@@ -47,11 +47,14 @@ const findById = (x: unknown, id: string): any => {
 const cmd = process.argv[2];
 if (cmd === 'ids') {
   // Lists the seeded Preprod V2 payment sources and their selling wallets, so MPS_SOURCE_ID and MPS_WALLET_ID can be set.
-  const data = await request('/payment-source?take=100');
-  const sources = (Array.isArray(data) ? data : (data.PaymentSources ?? data.paymentSources ?? [])) as any[];
-  for (const s of sources.filter((x) => x.network === 'Preprod')) {
+  const { ExtendedPaymentSources: sources } = (await request('/payment-source-extended?take=100')) as { ExtendedPaymentSources: any[] };
+  for (const s of sources.filter((x) => x.network === 'Preprod' && x.paymentSourceType === 'Web3CardanoV2')) {
     console.log(`MPS_SOURCE_ID=${s.id}   # ${s.paymentSourceType} ${s.smartContractAddress}`);
-    for (const w of s.SellingWallets ?? []) console.log(`MPS_WALLET_ID=${w.id}   # selling wallet ${w.walletAddress} (fund with test ADA)`);
+    const { Wallets } = (await request(`/wallet/list?take=100&paymentSourceId=${s.id}`)) as { Wallets: any[] };
+    for (const w of Wallets) {
+      const line = `${w.type} wallet ${w.walletAddress}`;
+      console.log(w.type === 'Selling' ? `MPS_WALLET_ID=${w.id}   # ${line} (fund with test ADA)` : `# ${line}`);
+    }
   }
   process.exit(0);
 }

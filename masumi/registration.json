@@ -1,0 +1,114 @@
+{
+  "walletId": "cmvvmh55w0009zoeygk5b0g83",
+  "sellerAddress": "addr_test1qq53schsdqekjahucft5uaadln9yvlhsgkrtagnl7vkx8kkc0nfmcsyy3knk4z56glq3n3e40kstkx2txl4887ymk3dqf2fnzu",
+  "registrationWritePending": false,
+  "request": {
+    "network": "Preprod",
+    "type": "Standard",
+    "sellingWalletVkey": "291862f068336976fcc2574e77adfcca467ef04586bea27ff32c63da",
+    "supportedPaymentSources": [
+      {
+        "chain": "Cardano",
+        "network": "Preprod",
+        "paymentSourceType": "Web3CardanoV2",
+        "address": "addr_test1wzs4e6wc95hkwezlccjw9mdvq0r0rsgx6zk34avptga3ftgn37w4g",
+        "pricing": {
+          "pricingType": "Dynamic"
+        }
+      }
+    ],
+    "ExampleOutputs": [],
+    "Tags": [
+      "fact-check",
+      "trading",
+      "news",
+      "signed-data",
+      "api3"
+    ],
+    "name": "SecondSource",
+    "description": "Checks a market headline against signed primary sources (X posts, Benzinga, market data via API3 AirnodeHub) and returns CONFIRMED, UNCONFIRMED or DENIED with a signed receipt for every step.",
+    "Capability": {
+      "name": "secondsource-check",
+      "version": "1"
+    },
+    "Author": {
+      "name": "SecondSource team"
+    },
+    "apiBaseUrl": "http://127.0.0.1:3013"
+  },
+  "registrationId": "cmvvmm3vl000660ey30ncbw4a",
+  "registration": {
+    "error": null,
+    "id": "cmvvmm3vl000660ey30ncbw4a",
+    "name": "SecondSource",
+    "description": "Checks a market headline against signed primary sources (X posts, Benzinga, market data via API3 AirnodeHub) and returns CONFIRMED, UNCONFIRMED or DENIED with a signed receipt for every step.",
+    "type": "Standard",
+    "apiBaseUrl": "http://127.0.0.1:3013",
+    "openApiSpecUrl": null,
+    "x402ResourcesUrl": null,
+    "a2aAgentCardUrl": null,
+    "a2aProtocolVersions": [],
+    "paymentSourceType": "Web3CardanoV2",
+    "Capability": {
+      "name": "secondsource-check",
+      "version": "1"
+    },
+    "Author": {
+      "name": "SecondSource team",
+      "contactEmail": null,
+      "contactOther": null,
+      "organization": null
+    },
+    "Legal": {
+      "privacyPolicy": null,
+      "terms": null,
+      "other": null
+    },
+    "state": "RegistrationConfirmed",
+    "Tags": [
+      "fact-check",
+      "trading",
+      "news",
+      "signed-data",
+      "api3"
+    ],
+    "createdAt": "2026-10-30T23:51:36.993Z",
+    "updatedAt": "2026-10-30T23:52:51.536Z",
+    "lastCheckedAt": null,
+    "ExampleOutputs": [],
+    "agentIdentifier": "67ab0c92c4ac1610895a1c965ee50aba41a8f1513b15240723b3bd0b1046e4019eb638852664bdcaa1c9cc7523505303af8e3951869671df6a000000",
+    "AgentPricing": null,
+    "sendFundingLovelace": null,
+    "supportedPaymentSources": [
+      {
+        "chain": "Cardano",
+        "network": "Preprod",
+        "paymentSourceType": "Web3CardanoV2",
+        "address": "addr_test1wzs4e6wc95hkwezlccjw9mdvq0r0rsgx6zk34avptga3ftgn37w4g",
+        "pricing": {
+          "pricingType": "Dynamic"
+        },
+        "id": "cmvvmm3vn000760eylcb4xt09"
+      }
+    ],
+    "verifications": null,
+    "SmartContractWallet": {
+      "walletVkey": "291862f068336976fcc2574e77adfcca467ef04586bea27ff32c63da",
+      "walletAddress": "addr_test1qq53schsdqekjahucft5uaadln9yvlhsgkrtagnl7vkx8kkc0nfmcsyy3knk4z56glq3n3e40kstkx2txl4887ymk3dqf2fnzu"
+    },
+    "RecipientWallet": null,
+    "CurrentTransaction": {
+      "txHash": "c92eccbff8cfe3ba56d8784466a2adbf48ae26e37403a3811e8b87932681caac",
+      "status": "Confirmed",
+      "confirmations": 5,
+      "fees": "276826",
+      "blockHeight": 5354992,
+      "blockTime": 1793404318
+    }
+  },
+  "runtimeKeyId": "cmvvmmatg000960eytmn9uxrb",
+  "agentIdentifier": "67ab0c92c4ac1610895a1c965ee50aba41a8f1513b15240723b3bd0b1046e4019eb638852664bdcaa1c9cc7523505303af8e3951869671df6a000000",
+  "registrationState": "RegistrationConfirmed",
+  "supportedPaymentSourceIndex": 0,
+  "registrationTx": "c92eccbff8cfe3ba56d8784466a2adbf48ae26e37403a3811e8b87932681caac"
+}
