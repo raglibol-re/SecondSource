@@ -1,0 +1,26 @@
+{
+  "name": "secondsource",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Coworker that checks a market headline against signed primary sources before an agent trades on it",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\"",
+    "tsc": "tsc",
+    "wallet:new": "node src/scripts/new-wallet.ts",
+    "wallet:balance": "node --env-file-if-exists=.env src/scripts/balance.ts",
+    "probe": "node --env-file-if-exists=.env src/scripts/probe.ts",
+    "mint": "node --env-file-if-exists=.env src/scripts/mint.ts"
+  },
+  "dependencies": {
+    "@x402/evm": "^2.28.0",
+    "@x402/fetch": "^2.28.0",
+    "viem": "^2.57.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "~6.0.3"
+  }
+}
