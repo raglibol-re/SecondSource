@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payments and signers</title>
+  <meta name="description" content="Every on-chain transaction SecondSource made, and the Airnode signers it trusts." />
+  <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/">Why it exists</a>
+        <a href="/check">Check a headline</a>
+        <a href="/verify">Verify a receipt</a>
+        <a href="/receipts" aria-current="page">Payments and signers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Payments and signers</h1>
+      <p class="lede">Every transaction SecondSource made on a testnet, and the Airnodes whose signatures it accepts.</p>
+    </div>
+
+    <section style="padding-bottom: 48px">
+      <h2 style="margin-bottom: 12px">The wallet that buys evidence</h2>
+      <p id="payer" class="muted">Loading…</p>
+    </section>
+
+    <section style="padding-bottom: 48px">
+      <h2 style="margin-bottom: 16px">Transactions</h2>
+      <div class="table-scroll" id="txs"><p class="muted">Loading…</p></div>
+    </section>
+
+    <section style="padding-bottom: 72px">
+      <h2 style="margin-bottom: 8px">Trusted signers</h2>
+      <p>Pinned from each listing's own spec on AirnodeHub. A response signed by anything else is rejected.</p>
+      <div class="table-scroll" id="signers"><p class="muted">Loading…</p></div>
+    </section>
+  </main>
+  <footer class="site"><div class="wrap">Testnets only: Base Sepolia and Cardano Preprod.</div></footer>
+
+  <script type="module">
+    import { esc } from '/assets/report.js';
+    const names = { twitter: 'TwitterAPI.io', benzinga: 'Benzinga', tickerlayer: 'TickerLayer', openrouter: 'OpenRouter', nodary: 'Nodary' };
+    try {
+      const s = await (await fetch('/api/status')).json();
+      document.getElementById('payer').innerHTML = s.payer
+        ? `<a class="mono" href="https://sepolia.basescan.org/address/${esc(s.payer.address)}" target="_blank" rel="noopener">${esc(s.payer.address)}</a> on Base Sepolia holds <b>${esc(s.payer.ausd ?? '?')} aUSD</b>.`
+        : 'The live checker is not configured on this deployment, so no wallet is attached. Recorded checks still work.';
+      document.getElementById('signers').innerHTML = `<table class="list"><thead><tr><th>API</th><th>Signer address</th><th>Price per call</th></tr></thead><tbody>${Object.entries(s.airnodes)
+        .map(([k, v]) => {
+          const prices = Object.values(s.prices[k] ?? {});
+          const p = prices.length ? `${Math.min(...prices.map(Number)).toFixed(2)} aUSD` : 'free';
+          return `<tr><td><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(names[k] ?? k)}</a></td><td class="mono">${esc(v.address)}</td><td>${p}</td></tr>`;
+        })
+        .join('')}</tbody></table>`;
+    } catch {
+      document.getElementById('payer').textContent = 'Could not reach the status endpoint.';
+    }
+    try {
+      const txs = await (await fetch('/data/transactions.json', { cache: 'no-store' })).json();
+      if (!txs.length) throw new Error();
+      document.getElementById('txs').innerHTML = `<table class="list"><thead><tr><th>When (UTC)</th><th>Network</th><th>What</th><th>Explorer</th></tr></thead><tbody>${txs
+        .slice()
+        .reverse()
+        .map((t) => `<tr><td>${esc(t.when.replace('T', ' ').slice(0, 16))}</td><td>${esc(t.network)}</td><td>${esc(t.what)}</td><td><a href="${esc(t.link)}" target="_blank" rel="noopener">View</a></td></tr>`)
+        .join('')}</tbody></table>`;
+    } catch {
+      document.getElementById('txs').innerHTML = '<p>No transactions recorded yet.</p>';
+    }
+  </script>
+</body>
+</html>

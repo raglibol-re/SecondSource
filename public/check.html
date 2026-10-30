@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Check a headline</title>
+  <meta name="description" content="Check a market headline against signed primary sources." />
+  <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/">Why it exists</a>
+        <a href="/check" aria-current="page">Check a headline</a>
+        <a href="/verify">Verify a receipt</a>
+        <a href="/receipts">Payments and signers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Check a headline</h1>
+      <p class="lede">See what the primary sources said, with a signed receipt for each answer.</p>
+    </div>
+
+    <div class="checker">
+      <div>
+        <div class="tabs" role="tablist" aria-label="Mode">
+          <button role="tab" id="tab-replay" aria-selected="true" aria-controls="pane-replay">Recorded checks</button>
+          <button role="tab" id="tab-live" aria-selected="false" aria-controls="pane-live">Live check</button>
+        </div>
+
+        <div id="pane-replay" role="tabpanel" aria-labelledby="tab-replay" class="panel">
+          <p class="small muted">Real checks we ran earlier, replayed step by step. Replaying is free and the receipts stay verifiable.</p>
+          <div id="runs"><p class="muted">Loading recorded checks…</p></div>
+        </div>
+
+        <form id="pane-live" role="tabpanel" aria-labelledby="tab-live" class="panel" hidden>
+          <div class="presets">
+            <button class="btn secondary small" type="button" data-preset="hassett">Use the Hassett case</button>
+            <button class="btn secondary small" type="button" data-preset="clear">Start blank</button>
+          </div>
+          <div class="field">
+            <label for="headline">Headline</label>
+            <textarea id="headline" name="headline" required minlength="8" maxlength="400" style="min-height: 90px; font-family: var(--body); font-size: 1rem" placeholder="Paste the headline exactly as it ran"></textarea>
+          </div>
+          <div class="field">
+            <label for="source">Attributed to</label>
+            <input type="text" id="source" name="source" placeholder="X handle, for example WhiteHouse" autocomplete="off" />
+            <span class="hint">Optional. We always check the White House accounts as well.</span>
+          </div>
+          <div class="field">
+            <label for="asset">Market to watch</label>
+            <select id="asset" name="asset">
+              <option value="">None</option>
+              <option value="indices/US30">Dow Jones (US30)</option>
+              <option value="indices/US500">S&amp;P 500 (US500)</option>
+              <option value="indices/US100">Nasdaq 100 (US100)</option>
+              <option value="crypto/BTCUSD">Bitcoin (BTCUSD)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="at">When it ran, in UTC</label>
+            <input type="datetime-local" id="at" name="at" />
+            <span class="hint">Leave empty for now. We look two hours before and up to three hours after.</span>
+          </div>
+          <details class="key" id="keybox">
+            <summary>Demo key</summary>
+            <div class="field" style="margin-top: 10px">
+              <label for="key" class="sr-only">Demo key</label>
+              <input type="password" id="key" autocomplete="off" placeholder="Live checks spend test money" />
+            </div>
+          </details>
+          <button class="btn" type="submit" id="run">Run the check</button>
+          <p class="small muted" style="margin-top: 12px">About 0.13 aUSD of evidence, paid over x402 on Base Sepolia.</p>
+          <div id="formerror" role="alert"></div>
+        </form>
+      </div>
+
+      <section id="report" aria-live="polite">
+        <div class="empty">
+          <h3 style="margin-bottom: 8px">No check yet</h3>
+          <p>Pick a recorded check to replay it, or run a live one.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site"><div class="wrap">Testnets only. Evidence is paid in aUSD on Base Sepolia; the coworker is paid in tUSDM on Cardano Preprod.</div></footer>
+
+  <script type="module">
+    import { esc, receiptHtml, renderReport } from '/assets/report.js';
+
+    const report = document.getElementById('report');
+    const tabs = { replay: document.getElementById('tab-replay'), live: document.getElementById('tab-live') };
+    const panes = { replay: document.getElementById('pane-replay'), live: document.getElementById('pane-live') };
+    const show = (name) => {
+      for (const k of Object.keys(tabs)) {
+        tabs[k].setAttribute('aria-selected', String(k === name));
+        panes[k].hidden = k !== name;
+      }
+    };
+    tabs.replay.onclick = () => show('replay');
+    tabs.live.onclick = () => show('live');
+
+    const sleep = (ms) => new Promise((r) => setTimeout(r, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ms));
+
+    // Shows receipts arriving one at a time, then the verdict, the way a live check unfolds.
+    const startProgress = (headline) => {
+      report.innerHTML = `<div class="report-head"><p class="muted small" style="margin-bottom:6px">Checking</p><p class="claim">${esc(headline)}</p></div>
+        <h3 style="margin-bottom:8px">Receipts</h3><ul class="receipts" id="live-receipts"><li class="receipt pending"><span class="tick"></span><span class="what">Buying evidence from primary sources</span><span class="price"></span><span class="sub">Paying per call over x402, then checking each signature</span></li></ul>`;
+      const list = document.getElementById('live-receipts');
+      let first = true;
+      return (step, attestation) => {
+        if (first) { list.innerHTML = ''; first = false; }
+        list.insertAdjacentHTML('beforeend', receiptHtml(step, attestation));
+      };
+    };
+
+    const replay = async (url) => {
+      report.innerHTML = '<p class="muted">Loading…</p>';
+      const r = await (await fetch(url)).json();
+      const add = startProgress(r.input.headline);
+      await sleep(700);
+      for (const s of r.steps) {
+        add(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined);
+        await sleep(650);
+      }
+      await sleep(400);
+      renderReport(report, r, { animate: true });
+      report.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // Recorded runs
+    try {
+      const runs = await (await fetch('/runs/index.json', { cache: 'no-store' })).json();
+      const box = document.getElementById('runs');
+      if (!runs.length) throw new Error('empty');
+      box.innerHTML = runs
+        .map((r, i) => `<div style="border-top:1px solid var(--rule);padding:12px 0">
+            <p style="margin:0 0 4px;font-weight:700">${esc(r.headline)}</p>
+            <p class="small muted" style="margin:0 0 8px">${esc(r.note ?? '')} Verdict ${esc(r.verdict)}.</p>
+            <button class="btn small" type="button" data-run="${i}">Replay this check</button></div>`)
+        .join('');
+      box.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(`/runs/${runs[Number(b.dataset.run)].file}`)));
+    } catch {
+      document.getElementById('runs').innerHTML = '<p>No recorded checks yet. Run a live check to make the first one.</p>';
+      show('live');
+    }
+
+    // Live check
+    const f = panes.live;
+    const presets = {
+      hassett: { headline: 'Hassett: Trump considering 90-day tariff pause', source: '', asset: 'indices/US30', at: '2025-04-07T14:12' },
+      clear: { headline: '', source: '', asset: '', at: '' },
+    };
+    f.querySelectorAll('[data-preset]').forEach((b) => (b.onclick = () => {
+      const p = presets[b.dataset.preset];
+      f.headline.value = p.headline; f.source.value = p.source; f.asset.value = p.asset; f.at.value = p.at;
+      f.headline.focus();
+    }));
+    try { document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? ''; } catch {}
+    if (document.getElementById('key').value) document.getElementById('keybox').open = false; else document.getElementById('keybox').open = true;
+
+    f.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const err = document.getElementById('formerror');
+      err.innerHTML = '';
+      const key = document.getElementById('key').value.trim();
+      try { localStorage.setItem('secondsource:key', key); } catch {}
+      const body = {
+        headline: f.headline.value.trim(),
+        claimedSource: f.source.value.trim() || undefined,
+        asset: f.asset.value || undefined,
+        publishedAt: f.at.value ? `${f.at.value}:00Z` : undefined,
+      };
+      const button = document.getElementById('run');
+      button.disabled = true; button.textContent = 'Checking…';
+      const add = startProgress(body.headline);
+      try {
+        const res = await fetch('/api/check', { method: 'POST', headers: { 'content-type': 'application/json', 'x-demo-key': key }, body: JSON.stringify(body) });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `The check failed with status ${res.status}.`);
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = '';
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          let nl;
+          while ((nl = buf.indexOf('\n')) >= 0) {
+            const line = buf.slice(0, nl); buf = buf.slice(nl + 1);
+            if (!line.trim()) continue;
+            const e = JSON.parse(line);
+            if (e.type === 'step') add(e.step, e.attestation);
+            if (e.type === 'result') renderReport(report, e.result, { animate: true });
+            if (e.type === 'error') throw new Error(e.error);
+          }
+        }
+      } catch (e) {
+        err.innerHTML = `<p class="error">${esc(e.message)}</p>`;
+        report.innerHTML = `<div class="empty"><h3>The check did not finish</h3><p>${esc(e.message)}</p></div>`;
+      } finally {
+        button.disabled = false; button.textContent = 'Run the check';
+      }
+    };
+  </script>
+</body>
+</html>

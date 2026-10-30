@@ -1,1 +1,127 @@
-<!doctype html><title>SecondSource</title><p>Deploying…</p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SecondSource</title>
+  <meta name="description" content="A coworker AI trading agents hire before acting on a headline. It checks the claim against signed primary sources and returns a verdict with a receipt for every step." />
+  <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/" aria-current="page">Why it exists</a>
+        <a href="/check">Check a headline</a>
+        <a href="/verify">Verify a receipt</a>
+        <a href="/receipts">Payments and signers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <p class="dateline"><span class="flash">Flash</span> Monday 7 April 2025, 10:12 New York</p>
+        <div class="headline-stage">
+          <h1><q>Hassett: Trump considering 90-day tariff pause</q></h1>
+          <div class="stamp animate" style="--delay: 900ms" aria-label="Verdict: denied">DENIED<small>by the primary source</small></div>
+        </div>
+        <ol class="timeline" aria-label="What happened that morning">
+          <li><time>10:12</time>The headline crosses the newswires and X.</li>
+          <li><time>Minutes later</time>The Dow swings about 800 points up.</li>
+          <li><time class="bad">About 20 min later</time>The White House says the report is wrong.</li>
+          <li><time>Then</time>The rally fades. Agents that bought the headline are holding the loss.</li>
+        </ol>
+        <p class="lede" style="margin-top: 40px">
+          Trading agents act on headlines in seconds. SecondSource is the coworker they hire first: it buys signed evidence
+          from primary sources, has it judged, and answers <b>confirmed</b>, <b>unconfirmed</b> or <b>denied</b>, with a receipt
+          for every step.
+        </p>
+        <div class="actions">
+          <a class="btn" href="/check">Check a headline</a>
+          <a class="btn secondary" href="#how">See how a check works</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="how">
+      <div class="wrap">
+        <h2>How a check works</h2>
+        <p class="lede">One job takes about twenty seconds and costs about 13 cents of test money in evidence.</p>
+        <ol class="steps">
+          <li><h3>Hire</h3><p>An agent, or a person in Sokosumi, sends the headline. Payment waits in Masumi escrow on Cardano.</p></li>
+          <li><h3>Buy evidence</h3><p>SecondSource pays per call over x402 on AirnodeHub: posts from the accounts that matter, the Benzinga newswire, and the market tape.</p></li>
+          <li><h3>Check signatures</h3><p>Every answer is signed by the Airnode that served it. Anything with the wrong signer, request or age is thrown out before use.</p></li>
+          <li><h3>Judge</h3><p>A language model reads only that evidence. Its answer comes back through an Airnode too, so the judgment is signed.</p></li>
+          <li><h3>Deliver</h3><p>The verdict, the reasoning, the cited evidence and every receipt. The result hash is logged on Cardano.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <h2>Every answer carries a signature</h2>
+        <p class="lede">A screenshot of a post can be faked and a deleted post leaves nothing behind. A signed response says who served it, what was asked and when.</p>
+        <div class="specimen">
+          <pre id="specimen" aria-label="A real signed response from the Nodary Airnode">Loading a real signed response…</pre>
+          <dl>
+            <dt>airnode</dt><dd>The address that signed. We compare it to the address published in that API's own spec.</dd>
+            <dt>requestHash</dt><dd>A hash of the exact question. We recompute it from what we asked, so an answer cannot be moved to another question.</dd>
+            <dt>timestamp</dt><dd>When the Airnode signed. Stale answers are rejected.</dd>
+            <dt>data</dt><dd>The provider's answer, byte for byte. Change one character and the signature no longer matches.</dd>
+            <dt>signature</dt><dd>EIP-191 over all of the above. Anyone can check it, including a smart contract.</dd>
+          </dl>
+        </div>
+        <div class="actions"><a class="btn secondary" href="/verify">Verify a receipt yourself</a></div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <h2>Who hires it</h2>
+        <div class="cols" style="margin-top: 28px">
+          <div><h3>Trading agents</h3><p>Call SecondSource before any order that a headline triggered. Only act on CONFIRMED, and keep the receipts for the audit trail.</p></div>
+          <div><h3>Trading desks</h3><p>Put a check between the news feed and execution. A vault can refuse to trade unless a signed CONFIRMED verdict is attached.</p></div>
+          <div><h3>Newsrooms</h3><p>Check what a quoted account really posted, and keep proof of it even after the post is edited or deleted.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <h2>Built on two networks</h2>
+        <div class="tracks" style="margin-top: 28px">
+          <div>
+            <h3>Cardano, Masumi and Sokosumi</h3>
+            <p>SecondSource is a Coworker that gets paid. Buyers hire it through Masumi escrow on Preprod, and the decision hash goes on chain.</p>
+          </div>
+          <div>
+            <h3>API3 AirnodeHub</h3>
+            <p>Every input is bought per call over x402 in aUSD on Base Sepolia, from Airnodes that sign each response: TwitterAPI.io, Benzinga, TickerLayer, Nodary and OpenRouter.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">SecondSource, TUM Blockchain Hackathon 2026. Testnets only. <a href="https://github.com/raglibol-re/SecondSource">Source code</a></div>
+  </footer>
+
+  <script type="module">
+    try {
+      const r = await fetch('/data/example-nodary.json');
+      const a = await r.json();
+      document.getElementById('specimen').textContent = JSON.stringify(a, null, 2).replace(/"signature": "(0x.{20}).*"/, '"signature": "$1…"');
+    } catch {
+      document.getElementById('specimen').textContent = 'Could not load the example.';
+    }
+  </script>
+</body>
+</html>

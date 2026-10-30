@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verify a receipt</title>
+  <meta name="description" content="Check the signature on any SecondSource receipt or AirnodeHub response." />
+  <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/">Why it exists</a>
+        <a href="/check">Check a headline</a>
+        <a href="/verify" aria-current="page">Verify a receipt</a>
+        <a href="/receipts">Payments and signers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Verify a receipt</h1>
+      <p class="lede">Don't trust us. Paste a signed response, or a whole check result, and see who signed it and for which question.</p>
+    </div>
+    <div class="checker">
+      <form class="panel" id="form">
+        <div class="presets">
+          <button class="btn secondary small" type="button" id="example">Load a real example</button>
+          <button class="btn secondary small" type="button" id="tamper">Tamper with it</button>
+          <button class="btn secondary small" type="button" id="last" hidden>Use my last check</button>
+        </div>
+        <div class="field">
+          <label for="json">Signed JSON</label>
+          <textarea id="json" spellcheck="false" placeholder='{"request": {...}, "response": {"airnode": "0x…", "requestHash": "0x…", "timestamp": "…", "data": "…", "signature": "0x…"}}'></textarea>
+          <span class="hint">Accepts one response, a list, or a full result from the check page.</span>
+        </div>
+        <button class="btn" type="submit">Verify signatures</button>
+      </form>
+      <section id="out" aria-live="polite">
+        <div class="empty"><h3 style="margin-bottom: 8px">Nothing verified yet</h3><p>Load the example, then tamper with one character and verify again.</p></div>
+      </section>
+    </div>
+    <section class="band" style="border-bottom: 0; padding-top: 24px">
+      <h2 style="margin-bottom: 12px">What is checked</h2>
+      <p>The signer is recovered from the signature over keccak256(requestHash, timestamp, data) and compared with the Airnode addresses published in each API's spec on AirnodeHub. When the request is included, its hash is recomputed from the operation and parameters, so a valid answer cannot be passed off as the answer to a different question.</p>
+    </section>
+  </main>
+  <footer class="site"><div class="wrap">The same check runs in a Solidity contract with AirnodeV2Attestation.verify.</div></footer>
+
+  <script type="module">
+    import { esc, short } from '/assets/report.js';
+    const ta = document.getElementById('json');
+    const out = document.getElementById('out');
+    document.getElementById('example').onclick = async () => {
+      const a = await (await fetch('/data/example-nodary.json')).json();
+      ta.value = JSON.stringify({ request: { operation: 'latestFeeds', parameters: { name: 'ETH/USD' } }, response: a }, null, 2);
+    };
+    document.getElementById('tamper').onclick = () => {
+      if (!ta.value) return;
+      ta.value = ta.value.replace(/"value\\":(\d)/, (m, d) => `"value\\":${(Number(d) + 1) % 10}`);
+    };
+    let last = null;
+    try { last = sessionStorage.getItem('secondsource:last'); } catch {}
+    if (last) {
+      const b = document.getElementById('last');
+      b.hidden = false;
+      b.onclick = () => (ta.value = last);
+    }
+    document.getElementById('form').onsubmit = async (e) => {
+      e.preventDefault();
+      let body;
+      try { body = JSON.parse(ta.value); } catch { out.innerHTML = '<p class="error">That is not valid JSON.</p>'; return; }
+      out.innerHTML = '<p class="muted">Verifying…</p>';
+      const res = await fetch('/api/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      const j = await res.json();
+      if (!res.ok) { out.innerHTML = `<p class="error">${esc(j.error)}</p>`; return; }
+      const all = j.results.every((r) => r.ok);
+      out.innerHTML = `
+        <div class="report-head" style="min-height: 90px">
+          <p class="claim">${all ? `All ${j.results.length} signature${j.results.length > 1 ? 's' : ''} check out` : 'At least one signature fails'}</p>
+          <div class="stamp ${all ? 'confirmed' : ''} animate" style="font-size:2rem">${all ? 'VALID' : 'INVALID'}</div>
+        </div>
+        <div class="table-scroll"><table class="list"><thead><tr><th>Result</th><th>Recovered signer</th><th>Listing</th><th>Question matches</th><th>Signed at</th></tr></thead><tbody>
+        ${j.results.map((r) => `<tr>
+          <td><span class="badge ${r.ok ? 'ok' : 'bad'}">${r.ok ? 'valid' : 'invalid'}</span></td>
+          <td class="mono" title="${esc(r.signer)}">${esc(short(r.signer ?? r.error ?? ''))}</td>
+          <td>${esc(r.listing ?? 'unknown signer')}</td>
+          <td>${r.requestHashMatches === null || r.requestHashMatches === undefined ? 'not given' : r.requestHashMatches ? 'yes' : 'no'}</td>
+          <td>${esc((r.signedAt ?? '').replace('T', ' ').slice(0, 19))}</td></tr>`).join('')}
+        </tbody></table></div>`;
+    };
+  </script>
+</body>
+</html>
