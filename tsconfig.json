@@ -5,11 +5,17 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "rewriteRelativeImportExtensions": true
   },
-  "include": ["src", "test"]
+  "include": [
+    "src",
+    "test",
+    "api"
+  ]
 }

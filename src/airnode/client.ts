@@ -21,7 +21,17 @@ export const createPayer = (): typeof fetch => {
 };
 
 const TX_LOG = 'docs/transactions.md';
+// Appends to docs/transactions.md when running locally. On Vercel the filesystem is read-only, so it only logs.
 export const logTransaction = (network: string, url: string, description: string) => {
+  console.error(`[tx] ${network} ${url} ${description}`);
+  if (process.env.VERCEL) return;
+  try {
+    writeTxLine(network, url, description);
+  } catch {
+    // Never let bookkeeping break a paid call.
+  }
+};
+const writeTxLine = (network: string, url: string, description: string) => {
   if (!existsSync(TX_LOG)) writeFileSync(TX_LOG, '# Transactions\n\n| When (UTC) | Network | Link | What |\n|---|---|---|---|\n');
   appendFileSync(TX_LOG, `| ${new Date().toISOString()} | ${network} | ${url} | ${description} |\n`);
 };

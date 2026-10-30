@@ -1,6 +1,6 @@
 // Adapted from api3dao/airnodehub-hackathon-starter (MIT), src/x402.ts.
 import { ExactEvmScheme } from '@x402/evm';
-import { decodePaymentResponseHeader, wrapFetchWithPaymentFromConfig } from '@x402/fetch';
+import { decodePaymentResponseHeader, wrapFetchWithPaymentFromConfig, type PaymentPolicy } from '@x402/fetch';
 import type { Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
@@ -16,6 +16,9 @@ export const AUSD_ADDRESS = '0xbeA34973e5f67F18F656A2C6070C64326C791808';
 const MAX_USD_PER_PAYMENT = '$1';
 const MAX_AUSD_PER_PAYMENT = '1000000';
 
+const onlyAusd = (<T extends { asset: string }>(_x402Version: number, requirements: T[]): T[] =>
+  requirements.filter((requirement: T) => requirement.asset.toLowerCase() === AUSD_ADDRESS.toLowerCase())) as PaymentPolicy;
+
 // Wraps fetch so that it answers a 402 by signing the aUSD payment that the Airnode asks for, and sending the call
 // again. The payer needs aUSD on Base Sepolia, but no ETH, because the facilitator submits the transfer.
 export const createPayingFetch = (payerPrivateKey: Hex, fetchFunction: typeof fetch = fetch): typeof fetch =>
@@ -27,10 +30,7 @@ export const createPayingFetch = (payerPrivateKey: Hex, fetchFunction: typeof fe
       allowedAssets: [{ network: BASE_SEPOLIA, asset: AUSD_ADDRESS, maxAmountPerPayment: MAX_AUSD_PER_PAYMENT }],
     },
     // The client would also pay in the assets that it knows, so keep only aUSD.
-    policies: [
-      (_x402Version, requirements) =>
-        requirements.filter((requirement) => requirement.asset.toLowerCase() === AUSD_ADDRESS.toLowerCase()),
-    ],
+    policies: [onlyAusd],
   });
 
 // The Airnode answers a paid call with the settlement of the payment in the PAYMENT-RESPONSE header, such as the
