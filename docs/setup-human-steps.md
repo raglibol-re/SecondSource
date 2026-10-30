@@ -8,12 +8,13 @@ Run commands from the repo root unless a step says otherwise.
 The payer wallet is `0x40C29519D7D6a5DA160e7a371c9fb506E8aC031e` on Base Sepolia. It pays for evidence and also
 deploys and calls the Guarded Vault.
 
-1. Send it about 0.02 Base Sepolia ETH from a faucet, for example https://portal.cdp.coinbase.com/products/faucet or
-   https://www.alchemy.com/faucets/base-sepolia.
+1. Create a CDP secret API key at https://portal.cdp.coinbase.com/api-keys/secret and add `CDP_API_KEY_ID` and
+   `CDP_API_KEY_SECRET` to `.env`. Then `pnpm faucet` claims Base Sepolia ETH for gas by itself. Alternatively send
+   about 0.02 Base Sepolia ETH from any faucet or wallet.
 2. Mint aUSD and run the feasibility probe:
 
    ```sh
-   pnpm wallet:balance
+   pnpm faucet
    pnpm mint
    pnpm probe
    ```
