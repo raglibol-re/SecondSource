@@ -10,3 +10,4 @@ node_modules
 /contracts/broadcast
 # local run outputs
 /runs
+.local

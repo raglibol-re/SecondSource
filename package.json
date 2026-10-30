@@ -16,7 +16,9 @@
     "probe": "node --env-file-if-exists=.env src/scripts/probe.ts",
     "mint": "node --env-file-if-exists=.env src/scripts/mint.ts",
     "check": "node --env-file-if-exists=.env src/cli.ts",
-    "site:data": "node src/scripts/site-data.ts"
+    "site:data": "node src/scripts/site-data.ts",
+    "worker": "node --env-file-if-exists=.env src/coworker/worker.ts",
+    "masumi": "node --env-file-if-exists=.env src/coworker/register.ts"
   },
   "dependencies": {
     "@x402/evm": "^2.28.0",
