@@ -11,3 +11,12 @@ export const AIRNODES = {
 } as const satisfies Record<string, { url: string; address: Address }>;
 
 export type AirnodeName = keyof typeof AIRNODES;
+
+// aUSD per call, from each spec's x-airnode.payment.prices. Unlisted operations are free.
+export const PRICES: Record<AirnodeName, Record<string, string>> = {
+  twitter: { userInfo: '0.01', userLastTweets: '0.01', userFollowers: '0.01', tweetsByIds: '0.01', searchTweets: '0.01', trends: '0.01' },
+  benzinga: { news: '0.01' },
+  openrouter: { chatCompletion: '0.05' },
+  tickerlayer: { quote: '0.05', lastTrade: '0.05', snapshot: '0.05', previousBar: '0.05', aggregates: '0.05', bondRate: '0.05', marketStatus: '0.05' },
+  nodary: {},
+};
