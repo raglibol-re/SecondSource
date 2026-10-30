@@ -1,0 +1,19 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.37"
+optimizer = true
+evm_version = "cancun"
+remappings = [
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+  "forge-std/=lib/forge-std/src/",
+  "solady/=lib/solady/src/",
+]
+fs_permissions = [{ access = "read", path = "./test/fixtures" }]
+ignored_warnings_from = ["lib"]
+
+[fuzz]
+runs = 256
