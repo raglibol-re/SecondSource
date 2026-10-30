@@ -23,7 +23,8 @@
     "vault:fixtures": "node src/scripts/vault-fixtures.ts",
     "vault:deploy": "node --env-file-if-exists=.env src/vault/deploy.ts",
     "vault:trade": "node --env-file-if-exists=.env src/vault/trade.ts",
-    "contracts:test": "cd contracts && forge test"
+    "contracts:test": "cd contracts && forge test",
+    "agent": "node --env-file-if-exists=.env src/scripts/agent-demo.ts"
   },
   "dependencies": {
     "@x402/evm": "^2.28.0",

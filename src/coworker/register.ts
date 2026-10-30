@@ -45,6 +45,16 @@ const findById = (x: unknown, id: string): any => {
 };
 
 const cmd = process.argv[2];
+if (cmd === 'ids') {
+  // Lists the seeded Preprod V2 payment sources and their selling wallets, so MPS_SOURCE_ID and MPS_WALLET_ID can be set.
+  const data = await request('/payment-source?take=100');
+  const sources = (Array.isArray(data) ? data : (data.PaymentSources ?? data.paymentSources ?? [])) as any[];
+  for (const s of sources.filter((x) => x.network === 'Preprod')) {
+    console.log(`MPS_SOURCE_ID=${s.id}   # ${s.paymentSourceType} ${s.smartContractAddress}`);
+    for (const w of s.SellingWallets ?? []) console.log(`MPS_WALLET_ID=${w.id}   # selling wallet ${w.walletAddress} (fund with test ADA)`);
+  }
+  process.exit(0);
+}
 if (cmd === 'key') {
   if (state.runtimeKeyId) {
     console.log(`Runtime key already created: ${state.runtimeKeyId}`);

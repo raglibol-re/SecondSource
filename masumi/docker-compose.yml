@@ -1,0 +1,14 @@
+# Local PostgreSQL for the Masumi Payment Service. Bound to localhost only.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: masumi
+      POSTGRES_PASSWORD: masumi-local
+      POSTGRES_DB: masumi_payment
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - masumi-pg:/var/lib/postgresql/data
+volumes:
+  masumi-pg:
