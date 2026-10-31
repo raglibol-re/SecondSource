@@ -131,3 +131,5 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T09:01:06.451Z | Base Sepolia | https://sepolia.basescan.org/tx/0x95cd873811fc1b836514f28a84d1928347cc909029135502cea2bfb04c89d887 | x402 payment: twitter.searchTweets |
 | 2026-10-31T09:01:23.193Z | Base Sepolia | https://sepolia.basescan.org/tx/0x5fac9181ab3f0fdc1535cebdc9f33bef6e3603e26d339db958067b7ee08bc7b4 | x402 payment: openrouter.chatCompletion |
 | 2026-10-31T09:02:13.921Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/cc72cd2d98b189a96d800660c0ae59b80746f43b43183f2d2d4f391f9e8da6bd | x402 payment (2 tADA) from a buyer agent for a SecondSource investigation |
+| 2026-10-31T10:21:31.792Z | Base Sepolia | https://sepolia.basescan.org/tx/0x6f7f898800dae2645d7b03d6eea260d5f303d76956d1279ffd502d3767bc326f | x402 payment: lunarcrush.topicNews |
+| 2026-10-31T10:21:32.996Z | Base Sepolia | https://sepolia.basescan.org/tx/0x8e1a4e5c3636147c7fdec29b40b09451b6a2d2eee63fbaf059aa0a4ff6f0c0b1 | x402 payment: finnhub.market-news |

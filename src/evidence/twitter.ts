@@ -15,10 +15,28 @@ export const accountsRequest = (accounts: string[], since: string, until: string
   },
 });
 
-// What anyone with reach said about the claim in the window.
+const term = (k: string) => (/\s/.test(k.trim()) ? `"${k.trim().replace(/"/g, '')}"` : k.trim());
+
+// What anyone with reach said about the claim in the window. The first keyword (the name) must match, any of the
+// others may: requiring every word missed real coverage ("Binance hack $6.3B North Korea" matched almost nothing).
+export const keywordQuery = (keywords: string[]) => {
+  const [first, ...rest] = keywords.filter((k) => k.trim()).map(term);
+  if (!first) return '';
+  return rest.length ? `${first} (${rest.join(' OR ')})` : first;
+};
+
 export const keywordRequest = (keywords: string[], since: string, until: string): AirnodeV2Request => ({
   operation: 'searchTweets',
-  parameters: { query: `${keywords.join(' ')} since_time:${unix(since)} until_time:${unix(until)}`, queryType: 'Top' },
+  parameters: { query: `${keywordQuery(keywords)} since_time:${unix(since)} until_time:${unix(until)}`, queryType: 'Top' },
+});
+
+// What the primary accounts said about the topic, over the whole window (their latest posts may be about other things).
+export const accountsTopicRequest = (accounts: string[], keywords: string[], since: string, until: string): AirnodeV2Request => ({
+  operation: 'searchTweets',
+  parameters: {
+    query: `(${accounts.map((a) => `from:${handle(a)}`).join(' OR ')}) (${keywords.map(term).join(' OR ')}) since_time:${unix(since)} until_time:${unix(until)}`,
+    queryType: 'Latest',
+  },
 });
 
 interface Tweet {

@@ -14,6 +14,12 @@ export interface CheckInput {
   keywords?: string[];
   // Accounts whose word counts as primary for this claim. Defaults to the White House accounts.
   officialAccounts?: string[];
+  // How far back to look. Defaults to 2 hours before the headline, or 7 days for an undated question.
+  lookbackHours?: number;
+  // News search: a topic for LunarCrush (e.g. "binance"), a Finnhub category, and a US ticker for company news.
+  newsTopic?: string;
+  newsCategory?: 'general' | 'crypto' | 'forex' | 'merger';
+  ticker?: string;
 }
 
 export type Verdict = 'CONFIRMED' | 'UNCONFIRMED' | 'DENIED';

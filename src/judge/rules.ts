@@ -46,6 +46,18 @@ export const judgeByRules = (input: CheckInput, evidence: EvidenceItem[], keywor
       citations: confirmations.map((e) => e.id),
     };
   }
+  // Independent reporting: two or more outlets carrying the story as fact, with nobody primary disputing it.
+  const HEDGE = /\b(reportedly|rumou?rs?|unconfirmed|unverified|alleged(ly)?|claims?|fake)\b/i;
+  const reports = evidence.filter((e) => e.kind === 'news' && e.author && !HEDGE.test(e.text) && relevant(e) >= Math.min(2, words.length));
+  const outlets = [...new Set(reports.map((e) => e.author!.trim()))];
+  if (outlets.length >= 2) {
+    return {
+      verdict: 'CONFIRMED',
+      confidence: 0.55,
+      reasoning: `${outlets.length} independent outlets (${outlets.slice(0, 4).join(', ')}) report it as fact, and no primary account disputes it. This rests on independent reporting, not a primary source. Judged by fixed rules because the OpenRouter Airnode was unavailable; the evidence is signed, this judgment is not.`,
+      citations: reports.filter((e, k) => reports.findIndex((x) => x.author === e.author) === k).slice(0, 4).map((e) => e.id),
+    };
+  }
   return {
     verdict: 'UNCONFIRMED',
     confidence: 0.3,

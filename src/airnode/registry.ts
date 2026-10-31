@@ -8,6 +8,8 @@ export const AIRNODES = {
   openrouter: { url: 'https://airnode-openrouter.fly.dev/', address: '0x68B39A664eaD9781107B4498BEeC8AAc4E6F3b33' },
   tickerlayer: { url: 'https://airnode-tickerlayer.fly.dev/', address: '0x32f5eA20F05fdADfCD50Cb8eD920acE96D5f9f2c' },
   nodary: { url: 'https://airnode-nodary.fly.dev/', address: '0xE70f1e8b22a21e4Bb5188918a3033341b281E4c0' },
+  lunarcrush: { url: 'https://airnode-lunarcrush.fly.dev/', address: '0xA868C4C235cA1108dB494FB573C0ffaA0b16A739' },
+  finnhub: { url: 'https://airnode-finnhub.fly.dev/', address: '0xE67773Cb4ABF04d03B5348c2F5baC624874270d4' },
 } as const satisfies Record<string, { url: string; address: Address }>;
 
 export type AirnodeName = keyof typeof AIRNODES;
@@ -19,4 +21,6 @@ export const PRICES: Record<AirnodeName, Record<string, string>> = {
   openrouter: { chatCompletion: '0.05' },
   tickerlayer: { quote: '0.05', lastTrade: '0.05', snapshot: '0.05', previousBar: '0.05', aggregates: '0.05', bondRate: '0.05', marketStatus: '0.05' },
   nodary: {},
+  lunarcrush: { topicNews: '0.02', topicPosts: '0.02' },
+  finnhub: { 'market-news': '0.01', 'company-news': '0.01', filings: '0.01' },
 };
