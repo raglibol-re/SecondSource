@@ -19,19 +19,22 @@ const txs = existsSync('docs/transactions.md')
   : [];
 writeFileSync('public/data/transactions.json', JSON.stringify(txs, null, 2) + '\n');
 
+// Notes and pinning live beside the results, so each result file stays exactly what check() produced and hashed.
+const meta: Record<string, { note?: string; pinned?: boolean }> = existsSync('public/runs/meta.json') ? JSON.parse(readFileSync('public/runs/meta.json', 'utf8')) : {};
 const runs = readdirSync('public/runs')
-  .filter((f) => f.endsWith('.json') && f !== 'index.json')
+  .filter((f) => f.endsWith('.json') && f !== 'index.json' && f !== 'meta.json')
   .map((file) => {
-    const r = JSON.parse(readFileSync(`public/runs/${file}`, 'utf8')) as CheckResult & { note?: string };
+    const r = JSON.parse(readFileSync(`public/runs/${file}`, 'utf8')) as CheckResult;
     return {
       file,
       headline: r.input.headline,
       verdict: r.verdict,
-      note: r.note ?? `Checked ${r.checkedAt.slice(0, 10)} with ${r.attestations.length} signed answers.`,
+      note: meta[file]?.note ?? `Checked ${r.checkedAt.slice(0, 10)} with ${r.attestations.length} signed answers.`,
       checkedAt: r.checkedAt,
+      pinned: meta[file]?.pinned === true,
     };
   })
-  .sort((a, b) => b.checkedAt.localeCompare(a.checkedAt));
+  .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.checkedAt.localeCompare(a.checkedAt));
 writeFileSync('public/runs/index.json', JSON.stringify(runs, null, 2) + '\n');
 
 copyFileSync('test/fixtures/nodary-eth-usd.json', 'public/data/example-nodary.json');

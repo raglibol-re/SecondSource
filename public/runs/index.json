@@ -1,23 +1,26 @@
 [
   {
+    "file": "hassett-2025-04-07.json",
+    "headline": "Hassett: Trump considering 90-day tariff pause",
+    "verdict": "DENIED",
+    "note": "7 April 2025, the morning the Dow swung 800 points. Real signed X posts, Benzinga newswire and Dow bars.",
+    "checkedAt": "2026-10-31T00:30:18.309Z",
+    "pinned": true
+  },
+  {
     "file": "shipbuilding-2025-04-09.json",
     "headline": "Trump signs executive order to boost US shipbuilding",
     "verdict": "CONFIRMED",
     "note": "9 April 2025. A headline the White House posted itself on X: confirmed, so the Guarded Vault lets the trade through.",
-    "checkedAt": "2026-10-31T00:37:35.000Z"
+    "checkedAt": "2026-10-31T00:37:35.000Z",
+    "pinned": false
   },
   {
     "file": "pause-2025-04-09.json",
     "headline": "Trump authorizes 90-day pause on reciprocal tariffs",
     "verdict": "UNCONFIRMED",
     "note": "9 April 2025. The pause was real but announced on Truth Social, which SecondSource does not read; the White House X accounts only discussed it, so the answer stays cautious.",
-    "checkedAt": "2026-10-31T00:36:09.765Z"
-  },
-  {
-    "file": "hassett-2025-04-07.json",
-    "headline": "Hassett: Trump considering 90-day tariff pause",
-    "verdict": "DENIED",
-    "note": "7 April 2025, the morning the Dow swung 800 points. Real signed X posts, Benzinga newswire and Dow bars.",
-    "checkedAt": "2026-10-31T00:30:18.309Z"
+    "checkedAt": "2026-10-31T00:36:09.765Z",
+    "pinned": false
   }
 ]
