@@ -39,6 +39,7 @@ const runs = readdirSync('public/runs')
 writeFileSync('public/runs/index.json', JSON.stringify(runs, null, 2) + '\n');
 
 copyFileSync('test/fixtures/nodary-eth-usd.json', 'public/data/example-nodary.json');
+copyFileSync('contracts/test/fixtures/post-whitehouse-shipbuilding.json', 'public/data/post-whitehouse.json');
 console.log(`${txs.length} transactions, ${runs.length} recorded checks`);
 
 // Public, non-secret facts for the Payments and signers page.

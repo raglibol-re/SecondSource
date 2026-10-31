@@ -1,8 +1,8 @@
 {
   "payer": "0x40C29519D7D6a5DA160e7a371c9fb506E8aC031e",
   "vault": {
-    "address": "0x20b22351f91612015417965c8f43d22e85174ea8",
-    "deployTx": "0x043a3fee78fac82120c94af9cd39a0f6e724055fe9b07b0c6bb14a2045f871b7",
+    "address": "0x0e9128f550254ed3389330e8134cea8cb09f46b6",
+    "deployTx": "0x945c23b8bdeb69729a2a1fdbb6705a6bfe10858b09ecc7e8f1a28cb4c0983304",
     "secondSource": "0xC5b076bf4362E1a1e2652d7c75b3b6b90a0e5132"
   },
   "masumi": {

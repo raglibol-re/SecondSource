@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test the contract</title>
+  <meta name="description" content="Send your own AirnodeHub responses to the deployed GuardedVault and run the tamper test." />
+  <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <script src="/assets/theme.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/">Why it exists</a>
+        <a href="/check">Check a headline</a>
+        <a href="/vault" aria-current="page">Test the contract</a>
+        <a href="/verify">Verify a receipt</a>
+        <a href="/receipts">Payments and signers</a>
+        <button class="theme-toggle" type="button">Light mode</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Test the contract</h1>
+      <p class="lede">The Guarded Vault on Base Sepolia only acts on responses it can verify: the expected Airnode signed them, they answer the request it expects, and they are fresh. Try to fool it.</p>
+      <p class="small" id="where">Loading the contract address…</p>
+    </div>
+
+    <section style="padding-bottom: 40px">
+      <h2 style="margin-bottom: 8px">The tamper test</h2>
+      <p>One real, fresh ETH/USD response from the Nodary Airnode, then four real responses with something wrong. Each one goes to the deployed contract's <code>verifyPrice</code>, the same check a trade runs first.</p>
+      <div class="actions" style="margin-top: 12px"><button class="btn" type="button" id="run">Run the tamper test</button></div>
+      <ul class="receipts" id="results" style="margin-top: 24px"></ul>
+      <p id="summary" class="claim" style="font-size: 1.4rem"></p>
+    </section>
+
+    <section style="padding-bottom: 72px">
+      <h2 style="margin-bottom: 8px">Bring your own response</h2>
+      <p>Paste a response exactly as AirnodeHub returns it, edit anything, and send it to the contract. Leave the post id empty for a Nodary ETH/USD price; fill it in for a TwitterAPI.io post (<code>tweetsByIds</code>, projected to author, createdAt, id and text).</p>
+      <div class="checker" style="padding-bottom: 0">
+        <form class="panel" id="form">
+          <div class="presets" id="presets">
+            <button class="btn secondary small" type="button" data-load="fresh">Fresh signed price</button>
+            <button class="btn secondary small" type="button" data-load="post">Signed White House post</button>
+          </div>
+          <div class="field">
+            <label for="json">Response JSON</label>
+            <textarea id="json" spellcheck="false" placeholder='{"airnode":"0x…","requestHash":"0x…","timestamp":"…","data":"…","signature":"0x…"}'></textarea>
+          </div>
+          <div class="field">
+            <label for="postId">Post id</label>
+            <input type="text" id="postId" placeholder="Empty for a price response" autocomplete="off" />
+          </div>
+          <button class="btn" type="submit">Verify on chain</button>
+        </form>
+        <section id="out" aria-live="polite">
+          <div class="empty"><h3 style="margin-bottom: 8px">Nothing sent yet</h3><p>Load a response, change one character, and send it.</p></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <footer class="site"><div class="wrap">Read-only calls (eth_call) to the deployed contract: no wallet, no gas.</div></footer>
+
+  <script type="module">
+    import { esc, short } from '/assets/report.js';
+    const results = document.getElementById('results');
+    const summary = document.getElementById('summary');
+    const ta = document.getElementById('json');
+    const post = document.getElementById('postId');
+    const out = document.getElementById('out');
+
+    const verify = async (response, postId) => {
+      const r = await fetch('/api/vault/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ response, postId }) });
+      return r.json();
+    };
+    const row = (n, label, o) => `<li class="receipt ${o.accepted ? '' : 'failed'}">
+      <span class="tick" aria-hidden="true">${o.accepted ? '✓' : '✕'}</span>
+      <span class="what">${n}. ${esc(label)}</span>
+      <span class="price">${o.accepted ? 'ACCEPTED' : 'REVERTED'}</span>
+      <span class="sub">${o.accepted ? esc(o.detail) : `<b class="mono">${esc(o.error)}</b>: ${esc(o.reason)}`}</span></li>`;
+
+    try {
+      const c = await (await fetch('/data/proof.json', { cache: 'no-store' })).json();
+      const v = c.vault;
+      document.getElementById('where').innerHTML = v
+        ? `Contract <a class="mono" href="https://sepolia.basescan.org/address/${esc(v.address)}" target="_blank" rel="noopener">${esc(v.address)}</a> on Base Sepolia.`
+        : '';
+    } catch {}
+
+    let lastCases = null;
+    document.getElementById('run').onclick = async (ev) => {
+      const b = ev.currentTarget;
+      b.disabled = true; b.textContent = 'Running…';
+      results.innerHTML = '<li class="receipt pending"><span class="tick"></span><span class="what">Fetching fresh signed responses from the Nodary Airnode</span><span class="price"></span></li>';
+      summary.textContent = '';
+      const started = performance.now();
+      try {
+        const res = await fetch('/api/vault/cases', { cache: 'no-store' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        lastCases = data.cases;
+        results.innerHTML = '';
+        let accepted = 0;
+        const reasons = new Set();
+        for (const [i, c] of data.cases.entries()) {
+          const o = await verify(c.response);
+          if (o.accepted) accepted++; else reasons.add(o.error);
+          results.insertAdjacentHTML('beforeend', row(i + 1, c.label, o));
+        }
+        const pass = accepted === 1 && reasons.size === 4;
+        summary.innerHTML = `${pass ? 'PASS' : 'FAIL'}: ${accepted} accepted, ${5 - accepted} rejected for ${reasons.size} different reasons <span class="muted small">(${((performance.now() - started) / 1000).toFixed(1)} s)</span>`;
+        summary.style.color = pass ? 'var(--confirm)' : 'var(--deny)';
+      } catch (e) {
+        results.innerHTML = `<li class="error">${esc(e.message)}</li>`;
+      } finally {
+        b.disabled = false; b.textContent = 'Run the tamper test again';
+      }
+    };
+
+    document.querySelectorAll('[data-load]').forEach((b) => (b.onclick = async () => {
+      if (b.dataset.load === 'post') {
+        const p = await (await fetch('/data/post-whitehouse.json')).json();
+        post.value = p.postId;
+        const { postId, ...response } = p;
+        ta.value = JSON.stringify(response, null, 2);
+        return;
+      }
+      b.disabled = true;
+      try {
+        const data = await (await fetch('/api/vault/cases', { cache: 'no-store' })).json();
+        lastCases = data.cases;
+        post.value = '';
+        ta.value = JSON.stringify(data.cases[0].response, null, 2);
+      } finally { b.disabled = false; }
+    }));
+
+    document.getElementById('form').onsubmit = async (e) => {
+      e.preventDefault();
+      let response;
+      try { response = JSON.parse(ta.value); } catch { out.innerHTML = '<p class="error">That is not valid JSON.</p>'; return; }
+      out.innerHTML = '<p class="muted">Asking the contract…</p>';
+      const o = await verify(response.response ?? response, post.value.trim() || undefined);
+      if (o.error && o.accepted === undefined) { out.innerHTML = `<p class="error">${esc(o.error)}</p>`; return; }
+      out.innerHTML = `<div class="report-head" style="min-height: 90px">
+          <p class="claim">${o.accepted ? 'The contract accepts this response' : 'The contract rejects this response'}</p>
+          <div class="stamp ${o.accepted ? 'confirmed' : ''} animate" style="font-size: 2rem">${o.accepted ? 'ACCEPTED' : 'REVERTED'}</div>
+        </div>
+        <p>${o.accepted ? esc(o.detail) : `<b class="mono">${esc(o.error)}(${esc(short(o.args))})</b><br>${esc(o.reason)}`}</p>
+        <p class="small muted">${esc(o.function)} on ${esc(o.vault)}, Base Sepolia</p>`;
+    };
+  </script>
+</body>
+</html>

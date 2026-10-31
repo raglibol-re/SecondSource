@@ -21,7 +21,7 @@
     "masumi": "node --env-file-if-exists=.env src/coworker/register.ts",
     "vault:signer": "node src/scripts/new-wallet.ts COWORKER_SIGNER_KEY",
     "vault:fixtures": "node src/scripts/vault-fixtures.ts",
-    "vault:deploy": "node --env-file-if-exists=.env src/vault/deploy.ts",
+    "vault:deploy": "node --env-file-if-exists=.env src/vault/deploy.ts && node src/scripts/vault-export.ts",
     "contracts:test": "cd contracts && forge test",
     "agent": "node --env-file-if-exists=.env src/scripts/agent-demo.ts",
     "faucet": "node --env-file-if-exists=.env src/scripts/faucet.ts",
@@ -30,7 +30,9 @@
     "api:local": "node --env-file-if-exists=.env src/scripts/local-api.ts",
     "vault:act": "node --env-file-if-exists=.env src/vault/trade.ts",
     "tamper-test": "node --env-file-if-exists=.env src/scripts/tamper-test.ts",
-    "contracts:build": "cd contracts && forge build"
+    "contracts:build": "cd contracts && forge build",
+    "vault:export": "node src/scripts/vault-export.ts",
+    "vault:verify": "node --env-file-if-exists=.env src/scripts/vault-verify.ts"
   },
   "dependencies": {
     "@evolution-sdk/evolution": "^0.8.0",

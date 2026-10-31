@@ -520,5 +520,65 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/7616f0a56d346e068d7af71f167ef8cbee8e12dc63eef3acec5cd8d0ba29cc44",
     "what": "x402 payment (2 tADA) from a buyer agent for a SecondSource check: DENIED"
+  },
+  {
+    "when": "2026-10-31T08:14:00.444Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x0ba1e636f8a20f80dbad3ca0295229c1071a1c61bc72b625cd47b3c98b9b7a0f",
+    "what": "x402 payment: twitter.tweetsByIds"
+  },
+  {
+    "when": "2026-10-31T08:14:01.813Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x4aa95aa3a1b425eaf63aa1d965ca1344a62bdf24093a6c3905c4b17e97487c36",
+    "what": "x402 payment: twitter.tweetsByIds"
+  },
+  {
+    "when": "2026-10-31T08:14:02.867Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x9b06016da5cc87f1ffe88d0c52b6f56aaba6964bc3b45cb9f4a04c8dedc6def8",
+    "what": "x402 payment: twitter.tweetsByIds"
+  },
+  {
+    "when": "2026-10-31T08:19:31.855Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x945c23b8bdeb69729a2a1fdbb6705a6bfe10858b09ecc7e8f1a28cb4c0983304",
+    "what": "Deploy GuardedVault v2 at 0x0e9128f550254ed3389330e8134cea8cb09f46b6"
+  },
+  {
+    "when": "2026-10-31T08:20:10.884Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x813648e07a9746a75f2e8e9be6faaee03a7b05c4804c6166afda80de775d5dcd",
+    "what": "x402 payment: twitter.tweetsByIds"
+  },
+  {
+    "when": "2026-10-31T08:20:12.818Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x0cd73b4e626ef8b67573b9bb02883cbb7db849b088d9e7daaadc16a4e83913ed",
+    "what": "GuardedVault executeTrade on CONFIRMED citing @WhiteHouse post 1910100697980285041: Trump signs executive order to boost US shipbuildi"
+  },
+  {
+    "when": "2026-10-31T08:20:31.146Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x6509414cece205abba10b6261ae82dbf43a7ec602c04a5efc04f0790e863d191",
+    "what": "x402 payment: twitter.tweetsByIds"
+  },
+  {
+    "when": "2026-10-31T08:20:32.713Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x5c63424838f7ba6c39907eca6fa8c4986fd61f99d90dd31554b5df4643fb9617",
+    "what": "GuardedVault haltOnDenial on DENIED citing @RapidResponse47 post 1909255140671984072: Hassett: Trump considering 90-day tariff pause"
+  },
+  {
+    "when": "2026-10-31T08:20:54.522Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xed16718de3dbf1ed43a4c710e5eb6bae3c8613e46d12a9f1684dd8514d39ded7",
+    "what": "x402 payment: twitter.tweetsByIds"
+  },
+  {
+    "when": "2026-10-31T08:20:56.161Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x96c8be5af7c64952723813b94a5de20c04c082b075946a75985581522f302eb4",
+    "what": "GuardedVault refused executeTrade on CONFIRMED citing @RapidResponse47 post 1910028915881697701 (TradingHalted): Trump authorizes 90-day pause on reciprocal tariff"
   }
 ]
