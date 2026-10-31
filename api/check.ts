@@ -1,4 +1,5 @@
 import { investigate } from '../src/agent/investigate.ts';
+import { ndjsonStream } from '../src/x402/stream.ts';
 import { callAirnode, createPayer } from '../src/airnode/client.ts';
 import { check } from '../src/check.ts';
 import type { CheckInput } from '../src/types.ts';
@@ -25,20 +26,14 @@ export async function POST(request: Request): Promise<Response> {
   }
   const pay = createPayer();
   const call = (s: Parameters<typeof callAirnode>[0], r: Parameters<typeof callAirnode>[1]) => callAirnode(s, r, pay, { maxAgeSeconds: 300 });
-  const enc = new TextEncoder();
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (o: unknown) => controller.enqueue(enc.encode(JSON.stringify(o) + '\n'));
-      try {
-        const result = question.length >= 8
-          ? await investigate(question, call, send)
-          : await check({ headline, claimedSource: body.claimedSource || undefined, asset: body.asset || undefined, publishedAt: body.publishedAt || undefined }, call, send);
-        send({ type: 'result', result });
-      } catch (err) {
-        send({ type: 'error', error: (err as Error).message });
-      }
-      controller.close();
-    },
+  return ndjsonStream(async (send) => {
+    try {
+      const result = question.length >= 8
+        ? await investigate(question, call, send)
+        : await check({ headline, claimedSource: body.claimedSource || undefined, asset: body.asset || undefined, publishedAt: body.publishedAt || undefined }, call, send);
+      send({ type: 'result', result });
+    } catch (err) {
+      send({ type: 'error', error: (err as Error).message });
+    }
   });
-  return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-store' } });
 }

@@ -1,6 +1,7 @@
 import { investigate } from '../../src/agent/investigate.ts';
 import { callAirnode, createPayer } from '../../src/airnode/client.ts';
 import { settlementFromHeaders, undecidedSettlement, verifyX402Payment } from '../../src/x402/seller.ts';
+import { ndjsonStream } from '../../src/x402/stream.ts';
 
 export const maxDuration = 300;
 
@@ -22,39 +23,38 @@ export async function POST(request: Request): Promise<Response> {
   const v = await verifyX402Payment(request, { question });
   if ('respond' in v) return v.respond;
 
-  const enc = new TextEncoder();
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (o: unknown) => controller.enqueue(enc.encode(JSON.stringify(o) + '\n'));
-      try {
-        // The buyer's payment is verified (not yet settled): tell them what they are paying, for their receipt.
-        send({ type: 'payment', ...v.terms, verifiedAt: new Date().toISOString() });
-        const pay = createPayer();
-        const result = await investigate(question, (s, r) => callAirnode(s, r, pay, { maxAgeSeconds: 300 }), (e) => send(e));
-        send({ type: 'settling' });
-        const s = await v.settle(Buffer.from(JSON.stringify(result)));
-        const receipt = settlementFromHeaders(s.headers) as { errorReason?: string; transaction?: string } | null;
-        if (!s.ok && receipt?.errorReason === 'settlement_pending') {
-          // Cardano: the signed transaction was submitted and is waiting for its confirmation. The buyer will be charged,
-          // so they get the verdict now; the transaction id lets them follow it.
-          send({ type: 'settlement', ...receipt, pending: true, settledAt: new Date().toISOString() });
-          send({ type: 'result', result });
-        } else if (!s.ok && undecidedSettlement(s)) {
-          // The facilitator did not answer; the payment may already be on chain. Never charge without delivering.
-          send({ type: 'settlement', network: v.terms.network, pending: true, unconfirmed: true, settledAt: new Date().toISOString() });
-          send({ type: 'result', result });
-        } else if (!s.ok) {
-          const reason = receipt?.errorReason ?? (!s.ok ? JSON.stringify(s.body).slice(0, 200) : '');
-          send({ type: 'error', notCharged: true, error: `Your payment could not be settled (${reason}), so you were not charged and the verdict is withheld.` });
-        } else {
-          send({ type: 'settlement', ...settlementFromHeaders(s.headers), settledAt: new Date().toISOString() });
-          send({ type: 'result', result });
-        }
-      } catch (err) {
-        send({ type: 'error', notCharged: true, error: `The investigation failed, so you were not charged: ${(err as Error).message}` });
+  return ndjsonStream(async (send, isOpen) => {
+    try {
+      // The buyer's payment is verified (not yet settled): tell them what they are paying, for their receipt.
+      send({ type: 'payment', ...v.terms, verifiedAt: new Date().toISOString() });
+      const pay = createPayer();
+      const result = await investigate(question, (s, r) => callAirnode(s, r, pay, { maxAgeSeconds: 300 }), (e) => send(e));
+      if (!isOpen()) {
+        // The buyer disconnected before the verdict could be delivered: do not settle, so they are not charged.
+        console.error('[investigate] client disconnected before delivery; payment not settled');
+        return;
       }
-      controller.close();
-    },
+      send({ type: 'settling' });
+      const s = await v.settle(Buffer.from(JSON.stringify(result)));
+      const receipt = settlementFromHeaders(s.headers) as { errorReason?: string; transaction?: string } | null;
+      if (!s.ok && receipt?.errorReason === 'settlement_pending') {
+        // Cardano: the signed transaction was submitted and is waiting for its confirmation. The buyer will be charged,
+        // so they get the verdict now; the transaction id lets them follow it.
+        send({ type: 'settlement', ...receipt, pending: true, settledAt: new Date().toISOString() });
+        send({ type: 'result', result });
+      } else if (!s.ok && undecidedSettlement(s)) {
+        // The facilitator did not answer; the payment may already be on chain. Never charge without delivering.
+        send({ type: 'settlement', network: v.terms.network, pending: true, unconfirmed: true, settledAt: new Date().toISOString() });
+        send({ type: 'result', result });
+      } else if (!s.ok) {
+        const reason = receipt?.errorReason ?? JSON.stringify(s.body).slice(0, 200);
+        send({ type: 'error', notCharged: true, error: `Your payment could not be settled (${reason}), so you were not charged and the verdict is withheld.` });
+      } else {
+        send({ type: 'settlement', ...settlementFromHeaders(s.headers), settledAt: new Date().toISOString() });
+        send({ type: 'result', result });
+      }
+    } catch (err) {
+      send({ type: 'error', notCharged: true, error: `The investigation failed, so you were not charged: ${(err as Error).message}` });
+    }
   });
-  return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-store' } });
 }

@@ -395,19 +395,37 @@
       };
     };
 
+    // Reads the NDJSON stream. Heartbeat lines keep the connection alive and are skipped. If the connection drops, or
+    // the stream ends without a verdict, the reader says so plainly instead of "network error".
+    class DroppedError extends Error {}
     const readStream = async (res, onEvent) => {
       const reader = res.body.getReader();
       const dec = new TextDecoder();
       let buf = '';
+      let finished = false;
+      const handle = (e) => {
+        if (e.type === 'ping') return;
+        if (e.type === 'result' || e.type === 'error') finished = true;
+        onEvent(e);
+      };
       for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
+        let chunk;
+        try {
+          chunk = await reader.read();
+        } catch {
+          throw new DroppedError('dropped');
+        }
+        const { done, value } = chunk;
+        if (done) {
+          if (!finished) throw new DroppedError('ended');
+          break;
+        }
         buf += dec.decode(value, { stream: true });
         let nl;
         while ((nl = buf.indexOf('\n')) >= 0) {
           const line = buf.slice(0, nl);
           buf = buf.slice(nl + 1);
-          if (line.trim()) onEvent(JSON.parse(line));
+          if (line.trim()) handle(JSON.parse(line));
         }
       }
     };
@@ -486,7 +504,13 @@
         }
       } catch (e) {
         stopThinking();
-        const msg = e instanceof HtmlError ? e.message : esc(e?.code === 4001 ? 'You rejected the request in your wallet. Nothing was paid.' : (e?.message ?? String(e)));
+        const paid = mode !== 'demo';
+        const msg = e instanceof HtmlError
+          ? e.message
+          : e instanceof DroppedError || /network ?error|failed to fetch|load failed/i.test(e?.message ?? '')
+            ? `The connection to SecondSource dropped before the verdict arrived.${paid ? ' Your payment settles only when the verdict is delivered, so if no payment receipt appeared above, you were not charged.' : ''} Check your connection and ask again.`
+            : esc(e?.code === 4001 ? 'You rejected the request in your wallet. Nothing was paid.' : (e?.message ?? String(e)));
+        if (!outVerdict.innerHTML) outVerdict.innerHTML = `<div class="out-error"><h2 class="out-h">No verdict</h2><p>${msg}</p></div>`;
         agent(`<p class="error">${msg}</p>`);
         if (!wallet.kind) renderWallet();
       } finally {

@@ -44,11 +44,21 @@ export const callAirnode = async (
   verifyOptions: VerifyOptions = {}
 ): Promise<Attestation> => {
   const { url, address } = AIRNODES[source];
-  const res = await fetchFunction(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-  });
+  // One slow source must not stall a whole investigation: give up on it and record it as failed.
+  const timeoutMs = source === 'openrouter' ? 90_000 : 45_000;
+  let res: Response;
+  try {
+    res = await fetchFunction(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (err) {
+    const name = (err as Error)?.name;
+    if (name === 'TimeoutError' || name === 'AbortError') throw new Error(`${source}.${request.operation} did not answer within ${timeoutMs / 1000} s`);
+    throw err;
+  }
   const settlement = readPaymentSettlement(res);
   let paymentTx: string | undefined;
   if (settlement?.success && settlement.transaction) {
