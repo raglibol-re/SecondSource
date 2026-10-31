@@ -53,6 +53,11 @@ collected the payment:
 | Payout to SecondSource (Withdrawn) | [665cf3d5…](https://preprod.cardanoscan.io/transaction/665cf3d555452c066826138e7dff9969191a4221331572ca9f389c5a717bd877) |
 | Paid request over x402 (2 tADA) | [7616f0a5…](https://preprod.cardanoscan.io/transaction/7616f0a56d346e068d7af71f167ef8cbee8e12dc63eef3acec5cd8d0ba29cc44) |
 
+**Try a paid check yourself, in the browser.** On https://secondsource-two.vercel.app/check, open "Live check", load
+the Hassett case and click "Pay 0.10 USDC and check". Your wallet (MetaMask or any EVM wallet) signs one USDC
+authorization on Base Sepolia; you pay no gas. Test USDC is free at https://faucet.circle.com (Base Sepolia). The same
+endpoint, `POST /api/x402/check`, also accepts 2 tADA on Cardano Preprod (`pnpm x402:buy`).
+
 Payment is tied to the result. The x402 payment settles only after the check succeeded, and Masumi escrow refunds the
 buyer if no result hash is submitted before the deadline.
 
