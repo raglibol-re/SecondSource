@@ -18,7 +18,7 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 | Detailed description | DONE | `docs/devfolio.md`, README |
 | Tracks applied, teammates added | YOU | Select Cardano + API3 on Devfolio, add teammates |
 | Demo video, at most 2.5 minutes | YOU | Script ready: `docs/video-script.md` |
-| Public GitHub repo before the deadline | YOU | `raglibol-re/SecondSource` is still private. History scanned: no secrets. I'm not allowed to flip it |
+| Public GitHub repo before the deadline | DONE | https://github.com/raglibol-re/SecondSource is public; CI badge and screenshots load without login |
 | README: what it does, setup, run | DONE | `README.md` (badges, two verdicts, how it works, trust table). Fresh-clone check re-run before 14:30 |
 | Live demo link | DONE | https://secondsource-two.vercel.app |
 
