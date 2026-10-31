@@ -39,4 +39,4 @@ Terminal: `pnpm watchdog "Hassett: Trump considering 90-day tariff pause" --at 2
 | Did you hand-roll the verification? | No: `AirnodeV2Attestation.recoverSigner` and `.verify` from the starter, unmodified (`contracts/src/AirnodeV2Attestation.sol`) |
 | How do I send my own response? | `/vault` page; `POST /api/vault/verify` with `{airnode, requestHash, timestamp, data, signature}`; `pnpm vault:verify file.json [--post id]` |
 | How do you know which post a signature is about? | `primarySourceRequestHash(postId)` rebuilds the canonical request; Foundry `test_requestHashIsRebuiltOnChain` and TS `test/vault.test.ts` pin it to real signed responses |
-| What stops replays and duplicates? | Price under 60 s; post under a day; verdict bound to chain, vault and post, used once (`VerdictAlreadyUsed`); 30 Foundry tests (`pnpm contracts:test`) |
+| What stops replays and duplicates? | Price under 60 s; post under a day; verdict bound to chain, vault and post, used once (`VerdictAlreadyUsed`); 38 Foundry tests incl. 8 property tests, 100% coverage (`pnpm contracts:test`) |

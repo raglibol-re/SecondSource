@@ -56,7 +56,7 @@ Who uses it:
    - a Sokosumi task through Masumi escrow (1 tUSDM): the result hash goes on chain, then SecondSource collects;
    - a direct request over x402 on Cardano Preprod (2 tADA, no account, no key);
    - and for anyone with a browser wallet: the same endpoint takes 0.10 USDC on Base Sepolia over x402, signed in the
-     wallet with no gas ("Pay 0.10 USDC and check" on the check page).
+     wallet with no gas ("Connect EVM wallet", then "Ask and pay 0.10 USDC" on the check page).
 
    Payment is tied to the result. x402 settles only after a successful check, and the escrow refunds if no result is
    delivered.
