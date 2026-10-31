@@ -66,7 +66,7 @@
       const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`;
       const blocks = [];
       if (p.vault)
-        blocks.push(`<div><h3>Guarded Vault, Base Sepolia</h3><p>Trades only with a Nodary price signed under 60 seconds ago and a CONFIRMED verdict signed by SecondSource.</p>
+        blocks.push(`<div><h3>Guarded Vault, Base Sepolia</h3><p>Trades only with a Nodary price signed under 60 seconds ago, a primary-source post signed by the TwitterAPI.io Airnode, and a CONFIRMED verdict that cites it. <a href="/vault">Test it yourself</a>.</p>
           <p class="small">${link(`https://sepolia.basescan.org/address/${p.vault.address}`, 'Contract')}, ${link(base(p.vault.deployTx), 'deployment')}. Allowed and refused trades are in the list below.</p></div>`);
       if (p.masumi)
         blocks.push(`<div><h3>Masumi registry, Cardano Preprod</h3><p>SecondSource is a registered agent: ${esc(p.masumi.state === 'RegistrationConfirmed' ? 'confirmed' : p.masumi.state)}.</p>
@@ -74,7 +74,7 @@
       if (p.sokosumi?.paidTask) {
         const t = p.sokosumi.paidTask;
         blocks.push(`<div><h3>A paid Sokosumi task</h3><p>${esc(t.price)}. Verdict ${esc(t.verdict)}, task ${esc(t.status.toLowerCase())}.</p>
-          <p class="small">${link(ada(t.fundsLockedTx), 'Escrow locked')}, ${link(ada(t.resultSubmittedTx), 'result hash on chain')}</p></div>`);
+          <p class="small">${link(ada(t.fundsLockedTx), 'Escrow locked')}, ${link(ada(t.resultSubmittedTx), 'result hash on chain')}${t.payout?.withdrawnTx ? `, ${link(ada(t.payout.withdrawnTx), 'payout to SecondSource')}` : ''}</p></div>`);
       }
       document.getElementById('proof').innerHTML = blocks.join('') || '<p>Nothing on chain yet.</p>';
     } catch {

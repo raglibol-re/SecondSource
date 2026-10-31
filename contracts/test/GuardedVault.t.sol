@@ -178,6 +178,22 @@ contract GuardedVaultTest is VaultFixtures {
         v.verifyPrice(r);
     }
 
+    function test_revertsWhenSignedPostIsAnotherPost() public {
+        // A vault whose TwitterAPI.io signer is a test key: a correctly signed answer to the request for one post that
+        // carries a different post id, which a faulty or dishonest upstream could return.
+        string[] memory accounts = new string[](1);
+        accounts[0] = "WhiteHouse";
+        uint256 testTwitterKey = 0x7EE7;
+        GuardedVault v = new GuardedVault(NODARY, vm.addr(testTwitterKey), ETH_REQUEST, vm.addr(COWORKER_KEY), accounts);
+        bytes32 request = v.primarySourceRequestHash(whiteHouseId);
+        bytes memory data = bytes('{"author":"WhiteHouse","createdAt":"Wed Apr 09 22:41:09 +0000 2025","id":"1","text":"x"}');
+        GuardedVault.AirnodeResponse memory r = GuardedVault.AirnodeResponse(
+            vm.addr(testTwitterKey), request, block.timestamp, data, signResponse(testTwitterKey, request, block.timestamp, data)
+        );
+        vm.expectRevert(abi.encodeWithSelector(GuardedVault.PostIdMismatch.selector, whiteHouseId, "1"));
+        v.verifyPrimarySource(whiteHouseId, r);
+    }
+
     function test_revertsWhenVerdictSignedByAnotherKey() public {
         GuardedVault.SignedVerdict memory v = signVerdict(
             OTHER_KEY, GuardedVault.Verdict.Confirmed, keccak256("x"), block.timestamp, address(vault), whiteHousePost.requestHash

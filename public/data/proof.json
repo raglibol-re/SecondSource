@@ -22,7 +22,11 @@
       "fundsLockedTx": "b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3",
       "resultSubmittedTx": "721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879",
       "checkResultHash": "0xf04cace4079fe504620fc12ae819dafc760facf507e5db2381db011cba574404",
-      "resultHashOnChainMatches": true
+      "resultHashOnChainMatches": true,
+      "payout": {
+        "state": "Withdrawn",
+        "withdrawnTx": "665cf3d555452c066826138e7dff9969191a4221331572ca9f389c5a717bd877"
+      }
     }
   }
 }
