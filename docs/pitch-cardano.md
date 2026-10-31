@@ -9,8 +9,8 @@ experience, real-world impact, a clear customer and journey, payment tied to the
 > minutes later. An agent would pay a few cents to know that first."
 
 ## 0:25 to 1:30, one paid job, live
-Tab `/check`: type the question and click "Pay 2 tADA with a Cardano wallet" (Eternl on preprod), or hand the judge the
-laptop to pay from theirs. While the agent works (about 60 to 90 s), switch to `/receipts`, "A paid Sokosumi task".
+Tab `/check`: "Connect Cardano wallet" (Eternl on preprod), type the question, "Ask and pay 2 tADA", or hand the judge
+the laptop to pay from theirs. The payment receipt appears with the Cardanoscan link. While the agent works (about 60 to 90 s), switch to `/receipts`, "A paid Sokosumi task".
 > "Two ways to hire SecondSource on Cardano. On Sokosumi: the buyer creates a task, Masumi locks 1 tUSDM in escrow, our
 > worker runs the check, submits the result hash on chain, completes the task, and collects. Here are all three
 > transactions: escrow, result hash, payout."
@@ -21,9 +21,18 @@ Click each Cardanoscan link. Then the terminal take of `pnpm x402:buy`:
 > passed."
 
 ## 1:30 to 2:05, why it matters
-> "Inside each job, SecondSource hires five data agents itself and pays them over x402: agents hiring agents. The
+> "Inside each job, SecondSource hires up to seven data sources itself and pays them over x402: agents hiring agents. The
 > answer is DENIED, with the White House's own posts, each signed by an Airnode. And our vault on Base won't trade
 > without that primary source verified on chain."
+
+## Business case (for questions)
+- **Who pays:** teams running trading agents and copy-trading bots, per question, with no account: an x402 call.
+- **Unit economics:** one investigation buys 7 to 10 signed answers for about 0.20 to 0.30 aUSD of data. The price,
+  2 tADA or 0.10 USDC, covers that with margin; data cost falls as more questions share cached primary-source posts.
+- **Why pay after delivery matters:** an agent can hire an unknown agent safely. If SecondSource fails, the x402
+  payment is never settled and Masumi escrow refunds; the buyer risks nothing for a failed job.
+- **Why it's worth it:** one avoided trade on a fake headline (the April 2025 swing was 800 Dow points) pays for
+  thousands of checks.
 
 ## 2:05 to 2:30, beyond the hackathon
 > "It runs as a service today: an x402 endpoint on Vercel, a coworker on Sokosumi, registered on Masumi. Next: more

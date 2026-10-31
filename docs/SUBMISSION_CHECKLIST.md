@@ -2,7 +2,7 @@
 
 Source: https://hackathon.tum-blockchain.com/prizes (fetched 31 Oct 2026), merged with the team briefing. Where they
 differ, the website wins. Tracks: **Cardano** and **API3**, 2 of the 3 allowed partner tracks. The **TUM Blockchain
-Track** is judged automatically and does not count toward the 3. Status as of 31 Oct, about 10:15 CET.
+Track** is judged automatically and does not count toward the 3. Status as of 31 Oct, about 12:30 CET.
 
 "You" marks the steps that need a person: Devfolio, recording, repo settings.
 
@@ -19,7 +19,7 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 | Tracks applied, teammates added | YOU | Select Cardano + API3 on Devfolio, add teammates |
 | Demo video, at most 2.5 minutes | YOU | Script ready: `docs/video-script.md` |
 | Public GitHub repo before the deadline | YOU | `raglibol-re/SecondSource` is still private. History scanned: no secrets. I'm not allowed to flip it |
-| README: what it does, setup, run | DONE | `README.md`. A fresh clone following it passed: `pnpm install`, 34 TS tests, 30 Foundry tests, `pnpm tamper-test` PASS |
+| README: what it does, setup, run | DONE | `README.md` (badges, two verdicts, how it works, trust table). Fresh-clone check re-run before 14:30 |
 | Live demo link | DONE | https://secondsource-two.vercel.app |
 
 ## Cardano: Agentic Commerce on Cardano
@@ -34,7 +34,7 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 | Video: customer, problem, business case, one paid job start to finish | YOU | `docs/video-script.md`, `docs/pitch-cardano.md` |
 | Description: how it works, Cardano tools, real use | DONE | `docs/devfolio.md` ("Cardano tools used", "How it runs in real use") |
 | README: setup steps and limits | DONE | README "Run it", "Limits"; `docs/setup-human-steps.md` |
-| Judges can pay from their own Cardano wallet | PARTIAL (you) | Button live on `/check`; needs `BLOCKFROST_API_KEY_PREPROD` on Vercel for the read-only proxy |
+| Judges can pay from their own Cardano wallet | DONE (test once yourself) | Wallet bar on `/check` (Eternl, Lace); payment receipt shown for every payment. Live buyer-agent run settled `30a21c79…` |
 
 ## API3: Any API in your contract
 
@@ -59,7 +59,10 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 | NatSpec | DONE | Every function, struct, event and error in `GuardedVault.sol` |
 | Explicit custom errors | DONE | 14 custom errors |
 | No unchecked external calls | DONE | No external calls, no owner, immutable configuration |
-| Tests for every revert path | DONE | 30 Foundry tests on real signed fixtures |
+| Tests for every revert path | DONE | 30 Foundry tests on real signed fixtures, plus 8 property tests (256 random runs each) |
+| Coverage | DONE | `GuardedVault.sol`: 100% lines, statements, branches, functions (`forge coverage`) |
+| Static analysis | DONE | Slither 0.11.6: 9 results (timestamp, constructor zero-checks), each answered in `SECURITY.md` |
+| CI | DONE | `.github/workflows/ci.yml`: typecheck, 40 TS tests, Foundry build and tests; green |
 | `SECURITY.md` | DONE | Threat model, trust assumptions, known limitations |
 
 ## Differences between the website and the briefing

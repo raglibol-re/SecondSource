@@ -11,30 +11,27 @@ and end, or speed them up and show a visible timer.
 > minutes later the White House says it's fake, and the rally fades. Trading agents that bought the headline lost money.
 > SecondSource is the coworker those agents hire first."
 
-## 0:20 to 0:40, the naive agent versus SecondSource
-**Screen:** terminal.
-```sh
-pnpm agent "Hassett: Trump considering 90-day tariff pause" --naive
-```
-> "This agent buys on the headline. Nothing in between."
+## 0:20 to 0:45, two questions, two verdicts
+**Screen:** tab `/check?replay=binance-hack-2026-10-31`: the plan grouped by source, the signed receipts ticking in,
+the green CONFIRMED card with CNBC, Cointelegraph and The Independent as cards.
+> "Ask in plain words. 'Was Binance hacked recently?' The agent plans where to look, and the plan itself is signed. It
+> buys evidence over x402 on API3's AirnodeHub: Binance's own accounts, X, the newswires, newsrooms through LunarCrush
+> and Finnhub. Every answer is signed by its Airnode and checked. Confirmed: independent newsrooms report it, and no
+> Binance account disputes it."
 
-**Screen:** tab `/check?replay=hassett-agent-2025-04-07`: the question in plain words, the agent's plan (accounts, search
-words, 14:12 UTC), the receipts arriving, then the stamp. (Live alternative: type the question and click "Pay 2 tADA with
-a Cardano wallet" in Eternl.)
-> "You ask in plain words. The agent plans where the primary source would speak, and the plan itself is signed. It
-> buys evidence over x402 on API3's AirnodeHub: posts from the White House accounts, the Benzinga
-> newswire, Dow price bars. Each answer is signed by its Airnode and checked. A model judges only that evidence, also
-> through an Airnode. Verdict: denied. It cites the White House's own posts: 'Wrong. Fake News.'"
+**Screen:** tab `/check?replay=hassett-agent-2025-04-07`, the red DENIED stamp.
+> "Same agent, the tariff headline: denied, citing the White House's own signed posts. 'Wrong. Fake News.' An
+> official denial beats any number of outlets repeating a story."
 
-## 0:40 to 1:15, a paid job on Cardano, start to finish
-**Screen:** terminal (pre-recorded take, trimmed).
-```sh
-pnpm x402:buy "Hassett: Trump considering 90-day tariff pause" --asset indices/US30 --at 2025-04-07T14:12:00Z
-```
-Show: `HTTP 402 Payment Required`, "Paying 2 tADA…", `HTTP 200`, `DENIED (95%)`, `Paid: preprod.cardanoscan.io/…`.
-> "Any agent can hire it with no account: a 402, a 2-tADA payment on Cardano Preprod, the signed answer. Payment
-> settles only if the check succeeded. Inside that one job, SecondSource paid five Airnodes over x402 itself: agents
-> paying agents."
+## 0:45 to 1:15, a paid question on Cardano, start to finish
+**Screen:** `/check`, wallet bar: "Connect Cardano wallet" (Eternl on preprod), the address and tADA balance appear.
+Type a question, "Ask and pay 2 tADA", sign in Eternl. Cut the wait. Show the payment receipt: 2 tADA, from, to,
+Cardano Preprod, the transaction link, "Paid", then the verdict below it. Click the Cardanoscan link.
+(Pre-recorded fallback: `pnpm x402:buy --question "Is it true that Binance was hacked recently?"`, which settled
+`30a21c79…` on 31 Oct.)
+> "Connect a wallet, ask, sign once. The payment is verified up front but settles only after the verdict exists, so
+> you pay for delivered work, and here's the receipt with the transaction on Cardano. Inside that one job SecondSource
+> paid seven data sources over x402 itself: agents paying agents."
 
 **Screen:** `/receipts`, "A paid Sokosumi task": escrow locked, result hash, payout.
 > "The same job through Sokosumi: escrow funded, result hash on Cardano, then payout to SecondSource."
