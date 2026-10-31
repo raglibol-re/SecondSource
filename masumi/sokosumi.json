@@ -1,0 +1,8 @@
+{
+  "network": "preprod",
+  "organization": "01a18f47-05a1-773f-bcac-bf13beaccb8d",
+  "vendorId": "01a18f47-7179-7418-ad0a-206928e56d25",
+  "coworkerId": "01a18f47-8ad2-7695-ac78-40515a62e758",
+  "personalWorkspaceAccess": "GRANTED",
+  "firstTask": { "id": "01a18f47-e882-723a-82ca-e7bffa262468", "status": "COMPLETED", "paid": false, "note": "plumbing test before the evidence wallet was funded" }
+}
