@@ -48,18 +48,24 @@ Who uses it:
    @RobertIger), search words and the market to watch. It tells you its plan in the chat.
 1. **Buy evidence.** SecondSource pays per call over x402 in aUSD on Base Sepolia for AirnodeHub data. It gets X posts
    from the primary accounts and top posts about the claim (TwitterAPI.io), the Benzinga newswire, and market bars
-   (TickerLayer). Every answer is signed by the Airnode that served it, and every signature is verified before use:
-   expected signer, exact request, fresh timestamp.
+   (TickerLayer). For news it adds what established newsrooms report (LunarCrush topic news, Finnhub market and company
+   news) and, for a US-listed company, its SEC filings. Undated questions ("was Binance hacked recently?") look back a
+   week. Every answer is signed by the Airnode that served it, and every signature is verified before use: expected
+   signer, exact request, fresh timestamp.
 2. **Judge.** A model reads only that evidence, through the OpenRouter Airnode, so the judgment is signed too. Citations
-   are enforced, and a verdict without valid citations is downgraded.
+   are enforced, and a verdict without valid citations is downgraded. An official denial beats everything; two or
+   more independent newsrooms reporting an event as fact can confirm it, capped at 80%. On 31 Oct, "Was Binance hacked
+   recently?" came back CONFIRMED, citing CNBC, Cointelegraph, Fox Business and ABC News.
 3. **Get paid on Cardano.** Two ways:
    - a Sokosumi task through Masumi escrow (1 tUSDM): the result hash goes on chain, then SecondSource collects;
    - a direct request over x402 on Cardano Preprod (2 tADA, no account, no key);
-   - and for anyone with a browser wallet: the same endpoint takes 0.10 USDC on Base Sepolia over x402, signed in the
+   - from the browser: connect Eternl or Lace once in the wallet bar, then "Ask and pay 2 tADA";
+   - and for anyone with an EVM wallet: the same endpoint takes 0.10 USDC on Base Sepolia over x402, signed in the
      wallet with no gas ("Connect EVM wallet", then "Ask and pay 0.10 USDC" on the check page).
 
    Payment is tied to the result. x402 settles only after a successful check, and the escrow refunds if no result is
-   delivered.
+   delivered. If the payment service times out after the buyer paid, the verdict is still delivered, so a buyer never
+   pays without getting the answer. Every payment shows a receipt: amount, from, to, network, transaction, status.
 4. **Enforce on chain.** The Guarded Vault on Base Sepolia trades only with three proofs:
    - a Nodary ETH/USD price signed in the last 60 seconds;
    - a post by a primary account, signed by the TwitterAPI.io Airnode, whose request hash the contract **rebuilds from
