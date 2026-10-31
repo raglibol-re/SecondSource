@@ -89,3 +89,4 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T07:40:14.128Z | Base Sepolia | https://sepolia.basescan.org/tx/0x4f0b74af4750852c67219c19464b910a08aad9f5d7959bf58b93b07335fa1389 | x402 payment: tickerlayer.aggregates |
 | 2026-10-31T07:40:38.109Z | Base Sepolia | https://sepolia.basescan.org/tx/0xbccd647145c9ef5c028d2be4dbde51d20b324ee6abb5831d86ee7d7454beddbf | x402 payment: openrouter.chatCompletion |
 | 2026-10-31T07:41:04.030Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629 | x402 payment (2 tADA) from a buyer agent for a SecondSource check: DENIED |
+| 2026-10-31T07:44:34.408Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/86d011cb7a07687f2104d301bfa4f60bbbc805509aa4872e617863460ef6fc50 | Masumi dispenser: test ADA to the demo x402 buyer agent |

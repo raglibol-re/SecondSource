@@ -508,5 +508,11 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629",
     "what": "x402 payment (2 tADA) from a buyer agent for a SecondSource check: DENIED"
+  },
+  {
+    "when": "2026-10-31T07:44:34.408Z",
+    "network": "Cardano Preprod",
+    "link": "https://preprod.cardanoscan.io/transaction/86d011cb7a07687f2104d301bfa4f60bbbc805509aa4872e617863460ef6fc50",
+    "what": "Masumi dispenser: test ADA to the demo x402 buyer agent"
   }
 ]

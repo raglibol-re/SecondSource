@@ -11,8 +11,9 @@ traded on the headline lost money. SecondSource would have answered: denied by t
 
 Built for two tracks at the TUM Blockchain Hackathon 2026:
 
-- **Cardano, Masumi and Sokosumi:** an AI Coworker that gets paid. Buyers hire it through Masumi escrow on Preprod, paying
-  1 tUSDM per check, and the result hash is submitted on chain.
+- **Cardano, Masumi and Sokosumi:** an AI Coworker that gets paid, two ways. Through Masumi escrow in a Sokosumi task
+  (1 tUSDM per check, result hash submitted on chain), or per request over x402 on Cardano Preprod (2 tADA, no account
+  and no key).
 - **API3 AirnodeHub:** every input is bought per call over x402 in aUSD on Base Sepolia, and every response is signed by
   the Airnode that served it. The judgment itself comes from OpenRouter through an Airnode, so it is signed too. The
   Guarded Vault verifies a Nodary price attestation on chain.
@@ -61,6 +62,26 @@ flowchart LR
     AH --> BS["Base Sepolia: x402 settlement"]
     VT["pnpm vault:trade"] --> GV["GuardedVault.sol"]
 ```
+
+## Hire it over x402 on Cardano
+
+Any agent can buy a check without an account. An unpaid request gets HTTP 402 with the payment requirements; the agent
+pays 2 tADA on Cardano Preprod through the Cardano Foundation's x402 facilitator and retries. The check runs before
+the payment settles, so a failed check is not charged.
+
+```sh
+curl -i -X POST https://secondsource-two.vercel.app/api/x402/check \
+  -H 'Content-Type: application/json' \
+  -d '{"headline":"Hassett: Trump considering 90-day tariff pause","asset":"indices/US30","publishedAt":"2025-04-07T14:12:00Z"}'
+# HTTP 402, PAYMENT-REQUIRED: cardano:preprod, 2000000 lovelace
+
+pnpm x402:wallet --fund     # a demo buyer wallet, funded from the Masumi dispenser
+pnpm x402:buy "Hassett: Trump considering 90-day tariff pause" --asset indices/US30 --at 2025-04-07T14:12:00Z
+```
+
+One purchase uses x402 twice: the buyer pays SecondSource on Cardano, and SecondSource pays its five evidence sources on
+Base Sepolia. The first one settled on Preprod in
+[this transaction](https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629).
 
 ## Repository
 
@@ -115,6 +136,7 @@ Keys live in `.env`, which is gitignored. Testnets only.
 | Shipbuilding executive order, 9 April 2025 | **CONFIRMED** by a signed @WhiteHouse post. The Guarded Vault executed the trade. |
 | 90-day pause, 9 April 2025 | **CONFIRMED** from Treasury Secretary Bessent's words ("We've given 90 days") as posted by @RapidResponse47. |
 | Guarded Vault | Deployed on Base Sepolia at `0x20b22351f91612015417965c8f43d22e85174ea8`. One allowed trade and one on-chain revert with `VerdictNotConfirmed`. |
+| x402 on Cardano | A buyer agent paid 2 tADA and received the signed DENIED check for the Hassett headline ([tx](https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629)). |
 | Masumi | Registered on Cardano Preprod. Two paid Sokosumi tasks ran end to end. The latest: 1 tUSDM locked in escrow ([tx](https://preprod.cardanoscan.io/transaction/b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3)), check returned DENIED with a signed model judgment, result hash submitted on chain ([tx](https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879)), task completed. |
 
 All transactions are listed in [docs/transactions.md](docs/transactions.md).
