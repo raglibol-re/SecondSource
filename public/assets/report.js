@@ -35,7 +35,7 @@ export const receiptHtml = (step, attestation, state = step.status) => {
   return `<li class="receipt ${state}">
     <span class="tick" aria-hidden="true">${state === 'failed' ? '!' : state === 'pending' ? '' : '✓'}</span>
     <span class="what">${esc(name)}: ${esc(step.label)}</span>
-    <span class="price">${price ? `${price.toFixed(2)} aUSD` : 'free'}</span>
+    <span class="price">${state === 'failed' ? 'not charged' : price ? `${price.toFixed(2)} aUSD` : 'free'}</span>
     <span class="sub">${sub.join('<span aria-hidden="true"></span>')}</span>
     ${raw}
   </li>`;

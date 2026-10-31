@@ -240,3 +240,5 @@ table.list th { border-bottom: 2px solid var(--ink); font-weight: 700; }
 h1, .claim { overflow-wrap: anywhere; hyphens: auto; }
 .theme-toggle { appearance: none; background: none; border: 1px solid var(--rule); color: var(--ink-2); border-radius: 999px; padding: 5px 12px; font: 600 0.85rem var(--body); cursor: pointer; }
 .theme-toggle:hover { color: var(--ink); border-color: var(--ink); }
+/* Keep the verdict stamp clear of the checked headline on wide screens. */
+@media (min-width: 641px) { .report-head .claim { max-width: calc(100% - 300px); } .report-head { min-height: 150px; } }
