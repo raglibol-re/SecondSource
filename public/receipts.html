@@ -83,7 +83,7 @@
       const s = await (await fetch('/api/status')).json();
       document.getElementById('payer').innerHTML = s.payer
         ? `<a class="mono" href="https://sepolia.basescan.org/address/${esc(s.payer.address)}" target="_blank" rel="noopener">${esc(s.payer.address)}</a> on Base Sepolia holds <b>${esc(s.payer.ausd ?? '?')} aUSD</b>.`
-        : 'The live checker is not configured on this deployment, so no wallet is attached. Recorded checks still work.';
+        : await (async () => { try { const p = await (await fetch('/data/proof.json')).json(); return p.payer ? `<a class="mono" href="https://sepolia.basescan.org/address/${esc(p.payer)}" target="_blank" rel="noopener">${esc(p.payer)}</a> on Base Sepolia. Every x402 payment below comes from this wallet. Live checks on this site are switched off; recorded checks replay for free.` : 'No wallet is attached to this deployment.'; } catch { return 'No wallet is attached to this deployment.'; } })();
       document.getElementById('signers').innerHTML = `<table class="list"><thead><tr><th>API</th><th>Signer address</th><th>Price per call</th></tr></thead><tbody>${Object.entries(s.airnodes)
         .map(([k, v]) => {
           const prices = Object.values(s.prices[k] ?? {});

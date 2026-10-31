@@ -1,3 +1,4 @@
+import { privateKeyToAccount } from 'viem/accounts';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import type { CheckResult } from '../types.ts';
 
@@ -49,6 +50,7 @@ writeFileSync(
   'public/data/proof.json',
   JSON.stringify(
     {
+      payer: process.env.PAYER_PRIVATE_KEY ? privateKeyToAccount(process.env.PAYER_PRIVATE_KEY as `0x${string}`).address : null,
       vault: vault ? { address: vault.GuardedVault, deployTx: vault.deployTx, secondSource: vault.secondSource } : null,
       masumi: reg ? { agentIdentifier: reg.agentIdentifier, state: reg.registrationState, registrationTx: reg.registrationTx, sellerAddress: reg.sellerAddress } : null,
       sokosumi: soko ? { coworkerId: soko.coworkerId, paidTask: soko.paidTask ?? null } : null,

@@ -58,3 +58,17 @@ is made.
 - It shows why signatures matter beyond price feeds: social posts, newswire stories and model output all become
   evidence a third party can verify, on chain or off.
 - It is an autonomous agent that discovers, pays for and verifies data by itself.
+
+## Shown working on testnets
+
+- **The pitch case, for real.** Checking "Hassett: Trump considering 90-day tariff pause" at 14:12 UTC on 7 April 2025
+  returns DENIED, citing three signed @RapidResponse47 posts from 14:38 to 14:41 UTC, including "Reports that @POTUS
+  is considering a 90-day pause on tariffs are FAKE NEWS". Evidence cost: 0.08 aUSD.
+- **Cautious when it should be.** The real pause two days later was announced on Truth Social, which no listing covers;
+  SecondSource says UNCONFIRMED rather than treating news repetition as confirmation.
+- **Paid as a Coworker.** A Sokosumi task paid 1 tUSDM into Masumi escrow, SecondSource ran the check, and the result
+  hash was submitted on Cardano Preprod before the task completed.
+- **Enforced on chain.** The Guarded Vault on Base Sepolia executed a trade with a CONFIRMED verdict and reverted with
+  `VerdictNotConfirmed` on the DENIED Hassett verdict.
+
+Every transaction is listed in [transactions.md](transactions.md) and on https://secondsource-two.vercel.app/receipts.

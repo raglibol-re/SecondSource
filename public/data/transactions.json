@@ -298,5 +298,35 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189",
     "what": "Masumi escrow ResultSubmitted for Task 01a18f66-f4b1-73fe-914b-c9a3660e1296"
+  },
+  {
+    "when": "2026-10-31T00:54:52.131Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x6076364366a4c5842ecf524e5082953d47cf9a2f42a4f3a5ed1bcd8214bd5fd9",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:54:52.179Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x9583f59f0f4a6703575cdbdebd5771cb965392d01be347f199641e57da1c1eb9",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:54:52.214Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xe720b44dac9b464a52955430df174b29aa96a5ff47a3572e638b7a0acc08f095",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:54:52.338Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x37ffdff55e7e1cc3f42d1e536b5ae81d9f20395fae0135d1dc19716c46a87555",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:55:04.979Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x3afbb7193f6b351b4bbc4309436a31f2181d1882e09606ee497de3b908b5d60a",
+    "what": "GuardedVault trade BLOCKED (DENIED, VerdictNotConfirmed(3)): Hassett: Trump considering 90-day tariff pause"
   }
 ]
