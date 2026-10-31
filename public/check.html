@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Check a headline</title>
-  <meta name="description" content="Check a market headline against signed primary sources." />
+  <title>Ask SecondSource</title>
+  <meta name="description" content="Ask SecondSource about a headline. The agent plans where the primary source would speak, buys signed evidence and answers with receipts." />
   <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,7 +18,7 @@
       <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
       <nav class="nav" aria-label="Main">
         <a href="/">Why it exists</a>
-        <a href="/check" aria-current="page">Check a headline</a>
+        <a href="/check" aria-current="page">Ask SecondSource</a>
         <a href="/vault">Test the contract</a>
         <a href="/verify">Verify a receipt</a>
         <a href="/receipts">Payments and signers</a>
@@ -29,242 +29,196 @@
 
   <main class="wrap">
     <div class="page-head">
-      <h1>Check a headline</h1>
-      <p class="lede">See what the primary sources said, with a signed receipt for each answer.</p>
+      <h1>Ask SecondSource</h1>
+      <p class="lede">Paste a headline or ask about one. The agent works out who the primary source is, buys signed evidence, and tells you whether they confirmed or denied it.</p>
     </div>
 
-    <div class="checker">
+    <div class="chat">
       <div>
-        <div class="tabs" role="tablist" aria-label="Mode">
-          <button role="tab" id="tab-replay" aria-selected="true" aria-controls="pane-replay">Recorded checks</button>
-          <button role="tab" id="tab-live" aria-selected="false" aria-controls="pane-live">Live check</button>
+        <div class="thread" id="thread" aria-live="polite">
+          <div class="msg agent"><span class="who">SecondSource</span><p>What headline should I check? Tell me when it ran if it isn't new. I'll find the people or institutions it's about, read what they actually posted, and show you every receipt.</p></div>
         </div>
 
-        <div id="pane-replay" role="tabpanel" aria-labelledby="tab-replay" class="panel">
-          <p class="small muted">Real checks we ran earlier, replayed step by step. Replaying is free and the receipts stay verifiable.</p>
-          <div id="runs"><p class="muted">Loading recorded checks…</p></div>
-        </div>
-
-        <form id="pane-live" role="tabpanel" aria-labelledby="tab-live" class="panel" hidden>
-          <div class="presets">
-            <button class="btn secondary small" type="button" data-preset="hassett">Use the Hassett case</button>
-            <button class="btn secondary small" type="button" data-preset="clear">Start blank</button>
+        <form class="composer" id="composer">
+          <div class="suggest" id="suggest">
+            <button type="button" data-q="Did Hassett really say Trump is considering a 90-day tariff pause? It hit the wires on 7 April 2025 at 10:12 New York time.">Hassett's 90-day tariff pause, 7 April 2025</button>
+            <button type="button" data-q="Is it true that Apple is buying Disney?">Is Apple buying Disney?</button>
+            <button type="button" data-q="Trump signs executive order to boost US shipbuilding, 9 April 2025 at 4pm New York">Shipbuilding order, 9 April 2025</button>
           </div>
-          <div class="field">
-            <label for="headline">Headline</label>
-            <textarea id="headline" name="headline" required minlength="8" maxlength="400" style="min-height: 90px; font-family: var(--body); font-size: 1rem" placeholder="Paste the headline exactly as it ran"></textarea>
+          <label for="q" class="sr-only">Your question</label>
+          <textarea id="q" required minlength="8" maxlength="1000" placeholder="e.g. Is it true the Fed is cutting rates by 50 basis points today?"></textarea>
+          <div class="row">
+            <button class="btn" type="submit" id="pay">Pay 0.10 USDC and investigate</button>
+            <span class="small muted" id="walletline">Your wallet signs once on Base Sepolia; no gas. <a href="https://faucet.circle.com/" target="_blank" rel="noopener">Free test USDC</a>.</span>
           </div>
-          <div class="field">
-            <label for="source">Attributed to</label>
-            <input type="text" id="source" name="source" placeholder="X handle, for example WhiteHouse" autocomplete="off" />
-            <span class="hint">Optional. We always check the White House accounts as well.</span>
-          </div>
-          <div class="field">
-            <label for="asset">Market to watch</label>
-            <select id="asset" name="asset">
-              <option value="">None</option>
-              <option value="indices/US30">Dow Jones (US30)</option>
-              <option value="indices/US500">S&amp;P 500 (US500)</option>
-              <option value="indices/US100">Nasdaq 100 (US100)</option>
-              <option value="crypto/BTCUSD">Bitcoin (BTCUSD)</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="at">When it ran, in UTC</label>
-            <input type="datetime-local" id="at" name="at" />
-            <span class="hint">Leave empty for now. We look two hours before and up to three hours after.</span>
-          </div>
-          <button class="btn" type="button" id="pay">Pay 0.10 USDC and check</button>
-          <p class="small muted" style="margin-top: 10px" id="walletline">Connects your wallet (MetaMask or any EVM wallet) on Base Sepolia. You sign once and pay no gas. Need test USDC? <a href="https://faucet.circle.com/" target="_blank" rel="noopener">Circle faucet</a>, Base Sepolia.</p>
-          <details class="key" id="keybox">
-            <summary>Have a demo key instead?</summary>
-            <div class="field" style="margin-top: 10px">
+          <details class="key" id="keybox" style="margin-top: 8px">
+            <summary class="small">Have a demo key?</summary>
+            <div class="row" style="margin-top: 6px">
               <label for="key" class="sr-only">Demo key</label>
-              <input type="password" id="key" autocomplete="off" placeholder="Demo key" />
+              <input type="password" id="key" autocomplete="off" placeholder="Demo key" style="max-width: 220px" />
+              <button class="btn secondary small" type="button" id="demo">Investigate with the demo key</button>
             </div>
-            <button class="btn secondary small" type="submit" id="run">Run with the demo key</button>
           </details>
-          <div id="formerror" role="alert"></div>
         </form>
       </div>
 
-      <section id="report" aria-live="polite">
-        <div class="empty">
-          <h3 style="margin-bottom: 8px">No check yet</h3>
-          <p>Pick a recorded check to replay it, or run a live one.</p>
+      <aside class="side">
+        <div class="panel">
+          <h3>Recorded investigations</h3>
+          <p class="small muted">Real runs, replayed step by step. Free.</p>
+          <div id="runs"><p class="muted small">Loading…</p></div>
         </div>
-      </section>
+        <p class="small muted" style="margin-top: 16px">Agents can call the same thing over HTTP: <code>POST /api/x402/investigate</code> with <code>{"question": "…"}</code>, paid over x402 (USDC on Base Sepolia or tADA on Cardano Preprod).</p>
+      </aside>
     </div>
   </main>
-
-  <footer class="site"><div class="wrap">Testnets only. You pay SecondSource in USDC on Base Sepolia (or tADA on Cardano Preprod); SecondSource pays its evidence sources in aUSD over x402.</div></footer>
+  <footer class="site"><div class="wrap">Testnets only. You pay SecondSource over x402; SecondSource pays its evidence sources over x402 in aUSD on Base Sepolia.</div></footer>
 
   <script type="module">
     import { esc, receiptHtml, renderReport } from '/assets/report.js';
 
-    const report = document.getElementById('report');
-    const tabs = { replay: document.getElementById('tab-replay'), live: document.getElementById('tab-live') };
-    const panes = { replay: document.getElementById('pane-replay'), live: document.getElementById('pane-live') };
-    const show = (name) => {
-      for (const k of Object.keys(tabs)) {
-        tabs[k].setAttribute('aria-selected', String(k === name));
-        panes[k].hidden = k !== name;
-      }
-    };
-    tabs.replay.onclick = () => show('replay');
-    tabs.live.onclick = () => show('live');
-
+    const thread = document.getElementById('thread');
+    const q = document.getElementById('q');
     const sleep = (ms) => new Promise((r) => setTimeout(r, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ms));
+    const scroll = (el) => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const add = (html) => {
+      thread.insertAdjacentHTML('beforeend', html);
+      const el = thread.lastElementChild;
+      scroll(el);
+      return el;
+    };
+    const agent = (inner) => add(`<div class="msg agent"><span class="who">SecondSource</span>${inner}</div>`);
+    const fmtTime = (iso) => (iso ? new Date(iso).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'now');
 
-    // Shows receipts arriving one at a time, then the verdict, the way a live check unfolds.
-    const startProgress = (headline) => {
-      report.innerHTML = `<div class="report-head"><p class="muted small" style="margin-bottom:6px">Checking</p><p class="claim">${esc(headline)}</p></div>
-        <h3 style="margin-bottom:8px">Receipts</h3><ul class="receipts" id="live-receipts"><li class="receipt pending"><span class="tick"></span><span class="what">Buying evidence from primary sources</span><span class="price"></span><span class="sub">Paying per call over x402, then checking each signature</span></li></ul>`;
-      const list = document.getElementById('live-receipts');
-      let first = true;
-      return (step, attestation) => {
-        if (first) { list.innerHTML = ''; first = false; }
-        list.insertAdjacentHTML('beforeend', receiptHtml(step, attestation));
+    const planHtml = (p, signed, model) => `<p>${esc(p.reply)}</p>
+      <div class="chips">
+        ${(p.officialAccounts ?? []).map((a) => `<span class="chip">@${esc(a)}</span>`).join('')}
+        ${p.claimedSource && !(p.officialAccounts ?? []).includes(p.claimedSource) ? `<span class="chip">@${esc(p.claimedSource)}</span>` : ''}
+        ${(p.keywords ?? []).map((k) => `<span class="chip">“${esc(k)}”</span>`).join('')}
+        <span class="chip"><b>When</b> ${esc(fmtTime(p.publishedAt))}</span>
+        ${p.asset ? `<span class="chip"><b>Market</b> ${esc(p.asset)}</span>` : ''}
+      </div>
+      <p class="small muted">${signed ? `Planned by ${esc(model)} through the OpenRouter Airnode; the plan is signed.` : 'Planned by simple rules: no model was reachable.'}</p>`;
+
+    // One investigation, streamed: plan, then receipts, then the verdict.
+    const work = () => {
+      let list = null;
+      return {
+        onEvent(e) {
+          if (e.type === 'plan') agent(planHtml(e.plan, e.signed, e.model));
+          if (e.type === 'step') {
+            if (!list) list = agent('<p>Buying evidence and checking every signature:</p><ul class="receipts"></ul>').querySelector('ul');
+            list.insertAdjacentHTML('beforeend', receiptHtml(e.step, e.attestation));
+            scroll(list.lastElementChild);
+          }
+          if (e.type === 'settling') agent('<p class="muted">Done. Settling your payment before I hand over the verdict…</p>');
+          if (e.type === 'settlement' && e.transaction) agent(`<p class="small">Payment settled: <a href="${/^0x/.test(e.transaction) ? 'https://sepolia.basescan.org/tx/' : 'https://preprod.cardanoscan.io/transaction/'}${esc(e.transaction)}" target="_blank" rel="noopener">${esc(e.transaction.slice(0, 10))}…</a></p>`);
+          if (e.type === 'result') {
+            const el = agent('<div></div>').querySelector('div');
+            renderReport(el, e.result, { animate: true, receipts: false });
+          }
+          if (e.type === 'error') agent(`<p class="error">${esc(e.error)}</p>`);
+        },
       };
     };
 
-    const replay = async (url) => {
-      report.innerHTML = '<p class="muted">Loading…</p>';
-      const r = await (await fetch(url)).json();
-      const add = startProgress(r.input.headline);
-      await sleep(700);
-      for (const s of r.steps) {
-        add(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined);
-        await sleep(650);
-      }
-      await sleep(400);
-      renderReport(report, r, { animate: true });
-      report.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    // Recorded runs
-    try {
-      const runs = await (await fetch('/runs/index.json', { cache: 'no-store' })).json();
-      const box = document.getElementById('runs');
-      if (!runs.length) throw new Error('empty');
-      box.innerHTML = runs
-        .map((r, i) => `<div style="border-top:1px solid var(--rule);padding:12px 0">
-            <p style="margin:0 0 4px;font-weight:700">${esc(r.headline)}</p>
-            <p class="small muted" style="margin:0 0 8px">${esc(r.note ?? '')} Verdict ${esc(r.verdict)}.</p>
-            <button class="btn small" type="button" data-run="${i}">Replay this check</button></div>`)
-        .join('');
-      box.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(`/runs/${runs[Number(b.dataset.run)].file}`)));
-      // /check?replay=<file> plays a recorded check straight away, for links in the pitch.
-      const wanted = new URLSearchParams(location.search).get('replay');
-      const match = wanted && runs.find((r) => r.file === wanted || r.file === `${wanted}.json`);
-      if (match) replay(`/runs/${match.file}`);
-    } catch {
-      document.getElementById('runs').innerHTML = '<p>No recorded checks yet. Run a live check to make the first one.</p>';
-      show('live');
-    }
-
-    // Live check
-    const f = panes.live;
-    const presets = {
-      hassett: { headline: 'Hassett: Trump considering 90-day tariff pause', source: '', asset: 'indices/US30', at: '2025-04-07T14:12' },
-      clear: { headline: '', source: '', asset: '', at: '' },
-    };
-    f.querySelectorAll('[data-preset]').forEach((b) => (b.onclick = () => {
-      const p = presets[b.dataset.preset];
-      f.headline.value = p.headline; f.source.value = p.source; f.asset.value = p.asset; f.at.value = p.at;
-      f.headline.focus();
-    }));
-    try { document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? ''; } catch {}
-
-    const readForm = () => ({
-      headline: f.headline.value.trim(),
-      claimedSource: f.source.value.trim() || undefined,
-      asset: f.asset.value || undefined,
-      publishedAt: f.at.value ? `${f.at.value}:00Z` : undefined,
-    });
-
-    // Pay 0.10 USDC on Base Sepolia from the visitor's own wallet over x402, then show the signed result.
-    document.getElementById('pay').onclick = async () => {
-      const err = document.getElementById('formerror');
-      const line = document.getElementById('walletline');
-      err.innerHTML = '';
-      const body = readForm();
-      if (body.headline.length < 8) { err.innerHTML = '<p class="error">Enter the headline first, or use the Hassett case.</p>'; return; }
-      const button = document.getElementById('pay');
-      button.disabled = true;
-      const status = (text) => { button.textContent = text.length > 40 ? 'Working…' : text; line.textContent = text; };
-      try {
-        const { connectWallet, usdcBalance, payWithUsdc, USDC_FAUCET } = await import('/assets/x402-usdc.js');
-        status('Connecting your wallet…');
-        const from = await connectWallet(window.ethereum);
-        const balance = await usdcBalance(window.ethereum, from);
-        if (balance < 100000n) {
-          throw new Error(`${from.slice(0, 6)}…${from.slice(-4)} holds ${(Number(balance) / 1e6).toFixed(2)} USDC on Base Sepolia. Get 10 free test USDC at ${USDC_FAUCET} (choose Base Sepolia), then try again.`);
+    const readStream = async (res, onEvent) => {
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = '';
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let nl;
+        while ((nl = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, nl);
+          buf = buf.slice(nl + 1);
+          if (line.trim()) onEvent(JSON.parse(line));
         }
-        report.innerHTML = `<div class="report-head"><p class="muted small" style="margin-bottom:6px">Checking</p><p class="claim">${esc(body.headline)}</p></div><ul class="receipts"><li class="receipt pending"><span class="tick"></span><span class="what">Waiting for your payment</span><span class="price">0.10 USDC</span><span class="sub">x402 on Base Sepolia, signed in your wallet</span></li></ul>`;
-        const { response, settlement } = await payWithUsdc(window.ethereum, from, '/api/x402/check', body, (s) => {
-          status(s);
-          const sub = report.querySelector('.receipt .what');
-          if (sub) sub.textContent = s;
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error ?? `The paid check failed with HTTP ${response.status}. You were not charged.`);
-        renderReport(report, data, { animate: true });
-        const tx = settlement?.transaction;
-        line.innerHTML = tx
-          ? `Paid 0.10 USDC: <a href="https://sepolia.basescan.org/tx/${esc(tx)}" target="_blank" rel="noopener">settlement on Base Sepolia</a>.`
-          : 'Paid. The settlement receipt was not returned.';
+      }
+    };
+
+    const busy = (on) => {
+      for (const id of ['pay', 'demo']) document.getElementById(id).disabled = on;
+      document.getElementById('pay').textContent = on ? 'Investigating…' : 'Pay 0.10 USDC and investigate';
+    };
+
+    const ask = async (mode) => {
+      const question = q.value.trim();
+      if (question.length < 8) { q.focus(); return; }
+      add(`<div class="msg user">${esc(question)}</div>`);
+      q.value = '';
+      busy(true);
+      const w = work();
+      try {
+        if (mode === 'pay') {
+          const { connectWallet, usdcBalance, payWithUsdc, USDC_FAUCET } = await import('/assets/x402-usdc.js');
+          const status = agent('<p class="muted">Connecting your wallet…</p>').querySelector('p');
+          const from = await connectWallet(window.ethereum);
+          const balance = await usdcBalance(window.ethereum, from);
+          if (balance < 100000n) {
+            status.innerHTML = `Your wallet ${esc(from.slice(0, 6))}…${esc(from.slice(-4))} holds ${(Number(balance) / 1e6).toFixed(2)} USDC on Base Sepolia. Get free test USDC at <a href="${USDC_FAUCET}" target="_blank" rel="noopener">faucet.circle.com</a> (choose Base Sepolia), then ask again.`;
+            return;
+          }
+          const { response } = await payWithUsdc(window.ethereum, from, '/api/x402/investigate', { question }, (s) => (status.textContent = s));
+          if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error ?? `HTTP ${response.status}`);
+          status.textContent = 'Payment authorised. Working on it; I settle it only if I can finish.';
+          await readStream(response, w.onEvent);
+        } else {
+          const key = document.getElementById('key').value.trim();
+          try { localStorage.setItem('secondsource:key', key); } catch {}
+          const res = await fetch('/api/check', { method: 'POST', headers: { 'content-type': 'application/json', 'x-demo-key': key }, body: JSON.stringify({ question }) });
+          if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `HTTP ${res.status}`);
+          await readStream(res, w.onEvent);
+        }
       } catch (e) {
         const msg = e?.code === 4001 ? 'You rejected the request in your wallet. Nothing was paid.' : (e?.message ?? String(e));
-        err.innerHTML = `<p class="error">${esc(msg)}</p>`;
-        line.innerHTML = 'Connects your wallet on Base Sepolia. You sign once and pay no gas. Need test USDC? <a href="https://faucet.circle.com/" target="_blank" rel="noopener">Circle faucet</a>.';
+        agent(`<p class="error">${esc(msg)}</p>`);
       } finally {
-        button.disabled = false; button.textContent = 'Pay 0.10 USDC and check';
+        busy(false);
       }
     };
 
-    f.onsubmit = async (ev) => {
-      ev.preventDefault();
-      const err = document.getElementById('formerror');
-      err.innerHTML = '';
-      const key = document.getElementById('key').value.trim();
-      try { localStorage.setItem('secondsource:key', key); } catch {}
-      const body = {
-        headline: f.headline.value.trim(),
-        claimedSource: f.source.value.trim() || undefined,
-        asset: f.asset.value || undefined,
-        publishedAt: f.at.value ? `${f.at.value}:00Z` : undefined,
-      };
-      const button = document.getElementById('run');
-      button.disabled = true; button.textContent = 'Checking…';
-      const add = startProgress(body.headline);
-      try {
-        const res = await fetch('/api/check', { method: 'POST', headers: { 'content-type': 'application/json', 'x-demo-key': key }, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `The check failed with status ${res.status}.`);
-        const reader = res.body.getReader();
-        const dec = new TextDecoder();
-        let buf = '';
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buf += dec.decode(value, { stream: true });
-          let nl;
-          while ((nl = buf.indexOf('\n')) >= 0) {
-            const line = buf.slice(0, nl); buf = buf.slice(nl + 1);
-            if (!line.trim()) continue;
-            const e = JSON.parse(line);
-            if (e.type === 'step') add(e.step, e.attestation);
-            if (e.type === 'result') renderReport(report, e.result, { animate: true });
-            if (e.type === 'error') throw new Error(e.error);
-          }
-        }
-      } catch (e) {
-        err.innerHTML = `<p class="error">${esc(e.message)}</p>`;
-        report.innerHTML = `<div class="empty"><h3>The check did not finish</h3><p>${esc(e.message)}</p></div>`;
-      } finally {
-        button.disabled = false; button.textContent = 'Run the check';
+    document.getElementById('composer').onsubmit = (e) => { e.preventDefault(); ask('pay'); };
+    document.getElementById('demo').onclick = () => ask('demo');
+    document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => { q.value = b.dataset.q; q.focus(); }));
+    try { document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? ''; } catch {}
+
+    // Recorded investigations, replayed as the conversation they were.
+    const replay = async (file) => {
+      const r = await (await fetch(`/runs/${file}`)).json();
+      thread.querySelectorAll('.msg:not(:first-child)').forEach((m) => m.remove());
+      add(`<div class="msg user">${esc(r.plan?.question ?? r.input.headline)}</div>`);
+      await sleep(600);
+      if (r.plan) {
+        agent(planHtml({ ...r.input, reply: r.plan.reply }, Boolean(r.plan.model), r.plan.model));
+        await sleep(900);
       }
+      const w = work();
+      for (const s of r.steps) {
+        if (s.label.startsWith('Plan')) continue;
+        w.onEvent({ type: 'step', step: s, attestation: s.attestation !== undefined ? r.attestations[s.attestation] : undefined });
+        await sleep(550);
+      }
+      await sleep(400);
+      w.onEvent({ type: 'result', result: r });
     };
+    try {
+      const runs = await (await fetch('/runs/index.json', { cache: 'no-store' })).json();
+      document.getElementById('runs').innerHTML = runs
+        .map((r) => `<div style="border-top:1px solid var(--rule);padding:10px 0">
+          <p style="margin:0 0 4px;font-weight:700">${esc(r.headline)}</p>
+          <p class="small muted" style="margin:0 0 6px">Verdict ${esc(r.verdict)}.</p>
+          <button class="btn small secondary" type="button" data-run="${esc(r.file)}">Replay</button></div>`)
+        .join('');
+      document.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(b.dataset.run)));
+      const wanted = new URLSearchParams(location.search).get('replay');
+      const match = wanted && runs.find((r) => r.file === wanted || r.file === `${wanted}.json`);
+      if (match) replay(match.file);
+    } catch {
+      document.getElementById('runs').innerHTML = '<p class="small">No recorded investigations yet.</p>';
+    }
   </script>
 </body>
 </html>

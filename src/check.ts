@@ -35,7 +35,15 @@ export type ProgressEvent =
   | { type: 'step'; step: CheckStep; attestation?: Attestation }
   | { type: 'evidence'; evidence: EvidenceItem[] };
 
-export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e: ProgressEvent) => void): Promise<CheckResult> => {
+// A signed planning step that came before the check (src/agent/plan.ts); it joins the receipts and the result hash.
+export interface Prelude {
+  question: string;
+  reply: string;
+  model?: string;
+  attestation?: Attestation;
+}
+
+export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e: ProgressEvent) => void, prelude?: Prelude): Promise<CheckResult> => {
   if (!rawInput.headline?.trim()) throw new Error('headline is required');
   const input: CheckInput = {
     ...rawInput,
@@ -64,6 +72,12 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
   );
   const attestations: Attestation[] = [];
   const steps: CheckStep[] = [];
+  if (prelude) {
+    const step: CheckStep = prelude.attestation
+      ? { label: `Plan: ${prelude.model}`, source: 'openrouter', status: 'ok', attestation: attestations.push(prelude.attestation) - 1 }
+      : { label: 'Plan: simple rules (no model reachable)', source: 'openrouter', status: 'failed' };
+    steps.push(step);
+  }
   const evidence: EvidenceItem[] = [];
   settled.forEach((s, k) => {
     const p = plan[k]!;
@@ -117,6 +131,7 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
   const cost = attestations.reduce((sum, a) => sum + Math.round(Number(PRICES[a.source]?.[a.request.operation] ?? 0) * 100), 0) / 100;
   const result: Omit<CheckResult, 'resultHash'> = {
     input: { ...input, keywords, officialAccounts: accounts },
+    ...(prelude ? { plan: { question: prelude.question, reply: prelude.reply, model: prelude.model ?? null } } : {}),
     window,
     ...judgment,
     evidence,

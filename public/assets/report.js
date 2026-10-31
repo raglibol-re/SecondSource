@@ -44,7 +44,7 @@ export const receiptHtml = (step, attestation, state = step.status) => {
 export const stampHtml = (verdict, animate) =>
   `<div class="stamp ${verdict.toLowerCase()} ${animate ? 'animate' : ''}" role="img" aria-label="Verdict: ${esc(verdict.toLowerCase())}">${esc(verdict)}</div>`;
 
-export const renderReport = (el, r, { animate = true } = {}) => {
+export const renderReport = (el, r, { animate = true, receipts = true } = {}) => {
   const cited = new Set(r.citations ?? []);
   const evidence = (r.evidence ?? [])
     .slice()
@@ -70,8 +70,8 @@ export const renderReport = (el, r, { animate = true } = {}) => {
       ${r.judge ? `<span>Judge <b>${esc(r.judge.model)}</b></span>` : ''}
       ${r.resultHash ? `<span>Result hash <b class="mono" title="${esc(r.resultHash)}">${esc(short(r.resultHash))}</b></span>` : ''}
     </div>
-    <h3 style="margin-bottom: 8px">Receipts</h3>
-    <ul class="receipts">${(r.steps ?? []).map((s) => receiptHtml(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined)).join('')}</ul>
+    ${receipts ? `<h3 style="margin-bottom: 8px">Receipts</h3>
+    <ul class="receipts">${(r.steps ?? []).map((s) => receiptHtml(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined)).join('')}</ul>` : ''}
     <h3 style="margin-bottom: 12px">Evidence the judge saw</h3>
     ${evidence ? `<ul class="evidence">${evidence}</ul>` : '<p class="muted">No evidence came back in the time window.</p>'}
     <div class="actions">

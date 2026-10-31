@@ -1,7 +1,7 @@
 {
   "hassett-2025-04-07.json": {
     "note": "7 April 2025, the morning the Dow swung 800 points. Signed X posts, Benzinga, Dow bars and a signed model judgment.",
-    "pinned": true
+    "pinned": false
   },
   "pause-2025-04-09.json": {
     "note": "9 April 2025, the real pause. Confirmed through Treasury Secretary Bessent's words, posted by the White House account.",
@@ -10,5 +10,9 @@
   "shipbuilding-2025-04-09.json": {
     "note": "9 April 2025. A headline the White House posted itself; confirmed, so the Guarded Vault lets the trade through.",
     "pinned": false
+  },
+  "hassett-agent-2025-04-07.json": {
+    "note": "Asked in plain words. The agent planned its own sources, then found the White House denials.",
+    "pinned": true
   }
 }

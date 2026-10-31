@@ -634,5 +634,53 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/89162f8241abd6ebd13a471b5f26bf6d3e552e156bf0096a3f5bca116a411533",
     "what": "Masumi escrow Withdrawn: SecondSource collected 1 tUSDM for Task 01a18f66-f4b1-73fe-914b-c9a3660e1296"
+  },
+  {
+    "when": "2026-10-31T08:48:11.085Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x91a7ba41830170a1c56c933f302a27060dba95c52dee5c84cc99464cebbe2cb4",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T08:48:20.339Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xeacb0a2e876c5554ddffede0d7c5c5505bcef11412b0460809baf50decb685d0",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T08:50:08.260Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x62442257fbc80317910debe088a38839d1815825e99b495f49bc6e9986559d26",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T08:50:09.845Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xa80480338dda52a2f1270ce0c8ad0286782488cebbb43beeabe14117b147353a",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T08:50:10.285Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x6de0fae5bc0283f264273a037bcdd7d826a40843f4b331a730d591bb070b2ca4",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T08:50:10.884Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x2934bf1a6ff2bacce4e41d793e7ccd2dd99a1f39f636da739121dc4f56aec291",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T08:50:11.236Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x2ae5a0563b01909e24937a71c2dc00aa5071f8917dbb490a0d9eab202a371e81",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T08:50:20.630Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xc5ca955b321340329c30d4b944e6755e03cbe4fa2bde154e9614f652122ce648",
+    "what": "x402 payment: openrouter.chatCompletion"
   }
 ]

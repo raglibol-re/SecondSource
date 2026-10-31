@@ -52,6 +52,8 @@ export interface CheckResult {
   costAusd: string;
   checkedAt: string;
   resultHash?: string;
+  // Present when the agent planned the check from a free-form question (src/agent/plan.ts).
+  plan?: { question: string; reply: string; model: string | null };
 }
 
 // The one function every evidence source uses to buy a signed, verified answer. Injected so tests can use fixtures.

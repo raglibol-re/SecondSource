@@ -1,10 +1,10 @@
 [
   {
-    "file": "hassett-2025-04-07.json",
-    "headline": "Hassett: Trump considering 90-day tariff pause",
+    "file": "hassett-agent-2025-04-07.json",
+    "headline": "Hassett says Trump considering 90-day tariff pause",
     "verdict": "DENIED",
-    "note": "7 April 2025, the morning the Dow swung 800 points. Signed X posts, Benzinga, Dow bars and a signed model judgment.",
-    "checkedAt": "2026-10-31T01:12:55.902Z",
+    "note": "Asked in plain words. The agent planned its own sources, then found the White House denials.",
+    "checkedAt": "2026-10-31T08:50:20.636Z",
     "pinned": true
   },
   {
@@ -21,6 +21,14 @@
     "verdict": "CONFIRMED",
     "note": "9 April 2025. A headline the White House posted itself; confirmed, so the Guarded Vault lets the trade through.",
     "checkedAt": "2026-10-31T01:13:26.537Z",
+    "pinned": false
+  },
+  {
+    "file": "hassett-2025-04-07.json",
+    "headline": "Hassett: Trump considering 90-day tariff pause",
+    "verdict": "DENIED",
+    "note": "7 April 2025, the morning the Dow swung 800 points. Signed X posts, Benzinga, Dow bars and a signed model judgment.",
+    "checkedAt": "2026-10-31T01:12:55.902Z",
     "pinned": false
   }
 ]

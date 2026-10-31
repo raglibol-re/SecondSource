@@ -65,9 +65,15 @@ export interface PaidRoute {
   description: string;
 }
 
+// Every paid route, all priced the same: 2 tADA on Cardano preprod or 0.10 USDC on Base Sepolia.
+export const PAID_ROUTES: PaidRoute[] = [
+  { method: 'POST', path: '/api/x402/check', description: 'SecondSource: check a market headline against signed primary sources' },
+  { method: 'POST', path: '/api/x402/investigate', description: 'SecondSource: an agent investigates a headline you describe, streaming each step' },
+];
+
 let httpServer: x402HTTPResourceServer | undefined;
 let ready: Promise<void> | undefined;
-const server = (route: PaidRoute) => {
+const server = () => {
   if (!httpServer) {
     const resourceServer = new x402ResourceServer([
       new HTTPFacilitatorClient({ url: X402_FACILITATOR }),
@@ -75,16 +81,20 @@ const server = (route: PaidRoute) => {
     ]);
     resourceServer.register(X402_NETWORK, new ExactCardanoScheme());
     resourceServer.register(X402_EVM_NETWORK, new ExactEvmScheme());
-    httpServer = new x402HTTPResourceServer(resourceServer, {
-      [`${route.method} ${route.path}`]: {
-        accepts: [
-          { scheme: 'exact', network: X402_NETWORK, price: { amount: X402_PRICE_LOVELACE, asset: 'lovelace' }, payTo: X402_PAY_TO },
-          { scheme: 'exact', network: X402_EVM_NETWORK, price: X402_EVM_PRICE, payTo: X402_EVM_PAY_TO },
-        ],
-        description: route.description,
-        mimeType: 'application/json',
-      },
-    } as never);
+    const routes = Object.fromEntries(
+      PAID_ROUTES.map((r) => [
+        `${r.method} ${r.path}`,
+        {
+          accepts: [
+            { scheme: 'exact', network: X402_NETWORK, price: { amount: X402_PRICE_LOVELACE, asset: 'lovelace' }, payTo: X402_PAY_TO },
+            { scheme: 'exact', network: X402_EVM_NETWORK, price: X402_EVM_PRICE, payTo: X402_EVM_PAY_TO },
+          ],
+          description: r.description,
+          mimeType: 'application/json',
+        },
+      ])
+    );
+    httpServer = new x402HTTPResourceServer(resourceServer, routes as never);
     ready = httpServer.initialize();
   }
   return { http: httpServer, ready: ready! };
@@ -93,14 +103,12 @@ const server = (route: PaidRoute) => {
 const json = (status: number, body: unknown, headers: Record<string, string> = {}) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', ...headers } });
 
-// Runs `handler` only after the payment verified, and settles only if the handler succeeded, so a failed job is not charged.
-export const sellWithX402 = async (
-  req: Request,
-  body: unknown,
-  route: PaidRoute,
-  handler: () => Promise<{ status: number; body: unknown }>
-): Promise<Response> => {
-  const { http, ready } = server(route);
+type Settle = (responseBody: Buffer) => Promise<{ ok: true; headers: Record<string, string> } | { ok: false; status: number; body: unknown; headers: Record<string, string> }>;
+
+// Verifies the payment on a request. Returns the response to send (402 or an error), or a `settle` function to call
+// once the paid work succeeded. Not calling it means the buyer is not charged.
+export const verifyX402Payment = async (req: Request, body: unknown): Promise<{ respond: Response } | { settle: Settle }> => {
+  const { http, ready } = server();
   const adapter = new WebAdapter(req, body);
   const path = new URL(req.url).pathname;
   const context = {
@@ -113,32 +121,60 @@ export const sellWithX402 = async (
   try {
     await ready;
   } catch (e) {
-    return json(503, { error: `The x402 facilitator is unreachable: ${(e as Error).message}` });
+    return { respond: json(503, { error: `The x402 facilitator is unreachable: ${(e as Error).message}` }) };
   }
   const result = await http.processHTTPRequest(context as never);
-  if (result.type === 'no-payment-required') return json(500, { error: 'Route is not priced' });
+  if (result.type === 'no-payment-required') return { respond: json(500, { error: 'Route is not priced' }) };
   if (result.type === 'payment-error') {
     const r = result.response;
     const isJson = typeof r.body !== 'string';
-    return new Response(isJson ? JSON.stringify(r.body ?? {}) : String(r.body), {
-      status: r.status,
-      headers: { ...(isJson ? { 'Content-Type': 'application/json' } : {}), ...r.headers },
-    });
+    return {
+      respond: new Response(isJson ? JSON.stringify(r.body ?? {}) : String(r.body), {
+        status: r.status,
+        headers: { ...(isJson ? { 'Content-Type': 'application/json' } : {}), ...r.headers },
+      }),
+    };
   }
+  return {
+    settle: async (responseBody) => {
+      const settled = await http.processSettlement(
+        result.paymentPayload,
+        result.paymentRequirements,
+        result.declaredExtensions,
+        { request: context, responseBody, responseHeaders: { 'content-type': 'application/json' } } as never,
+        undefined,
+        result.beforeHandlerSettlement
+      );
+      if (settled.success) return { ok: true, headers: settled.headers as Record<string, string> };
+      return { ok: false, status: settled.response.status, body: settled.response.body ?? { error: 'settlement_failed' }, headers: settled.response.headers as Record<string, string> };
+    },
+  };
+};
+
+// JSON route for agents (e.g. @x402/fetch): runs `handler` after the payment verified, settles only if it succeeded.
+export const sellWithX402 = async (
+  req: Request,
+  body: unknown,
+  _route: PaidRoute,
+  handler: () => Promise<{ status: number; body: unknown }>
+): Promise<Response> => {
+  const v = await verifyX402Payment(req, body);
+  if ('respond' in v) return v.respond;
   const out = await handler();
   if (out.status >= 400) return json(out.status, out.body); // not settled: the buyer keeps their money
   const responseBody = Buffer.from(JSON.stringify(out.body));
-  const settled = await http.processSettlement(
-    result.paymentPayload,
-    result.paymentRequirements,
-    result.declaredExtensions,
-    { request: context, responseBody, responseHeaders: { 'content-type': 'application/json' } } as never,
-    undefined,
-    result.beforeHandlerSettlement
-  );
-  if (!settled.success) {
-    const r = settled.response;
-    return new Response(JSON.stringify(r.body ?? { error: 'settlement_failed' }), { status: r.status, headers: { 'Content-Type': 'application/json', ...r.headers } });
+  const s = await v.settle(responseBody);
+  if (!s.ok) return new Response(JSON.stringify(s.body), { status: s.status, headers: { 'Content-Type': 'application/json', ...s.headers } });
+  return new Response(responseBody, { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store', ...s.headers } });
+};
+
+// Decodes the settlement receipt the facilitator returned (PAYMENT-RESPONSE header value).
+export const settlementFromHeaders = (headers: Record<string, string>) => {
+  const h = Object.entries(headers).find(([k]) => k.toLowerCase() === 'payment-response')?.[1];
+  if (!h) return null;
+  try {
+    return JSON.parse(Buffer.from(h, 'base64').toString('utf8')) as { success?: boolean; transaction?: string; network?: string; payer?: string };
+  } catch {
+    return null;
   }
-  return new Response(responseBody, { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store', ...settled.headers } });
 };

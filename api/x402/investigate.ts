@@ -1,0 +1,47 @@
+import { investigate } from '../../src/agent/investigate.ts';
+import { callAirnode, createPayer } from '../../src/airnode/client.ts';
+import { settlementFromHeaders, verifyX402Payment } from '../../src/x402/seller.ts';
+
+export const maxDuration = 300;
+
+// POST /api/x402/investigate {question}: the agent, paid per question over x402 (0.10 USDC on Base Sepolia or 2 tADA on
+// Cardano preprod). Streams newline-delimited JSON as it works: {type:"plan"}, {type:"step"}..., then settles the
+// payment and only then sends {type:"settlement"} and {type:"result"}. If the work fails, nothing is settled.
+export async function POST(request: Request): Promise<Response> {
+  let question: string;
+  try {
+    const body = (await request.json()) as { question?: unknown };
+    question = typeof body.question === 'string' ? body.question.trim() : '';
+    if (question.length < 8 || question.length > 1000) throw new Error();
+  } catch {
+    return Response.json({ error: 'Send JSON with a question between 8 and 1000 characters.' }, { status: 400 });
+  }
+  if (!process.env.PAYER_PRIVATE_KEY) {
+    return Response.json({ error: 'This deployment has no evidence wallet configured, so it does not take paid questions right now.' }, { status: 503 });
+  }
+  const v = await verifyX402Payment(request, { question });
+  if ('respond' in v) return v.respond;
+
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (o: unknown) => controller.enqueue(enc.encode(JSON.stringify(o) + '\n'));
+      try {
+        const pay = createPayer();
+        const result = await investigate(question, (s, r) => callAirnode(s, r, pay, { maxAgeSeconds: 300 }), (e) => send(e));
+        send({ type: 'settling' });
+        const s = await v.settle(Buffer.from(JSON.stringify(result)));
+        if (!s.ok) {
+          send({ type: 'error', error: 'Your payment could not be settled, so you were not charged and the verdict is withheld.' });
+        } else {
+          send({ type: 'settlement', ...settlementFromHeaders(s.headers) });
+          send({ type: 'result', result });
+        }
+      } catch (err) {
+        send({ type: 'error', error: `The investigation failed, so you were not charged: ${(err as Error).message}` });
+      }
+      controller.close();
+    },
+  });
+  return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-store' } });
+}

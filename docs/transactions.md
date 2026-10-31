@@ -110,3 +110,11 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T08:28:55.308Z | Base Sepolia | https://sepolia.basescan.org/tx/0xd3d341d8c0c8f60af5bfcf30299209f733b024cf35bc08d138498f3005b5f8d1 | GuardedVault haltOnDenial on DENIED citing @RapidResponse47 post 1909255140671984072: Hassett: Trump considering 90-day tariff pause |
 | 2026-10-31T08:29:50.579Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/665cf3d555452c066826138e7dff9969191a4221331572ca9f389c5a717bd877 | Masumi escrow Withdrawn: SecondSource collected 1 tUSDM for Task 01a18f87-970d-757b-8346-b32369aa2a99 |
 | 2026-10-31T08:29:50.719Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/89162f8241abd6ebd13a471b5f26bf6d3e552e156bf0096a3f5bca116a411533 | Masumi escrow Withdrawn: SecondSource collected 1 tUSDM for Task 01a18f66-f4b1-73fe-914b-c9a3660e1296 |
+| 2026-10-31T08:48:11.085Z | Base Sepolia | https://sepolia.basescan.org/tx/0x91a7ba41830170a1c56c933f302a27060dba95c52dee5c84cc99464cebbe2cb4 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T08:48:20.339Z | Base Sepolia | https://sepolia.basescan.org/tx/0xeacb0a2e876c5554ddffede0d7c5c5505bcef11412b0460809baf50decb685d0 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T08:50:08.260Z | Base Sepolia | https://sepolia.basescan.org/tx/0x62442257fbc80317910debe088a38839d1815825e99b495f49bc6e9986559d26 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T08:50:09.845Z | Base Sepolia | https://sepolia.basescan.org/tx/0xa80480338dda52a2f1270ce0c8ad0286782488cebbb43beeabe14117b147353a | x402 payment: benzinga.news |
+| 2026-10-31T08:50:10.285Z | Base Sepolia | https://sepolia.basescan.org/tx/0x6de0fae5bc0283f264273a037bcdd7d826a40843f4b331a730d591bb070b2ca4 | x402 payment: tickerlayer.aggregates |
+| 2026-10-31T08:50:10.884Z | Base Sepolia | https://sepolia.basescan.org/tx/0x2934bf1a6ff2bacce4e41d793e7ccd2dd99a1f39f636da739121dc4f56aec291 | x402 payment: twitter.searchTweets |
+| 2026-10-31T08:50:11.236Z | Base Sepolia | https://sepolia.basescan.org/tx/0x2ae5a0563b01909e24937a71c2dc00aa5071f8917dbb490a0d9eab202a371e81 | x402 payment: twitter.searchTweets |
+| 2026-10-31T08:50:20.630Z | Base Sepolia | https://sepolia.basescan.org/tx/0xc5ca955b321340329c30d4b944e6755e03cbe4fa2bde154e9614f652122ce648 | x402 payment: openrouter.chatCompletion |
