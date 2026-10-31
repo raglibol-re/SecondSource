@@ -88,6 +88,38 @@ contract.
   Not production key management.
 - **Not audited.** This is hackathon code on testnets.
 
+## Verification
+
+Run on 31 Oct 2026 against `contracts/src/GuardedVault.sol` as deployed at
+`0x0e9128f550254ed3389330e8134cea8cb09f46b6` (Base Sepolia).
+
+| Check | Result |
+|---|---|
+| Foundry unit tests (every revert path, real signed fixtures) | 30 passed |
+| Foundry property tests, 256 random runs each | 8 passed |
+| `forge coverage` on `GuardedVault.sol` | 100% lines (61/61), statements (90/90), branches (16/16), functions (10/10) |
+| CI (`.github/workflows/ci.yml`): typecheck, 40 TypeScript tests, Foundry build and tests | green on every push |
+| Slither 0.11.6, 102 detectors | 9 results, none exploitable (below) |
+
+Property tests (`GuardedVaultFuzzTest`): any single edited byte of a signed price, or any other timestamp, reverts with
+`SignatureMismatch`; any other signing key reverts with `UnexpectedAirnode`; a price is accepted while fresh and
+rejected with its exact age after 60 seconds; a verdict signed for any other vault is refused; any verdict trades once
+only; no trade passes at any moment of a halt, whoever sends it; the bought amount always equals notional / price.
+
+Slither findings and why they stand:
+
+- **timestamp (6).** Freshness windows (60 s price, 1 day evidence, 1 hour halt) are the contract's purpose. A block
+  producer can skew `block.timestamp` by seconds, which is small against these windows and cannot make a signed
+  timestamp look newer, because the timestamp is covered by the Airnode signature.
+- **missing-zero-check (3)** on the constructor's two Airnode addresses and the SecondSource signer. The deployed values
+  are non-zero and read back on chain (`nodaryAirnode()` `0xE70f…E4c0`, `twitterAirnode()` `0x7B02…1CCB`,
+  `secondSource()` `0xC5b0…5132`). A zero address could never be matched anyway: signatures are recovered with
+  OpenZeppelin `ECDSA.recover`, which reverts on an invalid signature instead of returning `address(0)`. We left the
+  source unchanged so it stays identical to the deployed bytecode; a redeploy would add the checks.
+
+Reproduce: `pnpm contracts:test`, `cd contracts && forge coverage --report summary --ir-minimum`,
+`slither src/GuardedVault.sol --filter-paths lib/` (from `contracts/`).
+
 ## Reporting
 
 Open an issue on https://github.com/raglibol-re/SecondSource.
