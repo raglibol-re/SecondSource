@@ -49,7 +49,10 @@
           <textarea id="q" required minlength="8" maxlength="1000" placeholder="e.g. Is it true the Fed is cutting rates by 50 basis points today?"></textarea>
           <div class="row">
             <button class="btn" type="submit" id="pay">Pay 0.10 USDC and investigate</button>
-            <span class="small muted" id="walletline">Your wallet signs once on Base Sepolia; no gas. <a href="https://faucet.circle.com/" target="_blank" rel="noopener">Free test USDC</a>.</span>
+            <button class="btn secondary" type="button" id="payada">Pay 2 tADA with a Cardano wallet</button>
+          </div>
+          <p class="small muted" id="walletline" style="margin: 8px 0 0">USDC: MetaMask or any EVM wallet on Base Sepolia, signed once, no gas (<a href="https://faucet.circle.com/" target="_blank" rel="noopener">free test USDC</a>). tADA: Eternl or Lace on Cardano preprod (<a href="https://dispenser.masumi.network" target="_blank" rel="noopener">free test ADA</a>). Either way you pay only if the agent finishes.</p>
+          <div>
           </div>
           <details class="key" id="keybox" style="margin-top: 8px">
             <summary class="small">Have a demo key?</summary>
@@ -112,7 +115,7 @@
             scroll(list.lastElementChild);
           }
           if (e.type === 'settling') agent('<p class="muted">Done. Settling your payment before I hand over the verdict…</p>');
-          if (e.type === 'settlement' && e.transaction) agent(`<p class="small">Payment settled: <a href="${/^0x/.test(e.transaction) ? 'https://sepolia.basescan.org/tx/' : 'https://preprod.cardanoscan.io/transaction/'}${esc(e.transaction)}" target="_blank" rel="noopener">${esc(e.transaction.slice(0, 10))}…</a></p>`);
+          if (e.type === 'settlement' && e.transaction) agent(`<p class="small">${e.pending ? 'Payment submitted on Cardano, confirming' : 'Payment settled'}: <a href="${/^0x/.test(e.transaction) ? 'https://sepolia.basescan.org/tx/' : 'https://preprod.cardanoscan.io/transaction/'}${esc(e.transaction)}" target="_blank" rel="noopener">${esc(e.transaction.slice(0, 10))}…</a></p>`);
           if (e.type === 'result') {
             const el = agent('<div></div>').querySelector('div');
             renderReport(el, e.result, { animate: true, receipts: false });
@@ -140,7 +143,7 @@
     };
 
     const busy = (on) => {
-      for (const id of ['pay', 'demo']) document.getElementById(id).disabled = on;
+      for (const id of ['pay', 'payada', 'demo']) document.getElementById(id).disabled = on;
       document.getElementById('pay').textContent = on ? 'Investigating…' : 'Pay 0.10 USDC and investigate';
     };
 
@@ -165,6 +168,26 @@
           if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error ?? `HTTP ${response.status}`);
           status.textContent = 'Payment authorised. Working on it; I settle it only if I can finish.';
           await readStream(response, w.onEvent);
+        } else if (mode === 'ada') {
+          const status = agent('<p class="muted">Looking for a Cardano wallet…</p>').querySelector('p');
+          const { listCardanoWallets, connectCardanoWallet, payWithCardano } = await import('/assets/cardano-pay.js');
+          const wallets = listCardanoWallets();
+          if (!wallets.length) {
+            status.innerHTML = 'No Cardano wallet found in this browser. Install <a href="https://eternl.io" target="_blank" rel="noopener">Eternl</a> or <a href="https://www.lace.io" target="_blank" rel="noopener">Lace</a>, switch it to preprod, and get test ADA at <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">dispenser.masumi.network</a>.';
+            return;
+          }
+          const chosen = wallets.find((x) => /eternl|lace/i.test(x.name)) ?? wallets[0];
+          status.textContent = `Connecting ${chosen.name}…`;
+          const signer = await connectCardanoWallet(chosen.id);
+          const lovelace = await signer.lovelace();
+          if (lovelace < 4_000_000n) {
+            status.innerHTML = `${esc(chosen.name)} (${esc(signer.getAddress().slice(0, 14))}…) holds ${(Number(lovelace) / 1e6).toFixed(2)} tADA on preprod. Get test ADA at <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">dispenser.masumi.network</a>, then ask again.`;
+            return;
+          }
+          const response = await payWithCardano(signer, '/api/x402/investigate', { question }, (s) => (status.textContent = s));
+          if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error ?? `HTTP ${response.status}`);
+          status.textContent = 'Payment signed in your Cardano wallet. Working on it; it settles only if I can finish.';
+          await readStream(response, w.onEvent);
         } else {
           const key = document.getElementById('key').value.trim();
           try { localStorage.setItem('secondsource:key', key); } catch {}
@@ -182,6 +205,7 @@
 
     document.getElementById('composer').onsubmit = (e) => { e.preventDefault(); ask('pay'); };
     document.getElementById('demo').onclick = () => ask('demo');
+    document.getElementById('payada').onclick = () => ask('ada');
     document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => { q.value = b.dataset.q; q.focus(); }));
     try { document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? ''; } catch {}
 

@@ -12,6 +12,11 @@ const TYPES: Record<string, string> = { '.html': 'text/html', '.css': 'text/css'
 createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', `http://127.0.0.1:${port}`);
   try {
+    if (url.pathname.startsWith('/api/blockfrost/')) {
+      // Same rewrite as vercel.json: /api/blockfrost/<path> -> /api/blockfrost?path=<path>
+      url.searchParams.set('path', url.pathname.slice('/api/blockfrost/'.length));
+      url.pathname = '/api/blockfrost';
+    }
     if (url.pathname.startsWith('/api/')) {
       const file = join('api', `${normalize(url.pathname.slice(5)).replace(/^(\.\.[/\\])+/, '')}.ts`);
       if (!existsSync(file)) return void res.writeHead(404).end();

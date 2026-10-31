@@ -118,3 +118,16 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T08:50:10.884Z | Base Sepolia | https://sepolia.basescan.org/tx/0x2934bf1a6ff2bacce4e41d793e7ccd2dd99a1f39f636da739121dc4f56aec291 | x402 payment: twitter.searchTweets |
 | 2026-10-31T08:50:11.236Z | Base Sepolia | https://sepolia.basescan.org/tx/0x2ae5a0563b01909e24937a71c2dc00aa5071f8917dbb490a0d9eab202a371e81 | x402 payment: twitter.searchTweets |
 | 2026-10-31T08:50:20.630Z | Base Sepolia | https://sepolia.basescan.org/tx/0xc5ca955b321340329c30d4b944e6755e03cbe4fa2bde154e9614f652122ce648 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T08:58:49.105Z | Base Sepolia | https://sepolia.basescan.org/tx/0x32a28065d04a3da1c4fa239a8e251db050a047fb4b65c6b4d09973be02da69f6 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T08:58:50.637Z | Base Sepolia | https://sepolia.basescan.org/tx/0x425d83e37527b48cc18c93ebc040179caaefe28e55abbd5ab1522ccf46aee445 | x402 payment: benzinga.news |
+| 2026-10-31T08:58:51.214Z | Base Sepolia | https://sepolia.basescan.org/tx/0xdf7e81ac44b2ac4d18162a39e66f90079bbee989e4e55bbf3f767b102df3a3aa | x402 payment: twitter.searchTweets |
+| 2026-10-31T08:58:51.350Z | Base Sepolia | https://sepolia.basescan.org/tx/0x8be1d861de7c71ce3a3a516121f465f9a7123534d4280312888edefd2024b686 | x402 payment: tickerlayer.aggregates |
+| 2026-10-31T08:58:51.517Z | Base Sepolia | https://sepolia.basescan.org/tx/0x2637ce662997b3ba1e52f0a76206b48497923907d66845afc17182489ca1a5e3 | x402 payment: twitter.searchTweets |
+| 2026-10-31T08:59:04.669Z | Base Sepolia | https://sepolia.basescan.org/tx/0x2b5558c277473758ef42eed24b763768d1037267734b94100a2e0dd009cd8e8a | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T09:01:04.087Z | Base Sepolia | https://sepolia.basescan.org/tx/0x1f158dfdcbb256dd99d9c30908a4772abcf541341cb3854f7a4b2fd680db26d4 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T09:01:05.496Z | Base Sepolia | https://sepolia.basescan.org/tx/0x0dd6a60c6f1bc7462ccf2bdf25a2f41851e8d20e9b96d2788e49c0df23f5eb7e | x402 payment: benzinga.news |
+| 2026-10-31T09:01:05.693Z | Base Sepolia | https://sepolia.basescan.org/tx/0x0187c04e414b80b596d696f2fba56d779f143c15f9e234c80e8d9e6acd304661 | x402 payment: tickerlayer.aggregates |
+| 2026-10-31T09:01:05.818Z | Base Sepolia | https://sepolia.basescan.org/tx/0xe97f8017d344c2aba0a7d2966963ca1041a5fdeb124f2756559583dc7a8a485b | x402 payment: twitter.searchTweets |
+| 2026-10-31T09:01:06.451Z | Base Sepolia | https://sepolia.basescan.org/tx/0x95cd873811fc1b836514f28a84d1928347cc909029135502cea2bfb04c89d887 | x402 payment: twitter.searchTweets |
+| 2026-10-31T09:01:23.193Z | Base Sepolia | https://sepolia.basescan.org/tx/0x5fac9181ab3f0fdc1535cebdc9f33bef6e3603e26d339db958067b7ee08bc7b4 | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T09:02:13.921Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/cc72cd2d98b189a96d800660c0ae59b80746f43b43183f2d2d4f391f9e8da6bd | x402 payment (2 tADA) from a buyer agent for a SecondSource investigation |

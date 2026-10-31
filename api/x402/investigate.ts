@@ -31,8 +31,15 @@ export async function POST(request: Request): Promise<Response> {
         const result = await investigate(question, (s, r) => callAirnode(s, r, pay, { maxAgeSeconds: 300 }), (e) => send(e));
         send({ type: 'settling' });
         const s = await v.settle(Buffer.from(JSON.stringify(result)));
-        if (!s.ok) {
-          send({ type: 'error', error: 'Your payment could not be settled, so you were not charged and the verdict is withheld.' });
+        const receipt = settlementFromHeaders(s.headers) as { errorReason?: string; transaction?: string } | null;
+        if (!s.ok && receipt?.errorReason === 'settlement_pending') {
+          // Cardano: the signed transaction was submitted and is waiting for its confirmation. The buyer will be charged,
+          // so they get the verdict now; the transaction id lets them follow it.
+          send({ type: 'settlement', ...receipt, pending: true });
+          send({ type: 'result', result });
+        } else if (!s.ok) {
+          const reason = receipt?.errorReason ?? (!s.ok ? JSON.stringify(s.body).slice(0, 200) : '');
+          send({ type: 'error', error: `Your payment could not be settled (${reason}), so you were not charged and the verdict is withheld.` });
         } else {
           send({ type: 'settlement', ...settlementFromHeaders(s.headers) });
           send({ type: 'result', result });

@@ -2,5 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
-  "functions": { "api/check.ts": { "maxDuration": 300 } }
+  "functions": {
+    "api/check.ts": {
+      "maxDuration": 300
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/blockfrost/:path*",
+      "destination": "/api/blockfrost?path=:path*"
+    }
+  ]
 }

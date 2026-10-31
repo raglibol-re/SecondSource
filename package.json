@@ -34,10 +34,11 @@
     "vault:verify": "node --env-file-if-exists=.env src/scripts/vault-verify.ts",
     "watchdog": "node --env-file-if-exists=.env src/scripts/watchdog.ts",
     "masumi:payout": "node --env-file-if-exists=.env src/coworker/payout.ts",
-    "site:local": "node --env-file-if-exists=.env src/scripts/local-api.ts"
+    "site:local": "node --env-file-if-exists=.env src/scripts/local-api.ts",
+    "build:browser": "esbuild src/browser/cardano-pay.ts --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=public/assets/cardano-pay.js --define:global=globalThis"
   },
   "dependencies": {
-    "@evolution-sdk/evolution": "^0.8.0",
+    "@evolution-sdk/evolution": "^0.5.19",
     "@x402/cardano": "2.29.0",
     "@x402/core": "2.29.0",
     "@x402/evm": "^2.28.0",
@@ -48,6 +49,8 @@
     "@coinbase/cdp-sdk": "^1.60.0",
     "@types/node": "^24.19.1",
     "@x402/express": "2.29.0",
+    "buffer": "^6.0.3",
+    "esbuild": "^0.28.2",
     "typescript": "~6.0.3"
   }
 }

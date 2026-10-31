@@ -10,7 +10,7 @@ import type { CheckResult } from '../types.ts';
 // 2 tADA on Cardano preprod over x402 and receives the signed check. Follows the Cardano Foundation's x402 buyer.
 const { positionals, values } = parseArgs({
   allowPositionals: true,
-  options: { asset: { type: 'string' }, at: { type: 'string' }, url: { type: 'string', default: 'https://secondsource-two.vercel.app' } },
+  options: { question: { type: 'boolean', default: false }, asset: { type: 'string' }, at: { type: 'string' }, url: { type: 'string', default: 'https://secondsource-two.vercel.app' } },
 });
 const headline = positionals.join(' ');
 const mnemonic = process.env.BUYER_CARDANO_MNEMONIC;
@@ -27,8 +27,9 @@ const signer = toClientCardanoSigner({
 client.register('cardano:*', new ExactCardanoScheme(signer));
 console.log(`Buyer agent wallet: ${signer.getAddress()}`);
 
-const url = `${values.url}/api/x402/check`;
-const body = JSON.stringify({ headline, asset: values.asset, publishedAt: values.at });
+// --question: the text is a free-form question for the planning agent (/api/x402/investigate, streamed).
+const url = `${values.url}/api/x402/${values.question ? 'investigate' : 'check'}`;
+const body = JSON.stringify(values.question ? { question: headline } : { headline, asset: values.asset, publishedAt: values.at });
 const plain = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
 console.log(`Unpaid request: HTTP ${plain.status}${plain.status === 402 ? ' Payment Required' : ''}`);
 if (plain.status !== 402) {
@@ -44,11 +45,27 @@ if (!res.ok) {
   console.log(await res.text());
   process.exit(1);
 }
-const result = (await res.json()) as CheckResult;
-const receipt = new x402HTTPClient(client).getPaymentSettleResponse((name) => res.headers.get(name));
-console.log(`\n${result.verdict} (${Math.round(result.confidence * 100)}%): ${result.reasoning}`);
-console.log(`${result.attestations.length} signed attestations, resultHash ${result.resultHash}`);
-if (receipt?.transaction) {
-  console.log(`Paid: https://preprod.cardanoscan.io/transaction/${receipt.transaction}`);
-  logTransaction('Cardano Preprod', `https://preprod.cardanoscan.io/transaction/${receipt.transaction}`, `x402 payment (2 tADA) from a buyer agent for a SecondSource check: ${result.verdict}`);
+if (values.question) {
+  // Streamed: plan, steps, then the settlement and the verdict.
+  const text = await res.text();
+  for (const line of text.trim().split(/\r?\n/)) {
+    const e = JSON.parse(line);
+    if (e.type === 'plan') console.log(`Plan (${e.model ?? 'rules'}): ${e.plan.reply}`);
+    if (e.type === 'step') console.log(`  ${e.step.status === 'ok' ? 'signed' : 'failed'}: ${e.step.label}`);
+    if (e.type === 'settlement' && e.transaction) {
+      console.log(`Paid${e.pending ? ' (confirming)' : ''}: https://preprod.cardanoscan.io/transaction/${e.transaction}`);
+      logTransaction('Cardano Preprod', `https://preprod.cardanoscan.io/transaction/${e.transaction}`, 'x402 payment (2 tADA) from a buyer agent for a SecondSource investigation');
+    }
+    if (e.type === 'result') console.log(`${e.result.verdict} (${Math.round(e.result.confidence * 100)}%): ${e.result.reasoning}`);
+    if (e.type === 'error') console.log(`ERROR: ${e.error}`);
+  }
+} else {
+  const result = (await res.json()) as CheckResult;
+  const receipt = new x402HTTPClient(client).getPaymentSettleResponse((name) => res.headers.get(name));
+  console.log(`\n${result.verdict} (${Math.round(result.confidence * 100)}%): ${result.reasoning}`);
+  console.log(`${result.attestations.length} signed attestations, resultHash ${result.resultHash}`);
+  if (receipt?.transaction) {
+    console.log(`Paid: https://preprod.cardanoscan.io/transaction/${receipt.transaction}`);
+    logTransaction('Cardano Preprod', `https://preprod.cardanoscan.io/transaction/${receipt.transaction}`, `x402 payment (2 tADA) from a buyer agent for a SecondSource check: ${result.verdict}`);
+  }
 }
