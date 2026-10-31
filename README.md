@@ -1,25 +1,87 @@
+<div align="center">
+
+<img src="public/assets/seal.svg" width="84" alt="SecondSource seal" />
+
 # SecondSource
 
-**Trust the primary source, not the headline.** SecondSource is a coworker that AI trading agents hire before they act
-on a market headline. It buys signed evidence from primary sources, has it judged, and answers `CONFIRMED`,
-`UNCONFIRMED` or `DENIED`, with a receipt for every step. Its Guarded Vault on Base Sepolia only trades when it can
-verify, on chain, a primary-source post signed by an Airnode.
+### Trust the primary source, not the headline.
 
-- Live site: https://secondsource-two.vercel.app
-- Ask it a question and pay from your own wallet: https://secondsource-two.vercel.app/check
-- Test the contract yourself: https://secondsource-two.vercel.app/vault
-- Guarded Vault v2 on Base Sepolia: [`0x0e9128f550254ed3389330e8134cea8cb09f46b6`](https://sepolia.basescan.org/address/0x0e9128f550254ed3389330e8134cea8cb09f46b6)
+The coworker AI trading agents hire before they act on a headline. It reads what the people involved actually posted,
+what newsrooms and filings report, and answers **CONFIRMED**, **UNCONFIRMED** or **DENIED**, with a signed receipt
+for every source and a payment that settles only after the verdict is delivered.
 
-## The problem
+[![CI](https://github.com/raglibol-re/SecondSource/actions/workflows/ci.yml/badge.svg)](https://github.com/raglibol-re/SecondSource/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/GuardedVault_coverage-100%25-13784b)
+![Tests](https://img.shields.io/badge/tests-40_TS_%2B_38_Foundry-2340c8)
+![Cardano](https://img.shields.io/badge/Cardano-Preprod-0033ad?logo=cardano&logoColor=white)
+![Base](https://img.shields.io/badge/Base-Sepolia-0052ff)
+![API3](https://img.shields.io/badge/API3-AirnodeHub-16202e)
+![x402](https://img.shields.io/badge/payments-x402-4a5668)
+![Masumi](https://img.shields.io/badge/Masumi-registered_agent-6b7789)
 
-On 7 April 2025 at 10:12 New York, a headline said Trump was considering a 90-day tariff pause. The Dow swung about 800
-points. About twenty minutes later the White House said the report was wrong, and the rally faded. Agents that traded on
-the headline lost money. The correction existed, on the primary source's own account, but nothing checked it before the
-order went out.
+**[Ask it live](https://secondsource-two.vercel.app/check)** |
+**[Run the tamper test](https://secondsource-two.vercel.app/vault?run)** |
+**[See every transaction](https://secondsource-two.vercel.app/receipts)** |
+[Contract on BaseScan](https://sepolia.basescan.org/address/0x0e9128f550254ed3389330e8134cea8cb09f46b6)
 
-We ran SecondSource on that headline. It answers **DENIED**, citing three posts by @RapidResponse47 from 14:38 to 14:41
-UTC, each signed by the TwitterAPI.io Airnode: "Wrong. Fake News." and "Reports that @POTUS is considering a 90-day
-pause on tariffs are FAKE NEWS". [Replay the check](https://secondsource-two.vercel.app/check?replay=hassett-2025-04-07).
+</div>
+
+---
+
+## Two headlines, two verdicts
+
+| The headline | Verdict | Why | Watch it |
+|---|---|---|---|
+| "Binance was hacked" (asked 31 Oct 2026, no date given) | **CONFIRMED**, 80% | CNBC, Cointelegraph, Fox Business, ABC News and others report the $6.3B hack as fact, and no Binance account disputes it | [Replay](https://secondsource-two.vercel.app/check?replay=binance-hack-2026-10-31) |
+| "Hassett: Trump considering 90-day tariff pause" (7 Apr 2025, 10:12 New York) | **DENIED** | @RapidResponse47's own posts, signed by the TwitterAPI.io Airnode: "Wrong. Fake News." | [Replay](https://secondsource-two.vercel.app/check?replay=hassett-agent-2025-04-07) |
+
+The second headline moved the Dow about 800 points before the White House called it fake. The correction was on the
+primary source's own account the whole time; nothing checked it before the orders went out.
+
+<p align="center">
+  <img src="docs/screenshots/payment-receipt.png" width="49%" alt="A paid question: the payment receipt, settled on Cardano Preprod" />
+  <img src="docs/screenshots/chat-binance.png" width="49%" alt="The agent's plan, the signed receipts and the CONFIRMED verdict" />
+</p>
+
+## How it works
+
+```mermaid
+flowchart LR
+    A["Trading agent<br/>or person"] -- "question + x402 payment<br/>(2 tADA or 0.10 USDC)" --> P["Plan<br/>signed model answer"]
+    P --> E{{"Buy signed evidence<br/>over x402, aUSD"}}
+    E --> X["X posts<br/>primary accounts"]
+    E --> N["Newsrooms<br/>Benzinga, LunarCrush, Finnhub"]
+    E --> F["SEC filings<br/>Finnhub"]
+    E --> M["Market<br/>TickerLayer"]
+    X & N & F & M --> J["Judge<br/>signed model answer"]
+    J --> R["Verdict + receipts<br/>result hash"]
+    R -- "settle payment<br/>only now" --> A
+    R -. "signed post + verdict" .-> V["Guarded Vault<br/>Base Sepolia"]
+```
+
+1. **Plan.** A model, called through the OpenRouter Airnode so its answer is signed, reads the question and picks the
+   primary accounts, search words, news feeds, time window and market.
+2. **Buy evidence.** SecondSource pays each AirnodeHub listing per call over x402 and accepts an answer only if it is
+   signed by the expected key, answers the exact request, and is fresh.
+3. **Judge.** A second signed model call weighs only that evidence. An official denial beats everything; independent
+   newsrooms can confirm an event, capped at 80%.
+4. **Deliver, then get paid.** The buyer's x402 payment on Cardano or Base settles only after the verdict exists. A
+   Masumi job puts the result hash on chain before SecondSource collects.
+5. **Act on chain.** The Guarded Vault trades only after it verifies, itself, a fresh Nodary price and the cited post
+   signed by the TwitterAPI.io Airnode.
+
+## Why you can trust the output
+
+| Guarantee | How | Check it |
+|---|---|---|
+| No evidence is invented or edited | Every answer is an Airnode signature over request, timestamp and data; signer, request hash and age are verified | [`/verify`](https://secondsource-two.vercel.app/verify), `src/airnode/verify.ts` |
+| You see what the model saw and said | Planner and judge run through the OpenRouter Airnode, so both answers are signed too | Receipts in every result |
+| The result can't change afterwards | One result hash covers question, verdict and all signed answers; Masumi writes it on Cardano | [Result hash on chain](https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879) |
+| You pay only for delivered work | x402 settles after the verdict; a failed run is never settled; escrow refunds without a result | `api/x402/investigate.ts`, `test/settlement.test.ts` |
+| The contract doesn't take our word for it | It rebuilds the post's request hash, verifies the TwitterAPI.io signature and the author on chain | `pnpm tamper-test`, [`SECURITY.md`](SECURITY.md) |
+
+Limits, plainly: a signature proves what a source said, not that it is true, and the model can misjudge. That is why
+money only moves in the vault on a primary source's own signed words.
 
 ## For judges: one minute per track
 
@@ -53,12 +115,13 @@ collected the payment:
 | Result hash on chain (ResultSubmitted) | [721423f3…](https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879) |
 | Payout to SecondSource (Withdrawn) | [665cf3d5…](https://preprod.cardanoscan.io/transaction/665cf3d555452c066826138e7dff9969191a4221331572ca9f389c5a717bd877) |
 | Paid request over x402 (2 tADA) | [7616f0a5…](https://preprod.cardanoscan.io/transaction/7616f0a56d346e068d7af71f167ef8cbee8e12dc63eef3acec5cd8d0ba29cc44) |
+| Live paid investigation over x402 (2 tADA), 31 Oct, verdict CONFIRMED | [30a21c79…](https://preprod.cardanoscan.io/transaction/30a21c79a0a8662dcf93ed5f0f4290894c05b8001193c95bd9b9f00e19105434) |
 
 **Ask it yourself, in the browser.** On https://secondsource-two.vercel.app/check, type a question about a headline in
 plain words (or pick a suggestion). Pay with either wallet:
-- **Cardano:** "Pay 2 tADA with a Cardano wallet" (Eternl or Lace on preprod; test ADA at
+- **Cardano:** "Connect Cardano wallet", then "Ask and pay 2 tADA" (Eternl or Lace on preprod; test ADA at
   https://dispenser.masumi.network).
-- **USDC:** "Pay 0.10 USDC and investigate" (MetaMask or any EVM wallet on Base Sepolia, signed once, no gas; test USDC
+- **USDC:** "Connect EVM wallet", then "Ask and pay 0.10 USDC" (MetaMask or any EVM wallet on Base Sepolia, signed once, no gas; test USDC
   at https://faucet.circle.com).
 
 The agent then plans the check: which primary accounts, which search words, which time window and market. You watch
@@ -70,9 +133,11 @@ buyer if no result hash is submitted before the deadline.
 
 **TUM Blockchain Track.** See [`SECURITY.md`](SECURITY.md) for the threat model, trust assumptions and limits, and
 [`contracts/src/GuardedVault.sol`](contracts/src/GuardedVault.sol): NatSpec throughout, 14 custom errors, no owner, no
-external calls. 30 Foundry tests cover every revert path on real signed responses.
+external calls. 30 Foundry tests cover every revert path on real signed responses, 8 property tests check the
+guarantees on random inputs, coverage is 100%, and Slither's findings are answered in `SECURITY.md`. CI runs all of it
+on every push.
 
-## How it works
+## The full sequence
 
 ```mermaid
 sequenceDiagram
@@ -130,7 +195,7 @@ git clone --recurse-submodules https://github.com/raglibol-re/SecondSource.git
 cd SecondSource
 pnpm install
 pnpm test                 # 34 TypeScript tests
-pnpm contracts:test       # 30 Foundry tests, including the tamper suite, on real signed responses
+pnpm contracts:test       # 38 Foundry tests: tamper suite, every revert path, 8 property tests
 pnpm tamper-test          # the tamper test against the deployed contract (read-only, no keys needed)
 ```
 
