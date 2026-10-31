@@ -32,7 +32,8 @@
     "tamper-test": "node --env-file-if-exists=.env src/scripts/tamper-test.ts",
     "contracts:build": "cd contracts && forge build",
     "vault:export": "node src/scripts/vault-export.ts",
-    "vault:verify": "node --env-file-if-exists=.env src/scripts/vault-verify.ts"
+    "vault:verify": "node --env-file-if-exists=.env src/scripts/vault-verify.ts",
+    "watchdog": "node --env-file-if-exists=.env src/scripts/watchdog.ts"
   },
   "dependencies": {
     "@evolution-sdk/evolution": "^0.8.0",
