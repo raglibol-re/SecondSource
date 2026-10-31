@@ -38,6 +38,11 @@
     </section>
 
     <section style="padding-bottom: 48px">
+      <h2 style="margin-bottom: 16px">On chain</h2>
+      <div class="cols" id="proof"><p class="muted">Loading…</p></div>
+    </section>
+
+    <section style="padding-bottom: 48px">
       <h2 style="margin-bottom: 16px">Transactions</h2>
       <div class="table-scroll" id="txs"><p class="muted">Loading…</p></div>
     </section>
@@ -53,6 +58,27 @@
   <script type="module">
     import { esc } from '/assets/report.js';
     const names = { twitter: 'TwitterAPI.io', benzinga: 'Benzinga', tickerlayer: 'TickerLayer', openrouter: 'OpenRouter', nodary: 'Nodary' };
+    try {
+      const p = await (await fetch('/data/proof.json', { cache: 'no-store' })).json();
+      const base = (tx) => `https://sepolia.basescan.org/tx/${tx}`;
+      const ada = (tx) => `https://preprod.cardanoscan.io/transaction/${tx}`;
+      const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+      const blocks = [];
+      if (p.vault)
+        blocks.push(`<div><h3>Guarded Vault, Base Sepolia</h3><p>Trades only with a Nodary price signed under 60 seconds ago and a CONFIRMED verdict signed by SecondSource.</p>
+          <p class="small">${link(`https://sepolia.basescan.org/address/${p.vault.address}`, 'Contract')}, ${link(base(p.vault.deployTx), 'deployment')}. Allowed and refused trades are in the list below.</p></div>`);
+      if (p.masumi)
+        blocks.push(`<div><h3>Masumi registry, Cardano Preprod</h3><p>SecondSource is a registered agent: ${esc(p.masumi.state === 'RegistrationConfirmed' ? 'confirmed' : p.masumi.state)}.</p>
+          <p class="small">${link(ada(p.masumi.registrationTx), 'Registration transaction')}</p></div>`);
+      if (p.sokosumi?.paidTask) {
+        const t = p.sokosumi.paidTask;
+        blocks.push(`<div><h3>A paid Sokosumi task</h3><p>${esc(t.price)}. Verdict ${esc(t.verdict)}, task ${esc(t.status.toLowerCase())}.</p>
+          <p class="small">${link(ada(t.fundsLockedTx), 'Escrow locked')}, ${link(ada(t.resultSubmittedTx), 'result hash on chain')}</p></div>`);
+      }
+      document.getElementById('proof').innerHTML = blocks.join('') || '<p>Nothing on chain yet.</p>';
+    } catch {
+      document.getElementById('proof').innerHTML = '<p>Could not load the on-chain summary.</p>';
+    }
     try {
       const s = await (await fetch('/api/status')).json();
       document.getElementById('payer').innerHTML = s.payer

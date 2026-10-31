@@ -46,21 +46,29 @@
           for every step.
         </p>
         <div class="actions">
-          <a class="btn" href="/check">Check a headline</a>
+          <a class="btn" href="/check?replay=hassett-2025-04-07">Replay the real check</a>
           <a class="btn secondary" href="#how">See how a check works</a>
         </div>
+      </div>
+    </section>
+
+    <section class="band" id="receipt">
+      <div class="wrap">
+        <h2>What SecondSource found</h2>
+        <p class="lede">We ran the check on that exact headline. These are the posts it cited, bought over x402 and signed by the TwitterAPI.io Airnode.</p>
+        <div id="found"><p class="muted">Loading the recorded check…</p></div>
       </div>
     </section>
 
     <section class="band" id="how">
       <div class="wrap">
         <h2>How a check works</h2>
-        <p class="lede">One job takes about twenty seconds and costs about 13 cents of test money in evidence.</p>
+        <p class="lede">One job takes about twenty seconds and costs 8 to 13 cents of test money in evidence.</p>
         <ol class="steps">
           <li><h3>Hire</h3><p>An agent, or a person in Sokosumi, sends the headline. Payment waits in Masumi escrow on Cardano.</p></li>
           <li><h3>Buy evidence</h3><p>SecondSource pays per call over x402 on AirnodeHub: posts from the accounts that matter, the Benzinga newswire, and the market tape.</p></li>
           <li><h3>Check signatures</h3><p>Every answer is signed by the Airnode that served it. Anything with the wrong signer, request or age is thrown out before use.</p></li>
-          <li><h3>Judge</h3><p>A language model reads only that evidence. Its answer comes back through an Airnode too, so the judgment is signed.</p></li>
+          <li><h3>Judge</h3><p>A language model reads only that evidence, through the OpenRouter Airnode, so the judgment is signed. If it is unreachable, fixed published rules decide and the result says so.</p></li>
           <li><h3>Deliver</h3><p>The verdict, the reasoning, the cited evidence and every receipt. The result hash is logged on Cardano.</p></li>
         </ol>
       </div>
@@ -117,6 +125,25 @@
   </footer>
 
   <script type="module">
+    import { esc, short } from '/assets/report.js';
+    // Filled from the recorded result, so every line here is what the check actually bought and cited.
+    try {
+      const r = await (await fetch('/runs/hassett-2025-04-07.json')).json();
+      const cited = r.citations.map((id) => r.evidence.find((e) => e.id === id)).filter(Boolean).sort((a, b) => (a.at < b.at ? -1 : 1));
+      const time = (iso) => iso.slice(11, 16) + ' UTC';
+      document.getElementById('found').innerHTML = `
+        <ol class="evidence" style="max-width: 820px">${cited
+          .map((e) => {
+            const a = r.attestations[e.attestation];
+            return `<li class="cited"><span class="eid">${esc(time(e.at))}</span>${esc(e.text.replace(/\s*https:\/\/t\.co\/\S+/g, ''))}
+              <span class="src">${esc(e.author)}${e.url ? `, <a href="${esc(e.url)}" target="_blank" rel="noopener">original post</a>` : ''}, signed by Airnode <span class="mono" title="${esc(a.response.airnode)}">${esc(short(a.response.airnode))}</span>${a.paymentTx ? `, <a href="https://sepolia.basescan.org/tx/${esc(a.paymentTx)}" target="_blank" rel="noopener">paid over x402</a>` : ''}</span></li>`;
+          })
+          .join('')}</ol>
+        <p style="margin-top: 20px">Verdict <b>${esc(r.verdict)}</b>, confidence ${Math.round(r.confidence * 100)}%, from ${r.attestations.length} signed answers costing ${esc(r.costAusd)} aUSD. The headline ran at ${esc(time(r.input.publishedAt))}; the first denial came ${Math.round((Date.parse(cited[0].at) - Date.parse(r.input.publishedAt)) / 60000)} minutes later.</p>
+        <div class="actions"><a class="btn" href="/check?replay=hassett-2025-04-07">Replay the check step by step</a><a class="btn secondary" href="/verify">Verify the signatures</a></div>`;
+    } catch {
+      document.getElementById('found').innerHTML = '<p>The recorded check could not be loaded. <a href="/check">Open the checker</a>.</p>';
+    }
     try {
       const r = await fetch('/data/example-nodary.json');
       const a = await r.json();

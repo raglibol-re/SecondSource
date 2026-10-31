@@ -1,0 +1,25 @@
+{
+  "vault": {
+    "address": "0x20b22351f91612015417965c8f43d22e85174ea8",
+    "deployTx": "0x043a3fee78fac82120c94af9cd39a0f6e724055fe9b07b0c6bb14a2045f871b7",
+    "secondSource": "0xC5b076bf4362E1a1e2652d7c75b3b6b90a0e5132"
+  },
+  "masumi": {
+    "agentIdentifier": "67ab0c92c4ac1610895a1c965ee50aba41a8f1513b15240723b3bd0b1046e4019eb638852664bdcaa1c9cc7523505303af8e3951869671df6a000000",
+    "state": "RegistrationConfirmed",
+    "registrationTx": "c92eccbff8cfe3ba56d8784466a2adbf48ae26e37403a3811e8b87932681caac",
+    "sellerAddress": "addr_test1qq53schsdqekjahucft5uaadln9yvlhsgkrtagnl7vkx8kkc0nfmcsyy3knk4z56glq3n3e40kstkx2txl4887ymk3dqf2fnzu"
+  },
+  "sokosumi": {
+    "coworkerId": "01a18f47-8ad2-7695-ac78-40515a62e758",
+    "paidTask": {
+      "id": "01a18f66-f4b1-73fe-914b-c9a3660e1296",
+      "status": "COMPLETED",
+      "price": "1 tUSDM via Masumi escrow",
+      "verdict": "DENIED",
+      "fundsLockedTx": "69f54064e43f4e970cd7325a97cfe9ce28b7c7b3018cd8c1a47bb49a6c2366ed",
+      "resultSubmittedTx": "ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189",
+      "checkResultHash": "0x024248f07629a21baa37e0b758fd0138ef4df39077fc1789db1c67a2df68d16f"
+    }
+  }
+}
