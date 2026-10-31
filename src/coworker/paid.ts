@@ -109,8 +109,8 @@ export const createMps = (url = process.env.MPS_URL, token = process.env.MPS_RUN
     headers: { 'Content-Type': 'application/json', token },
     body: JSON.stringify(body),
   });
-  const data = (await res.json()) as { status?: string; data?: unknown };
-  if (!res.ok || data.status !== 'success') throw new Error(`MPS ${path} failed with HTTP ${res.status}. Inspect saved state before retrying.`);
+  const data = (await res.json()) as { status?: string; data?: unknown; error?: { message?: string } };
+  if (!res.ok || data.status !== 'success') throw new Error(`MPS ${path} failed with HTTP ${res.status}: ${data.error?.message ?? 'no reason given'}. Inspect saved state before retrying.`);
   return data.data;
 };
 

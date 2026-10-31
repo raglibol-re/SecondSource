@@ -82,7 +82,7 @@ Node 24, pnpm and, for the contracts, Foundry.
 
 ```sh
 pnpm install
-pnpm test                 # 26 tests: attestation verification, pipeline, coworker, vault encoding
+pnpm test                 # 32 tests: attestation verification, pipeline, fallback judge, coworker, vault encoding
 pnpm contracts:test       # 13 Foundry tests for GuardedVault
 pnpm wallet:new           # creates the Base Sepolia payer key in .env and prints its address
 pnpm mint                 # mints aUSD from the faucet (needs Base Sepolia ETH for gas)
@@ -99,13 +99,27 @@ pnpm worker               # the Sokosumi coworker
 | `PAYER_PRIVATE_KEY` | CLI, worker, `api/check`, vault scripts | Base Sepolia account that pays x402 calls in aUSD and sends vault transactions |
 | `BASE_SEPOLIA_RPC_URL` | balance, mint, vault | Optional RPC override |
 | `DEMO_KEY` | `api/check` | Gate for live checks on the public site |
-| `JUDGE_MODEL` | judge | OpenRouter model id, default `anthropic/claude-sonnet-5.5` |
+| `JUDGE_MODEL` | judge | OpenRouter model id, default `anthropic/claude-sonnet-5` |
 | `COWORKER_SIGNER_KEY` | vault | Key the coworker signs verdicts with for the vault |
 | `COWORKER_ID`, `PAID_TASKS_ENABLED` | worker | Sokosumi coworker and paid mode |
 | `MPS_URL`, `MPS_ADMIN_KEY`, `MPS_RUNTIME_TOKEN`, `MPS_WALLET_ID`, `MPS_SOURCE_ID` | worker, registry | Masumi Payment Service |
 | `BLOCKFROST_API_KEY_PREPROD` | Masumi Payment Service | Cardano Preprod access |
 
 Keys live in `.env`, which is gitignored. Testnets only.
+
+## Results so far
+
+| What | Result |
+|---|---|
+| Hassett headline, 7 April 2025 | **DENIED**. Cites three signed @RapidResponse47 posts from 14:38 to 14:41 UTC, including "Reports that @POTUS is considering a 90-day pause on tariffs are FAKE NEWS". [Replay it](https://secondsource-two.vercel.app/check?replay=hassett-2025-04-07) |
+| Shipbuilding executive order, 9 April 2025 | **CONFIRMED** by a signed @WhiteHouse post. The Guarded Vault executed the trade. |
+| 90-day pause, 9 April 2025 | **UNCONFIRMED**. The pause was real, but it was announced on Truth Social, which no AirnodeHub listing covers. |
+| Guarded Vault | Deployed on Base Sepolia at `0x20b22351f91612015417965c8f43d22e85174ea8`. One allowed trade and one on-chain revert with `VerdictNotConfirmed`. |
+| Masumi | SecondSource is registered in the Masumi registry on Cardano Preprod. |
+
+All transactions are listed in [docs/transactions.md](docs/transactions.md).
+
+**Known limitation:** during the hackathon the OpenRouter Airnode answered every model with an upstream 403, and no other AirnodeHub listing offers a language model. Failed calls are not charged. When the judge is unreachable, SecondSource falls back to fixed, published rules over the signed evidence (`src/judge/rules.ts`). The result then says the judgment itself is not signed. When the Airnode works again, the signed model judgment is used automatically.
 
 ## Trust model
 
