@@ -88,6 +88,7 @@ sequenceDiagram
         S->>H: TwitterAPI.io: posts by the primary accounts
         S->>H: TwitterAPI.io: top posts about the claim
         S->>H: Benzinga newswire
+        S->>H: LunarCrush and Finnhub: newsrooms on the topic, SEC filings for a US ticker
         S->>H: TickerLayer price bars
     end
     Note over S: Every answer verified: expected signer,<br/>exact request, fresh timestamp
@@ -189,7 +190,7 @@ The first vault (v1, `0x20b2…4ea8`) and its transactions stay in the log as hi
 - **Free judge model.** The OpenRouter Airnode refused paid models upstream during the hackathon (HTTP 403), so the
   judge falls back to `nvidia/nemotron-3-ultra-550b-a55b:free`. If no model answers, fixed published rules decide, and
   the result says the judgment is unsigned.
-- **Coverage.** No AirnodeHub listing covers Truth Social, official press-release feeds or timestamped SEC filings.
+- **Coverage.** No AirnodeHub listing covers Truth Social or official press-release feeds. Finnhub gives SEC filing metadata and links, not the filing text.
   Benzinga's topic filter is unreliable, so we filter the day's feed locally. TickerLayer keeps only hourly bars for
   older dates.
 - **Primary accounts are fixed** to US policy accounts at deployment. Other markets need their own list.

@@ -24,11 +24,11 @@ Tab BaseScan, the `executeTrade` and `haltOnDenial` transactions (from `/receipt
 
 ## 1:50 to 2:20, the autonomous agent
 Terminal: `pnpm watchdog "Hassett: Trump considering 90-day tariff pause" --at 2025-04-07T14:12:00Z --cycles 1`.
-> "The watchdog runs on its own: each cycle it pays for fresh evidence over x402, five AirnodeHub listings, and the
+> "The watchdog runs on its own: each cycle it pays for fresh evidence over x402 from AirnodeHub listings, and the
 > moment a primary account denies the rumour it brings the signed post on chain and halts the vault."
 
 ## 2:20 to 2:30
-> "What we couldn't find on AirnodeHub: Truth Social, press-release feeds, SEC filings. Trust the primary source, not
+> "What we couldn't find on AirnodeHub: Truth Social, press-release feeds, the text of SEC filings. Trust the primary source, not
 > the headline."
 
 ## Likely questions

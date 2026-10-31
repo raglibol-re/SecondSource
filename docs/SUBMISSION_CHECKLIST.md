@@ -30,7 +30,7 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 | Transaction hash in README and `docs/transactions.md` | DONE | Escrow `b74e743b…`, result hash `721423f3…`, payout `665cf3d5…`; x402 `7616f0a5…`, `cc72cd2d…` |
 | Payout status | DONE | Both paid tasks are `Withdrawn`: `665cf3d5…`, `89162f82…` (`pnpm masumi:payout`) |
 | Payment tied to the result | DONE | x402 settles only after success; Masumi escrow refunds without a result hash |
-| Agents hiring agents | DONE | The buyer agent hires SecondSource over x402, and SecondSource pays 5 AirnodeHub listings itself |
+| Agents hiring agents | DONE | The buyer agent hires SecondSource over x402, and SecondSource pays up to 7 AirnodeHub listings itself (X, Benzinga, LunarCrush, Finnhub incl. SEC filings, TickerLayer, OpenRouter, Nodary) |
 | Video: customer, problem, business case, one paid job start to finish | YOU | `docs/video-script.md`, `docs/pitch-cardano.md` |
 | Description: how it works, Cardano tools, real use | DONE | `docs/devfolio.md` ("Cardano tools used", "How it runs in real use") |
 | README: setup steps and limits | DONE | README "Run it", "Limits"; `docs/setup-human-steps.md` |
@@ -40,7 +40,7 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 
 | Requirement | Status | Evidence |
 |---|---|---|
-| AirnodeHub essential to the core workflow | DONE | Every investigation buys 5 to 6 signed answers; the vault needs two Airnodes on chain |
+| AirnodeHub essential to the core workflow | DONE | Every investigation buys 5 to 10 signed answers, including newsrooms and SEC filings; the vault needs two Airnodes on chain |
 | Deployed contract checks signer, request and freshness before acting | DONE | GuardedVault v2 `0x0e9128f550254ed3389330e8134cea8cb09f46b6`, Base Sepolia |
 | Uses `AirnodeV2Attestation` from the starter | DONE | `contracts/src/AirnodeV2Attestation.sol`, unmodified |
 | Signed value drives an on-chain action, with duplicate protection | DONE | Price sizes the trade; the post's author gates it; verdicts are single-use. Trade `0x0cd73b4e…`, halt `0x5c634248…` |

@@ -76,7 +76,7 @@ mis-size the trade. The vault rejects all of these on chain: edited value, stale
 request, wrong signer. The tamper test on our site shows each one with its own revert reason.
 
 **Data we wanted but could not find on AirnodeHub.** Truth Social posts (the real 90-day pause was announced there),
-official press-release feeds such as whitehouse.gov, timestamped SEC filings, and intraday minute bars for older dates.
+official press-release feeds such as whitehouse.gov, the text of SEC filings (Finnhub gives only metadata and links), and intraday minute bars for older dates.
 
 **How it runs in real use.** Agents call the x402 endpoint per headline (about 13 cents of evidence, 60 to 90 seconds
 including Cardano settlement), or hire SecondSource on Sokosumi. Desks point execution at a vault like ours with their
