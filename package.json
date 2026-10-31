@@ -27,13 +27,14 @@
     "faucet": "node --env-file-if-exists=.env src/scripts/faucet.ts",
     "x402:wallet": "node --env-file-if-exists=.env src/scripts/cardano-buyer-wallet.ts",
     "x402:buy": "node --env-file-if-exists=.env src/scripts/x402-buy.ts",
-    "api:local": "node --env-file-if-exists=.env src/scripts/local-api.ts",
     "vault:act": "node --env-file-if-exists=.env src/vault/trade.ts",
     "tamper-test": "node --env-file-if-exists=.env src/scripts/tamper-test.ts",
     "contracts:build": "cd contracts && forge build",
     "vault:export": "node src/scripts/vault-export.ts",
     "vault:verify": "node --env-file-if-exists=.env src/scripts/vault-verify.ts",
-    "watchdog": "node --env-file-if-exists=.env src/scripts/watchdog.ts"
+    "watchdog": "node --env-file-if-exists=.env src/scripts/watchdog.ts",
+    "masumi:payout": "node --env-file-if-exists=.env src/coworker/payout.ts",
+    "site:local": "node --env-file-if-exists=.env src/scripts/local-api.ts"
   },
   "dependencies": {
     "@evolution-sdk/evolution": "^0.8.0",
