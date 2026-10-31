@@ -2,7 +2,7 @@
 
 Source: https://hackathon.tum-blockchain.com/prizes (fetched 31 Oct 2026), merged with the team briefing. Where they
 differ, the website wins. Tracks: **Cardano** and **API3**, 2 of the 3 allowed partner tracks. The **TUM Blockchain
-Track** is judged automatically and does not count toward the 3. Status as of 31 Oct, about 12:30 CET.
+Track** is judged automatically and does not count toward the 3. Status as of 31 Oct, 13:30 CET.
 
 "You" marks the steps that need a person: Devfolio, recording, repo settings.
 
@@ -64,6 +64,19 @@ Track** is judged automatically and does not count toward the 3. Status as of 31
 | Static analysis | DONE | Slither 0.11.6: 9 results (timestamp, constructor zero-checks), each answered in `SECURITY.md` |
 | CI | DONE | `.github/workflows/ci.yml`: typecheck, 40 TS tests, Foundry build and tests; green |
 | `SECURITY.md` | DONE | Threat model, trust assumptions, known limitations |
+
+## Pre-submission polish (31 Oct, 13:00 to 13:30)
+
+| Item | Status | Evidence |
+|---|---|---|
+| Cardano paid jobs at the top of /receipts | DONE | https://secondsource-two.vercel.app/receipts: two Masumi escrow tasks paid out (`b74e743b…` / `721423f3…` / `665cf3d5…` and `69f54064…` / `ac37ca58…` / `89162f82…`), five x402 tADA payments (`30a21c79…`, `8cf8ad9b…`, `cc72cd2d…`, `7616f0a5…`, `8bfdab7f…`), registration `c92eccbf…` |
+| Aiken validator verifying API3 attestations on Cardano | NOT BUILT | No Aiken code exists in the repo, so it is not mentioned anywhere. On-chain verification of Airnode data is in the Guarded Vault on Base Sepolia |
+| No dead ends for judges without a wallet | DONE | /check shows "No wallet? Watch a real paid run, free"; the demo key (it spends the shared evidence wallet) only appears with `?demo` |
+| All links work logged out | DONE | Crawled every link on /, /check, /vault, /receipts, /verify: all 200 (BaseScan answers 403 to scripts only, opens in a browser). Repo public |
+| No empty "Loading" on slow Wi-Fi | DONE | Home posts and contract address are in the HTML; /receipts renders from committed `transactions.json`, `proof.json`, `signers.json`, labelled "snapshot", then live; 5 s timeouts (15 s for the live tamper test) with readable errors. Under Chrome "Fast 3G" every page showed content and the tamper test passed within 12 s |
+| Tamper test unambiguous | DONE | /vault?run: five labelled rows, distinct reasons (SignatureMismatch, PriceResponseTooOld, WrongRequest, UnexpectedAirnode), contract link, 0.1 to 1.5 s, fits one screen |
+| Which test token for what | DONE | Table on /check and in README: tADA (x402) and tUSDM (Masumi) to pay SecondSource on Preprod, USDC (x402) on Base Sepolia, aUSD only for SecondSource's own evidence purchases |
+| Fresh clone, README steps, all tests | DONE | 13:28: install, typecheck, 40 TS tests, 38 Foundry tests, `pnpm tamper-test` PASS |
 
 ## Differences between the website and the briefing
 
