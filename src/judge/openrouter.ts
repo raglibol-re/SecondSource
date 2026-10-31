@@ -3,9 +3,9 @@ import type { AirnodeV2Request } from '../airnode/airnode-v2.ts';
 import type { CheckInput, EvidenceItem, Verdict } from '../types.ts';
 
 // Every chatCompletion costs the same flat 0.05 aUSD, whatever the model. On 2026-10-31 the Airnode refused paid models
-// with an upstream 403 but served this free one, so the judge tries the preferred model first and falls back in order.
+// with an upstream 403 but served this free one, so the free model that works goes first and the others are fallbacks.
 // JUDGE_MODELS (comma separated) overrides the list.
-export const JUDGE_MODELS = (process.env.JUDGE_MODELS ?? 'anthropic/claude-sonnet-5,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free')
+export const JUDGE_MODELS = (process.env.JUDGE_MODELS ?? 'nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,anthropic/claude-sonnet-5')
   .split(',')
   .map((m) => m.trim())
   .filter(Boolean);
