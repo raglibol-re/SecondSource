@@ -99,7 +99,7 @@ pnpm worker               # the Sokosumi coworker
 | `PAYER_PRIVATE_KEY` | CLI, worker, `api/check`, vault scripts | Base Sepolia account that pays x402 calls in aUSD and sends vault transactions |
 | `BASE_SEPOLIA_RPC_URL` | balance, mint, vault | Optional RPC override |
 | `DEMO_KEY` | `api/check` | Gate for live checks on the public site |
-| `JUDGE_MODEL` | judge | OpenRouter model id, default `anthropic/claude-sonnet-5` |
+| `JUDGE_MODELS` | judge | Comma-separated OpenRouter model ids, tried in order. Default `anthropic/claude-sonnet-5,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free` |
 | `COWORKER_SIGNER_KEY` | vault | Key the coworker signs verdicts with for the vault |
 | `COWORKER_ID`, `PAID_TASKS_ENABLED` | worker | Sokosumi coworker and paid mode |
 | `MPS_URL`, `MPS_ADMIN_KEY`, `MPS_RUNTIME_TOKEN`, `MPS_WALLET_ID`, `MPS_SOURCE_ID` | worker, registry | Masumi Payment Service |
@@ -113,13 +113,13 @@ Keys live in `.env`, which is gitignored. Testnets only.
 |---|---|
 | Hassett headline, 7 April 2025 | **DENIED**. Cites three signed @RapidResponse47 posts from 14:38 to 14:41 UTC, including "Reports that @POTUS is considering a 90-day pause on tariffs are FAKE NEWS". [Replay it](https://secondsource-two.vercel.app/check?replay=hassett-2025-04-07) |
 | Shipbuilding executive order, 9 April 2025 | **CONFIRMED** by a signed @WhiteHouse post. The Guarded Vault executed the trade. |
-| 90-day pause, 9 April 2025 | **UNCONFIRMED**. The pause was real, but it was announced on Truth Social, which no AirnodeHub listing covers. |
+| 90-day pause, 9 April 2025 | **CONFIRMED** from Treasury Secretary Bessent's words ("We've given 90 days") as posted by @RapidResponse47. |
 | Guarded Vault | Deployed on Base Sepolia at `0x20b22351f91612015417965c8f43d22e85174ea8`. One allowed trade and one on-chain revert with `VerdictNotConfirmed`. |
 | Masumi | Registered on Cardano Preprod. One paid Sokosumi task ran end to end: 1 tUSDM locked in escrow ([tx](https://preprod.cardanoscan.io/transaction/69f54064e43f4e970cd7325a97cfe9ce28b7c7b3018cd8c1a47bb49a6c2366ed)), check returned DENIED, result hash submitted on chain ([tx](https://preprod.cardanoscan.io/transaction/ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189)), task completed. |
 
 All transactions are listed in [docs/transactions.md](docs/transactions.md).
 
-**Known limitation:** during the hackathon the OpenRouter Airnode answered every model with an upstream 403, and no other AirnodeHub listing offers a language model. Failed calls are not charged. When the judge is unreachable, SecondSource falls back to fixed, published rules over the signed evidence (`src/judge/rules.ts`). The result then says the judgment itself is not signed. When the Airnode works again, the signed model judgment is used automatically.
+**Judge models:** during the hackathon the OpenRouter Airnode refused paid models with an upstream 403 but served free ones, so the judge tries `anthropic/claude-sonnet-5` first and falls back to `nvidia/nemotron-3-ultra-550b-a55b:free`. Refused calls are not charged. All recorded checks carry a signed model judgment. If no model answers at all, fixed published rules (`src/judge/rules.ts`) decide over the signed evidence and the result says the judgment is unsigned.
 
 ## Trust model
 

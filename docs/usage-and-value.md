@@ -63,9 +63,10 @@ is made.
 
 - **The pitch case, for real.** Checking "Hassett: Trump considering 90-day tariff pause" at 14:12 UTC on 7 April 2025
   returns DENIED, citing three signed @RapidResponse47 posts from 14:38 to 14:41 UTC, including "Reports that @POTUS
-  is considering a 90-day pause on tariffs are FAKE NEWS". Evidence cost: 0.08 aUSD.
-- **Cautious when it should be.** The real pause two days later was announced on Truth Social, which no listing covers;
-  SecondSource says UNCONFIRMED rather than treating news repetition as confirmation.
+  is considering a 90-day pause on tariffs are FAKE NEWS". The judgment came back signed from a model through the
+  OpenRouter Airnode. Evidence cost: 0.13 aUSD.
+- **Right in both directions.** The real pause two days later is CONFIRMED from Treasury Secretary Bessent's words as
+  posted by the White House account.
 - **Paid as a Coworker.** A Sokosumi task paid 1 tUSDM into Masumi escrow, SecondSource ran the check, and the result
   hash was submitted on Cardano Preprod before the task completed.
 - **Enforced on chain.** The Guarded Vault on Base Sepolia executed a trade with a CONFIRMED verdict and reverted with

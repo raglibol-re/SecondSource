@@ -6,7 +6,7 @@ import { newsRequest, newsToEvidence } from './evidence/benzinga.ts';
 import { extractKeywords } from './evidence/keywords.ts';
 import { barsRequest, barsToEvidence } from './evidence/market.ts';
 import { accountsRequest, handle, keywordRequest, tweetsToEvidence } from './evidence/twitter.ts';
-import { judgeRequest, parseJudgment } from './judge/openrouter.ts';
+import { JUDGE_MODELS, judgeRequest, parseJudgment } from './judge/openrouter.ts';
 import { judgeByRules } from './judge/rules.ts';
 import type { Caller, CheckInput, CheckResult, CheckStep, EvidenceItem } from './types.ts';
 
@@ -89,20 +89,26 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
   let judgment = { verdict: 'UNCONFIRMED' as CheckResult['verdict'], confidence: 0, reasoning: 'No evidence could be bought, so nothing confirms the headline.', citations: [] as string[] };
   let judge: CheckResult['judge'] = null;
   if (evidence.length > 0) {
-    const request = judgeRequest(input, evidence);
-    try {
-      const a = await call('openrouter', request);
-      const index = attestations.push(a) - 1;
-      judge = { model: String(request.parameters.model), attestation: index, signed: true };
-      const step: CheckStep = { label: `Judge: ${judge.model}`, source: 'openrouter', status: 'ok', attestation: index };
-      steps.push(step);
-      onProgress?.({ type: 'step', step, attestation: a });
-      judgment = parseJudgment(a, evidence);
-    } catch (err) {
-      const step: CheckStep = { label: `Judge: ${String(request.parameters.model)}`, source: 'openrouter', status: 'failed', error: (err as Error).message.slice(0, 300) };
-      steps.push(step);
-      onProgress?.({ type: 'step', step });
-      // Fall back to fixed rules over the signed evidence, and say so.
+    // Try each model in turn through the OpenRouter Airnode; a refused call is not charged.
+    for (const model of JUDGE_MODELS) {
+      const request = judgeRequest(input, evidence, model);
+      try {
+        const a = await call('openrouter', request);
+        const index = attestations.push(a) - 1;
+        judge = { model, attestation: index, signed: true };
+        const step: CheckStep = { label: `Judge: ${model}`, source: 'openrouter', status: 'ok', attestation: index };
+        steps.push(step);
+        onProgress?.({ type: 'step', step, attestation: a });
+        judgment = parseJudgment(a, evidence);
+        break;
+      } catch (err) {
+        const step: CheckStep = { label: `Judge: ${model}`, source: 'openrouter', status: 'failed', error: (err as Error).message.slice(0, 300) };
+        steps.push(step);
+        onProgress?.({ type: 'step', step });
+      }
+    }
+    if (!judge) {
+      // No model reachable: fixed rules over the signed evidence, and the result says so.
       judgment = judgeByRules(input, evidence, keywords, accounts);
       judge = { model: 'fixed rules (OpenRouter Airnode unavailable)', signed: false };
     }

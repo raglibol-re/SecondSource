@@ -328,5 +328,101 @@
     "network": "Base Sepolia",
     "link": "https://sepolia.basescan.org/tx/0x3afbb7193f6b351b4bbc4309436a31f2181d1882e09606ee497de3b908b5d60a",
     "what": "GuardedVault trade BLOCKED (DENIED, VerdictNotConfirmed(3)): Hassett: Trump considering 90-day tariff pause"
+  },
+  {
+    "when": "2026-10-31T01:11:29.248Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x3d784b48a4ca3e0219b1b4d52cdb8a7431683421d2ba33819d607b627459581d",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T01:12:31.133Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x76e2a58a3a452caccfbad50521c293e3ee37993136045ff06a71e89c37e211c3",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T01:12:31.545Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xfcbbe6dac1f130024cc2643d128e0a74e515dd0f25e9b097a401f05cfb5d945b",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T01:12:31.549Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x17d7160e52ab823d01fcbf62ec5d70695b0a7888f9ddcaf5d21c0e3aeb96f3b6",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:12:32.071Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xa2b837065b5246f71a091868ae18f39f0de8f3e0562cb14de8710fbb980779cd",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:12:55.881Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x5efaeca49cba1c3e25442d060533cd20d1a4f1a1e186f51f8fc067da080d8d58",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T01:13:13.882Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xe759cda319ca72fe5f6b937e96d2a783ab972a15ba07881aed8890abe303dbd0",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T01:13:14.247Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xcc837796424b14a5c9f4ce38dab1e505a7e63ac7aae95a3626e528c839ac87da",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:13:14.538Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x9135d0252bcd62108da8c27124cf57df56e7506373b774bfe7af7963cc201fcf",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:13:26.518Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xac060caf1935fbcf3e96b074eac86c5fb6a123e35ca71cacfb7c4425834724ad",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T01:13:32.695Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x4f01c10b7d15cd24c55beaad00ab6c7f335066bfec1ccfb93fe26ca40c396299",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T01:13:32.768Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x2c99717dc5af8c69d6ade08cb1e875334b0630a5a9b05b4c475e5776c5767281",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T01:13:34.062Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x43b3ab80a51c4badb5df38956d063d7e497d6e26bb845260a09eb58164c0b6a1",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:13:34.094Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xce88d7b649bbd5fccd80aacabef42c5fea33b68911db3aba3f1550553af75eef",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:14:01.671Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xa63623532c058941a2eabdf01f3bb0e9d7848cfd4ae65b1bdf02eab7cd4962ed",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T01:14:24.398Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x46fb2afc23d75398db15162061dddafe141a4a78e3811fe15c5a5fbb88f06c7b",
+    "what": "GuardedVault trade ALLOWED (CONFIRMED): Trump signs executive order to boost US shipbuilding"
   }
 ]

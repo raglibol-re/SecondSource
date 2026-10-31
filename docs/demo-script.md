@@ -38,7 +38,7 @@ Tab 2 plays the recorded check: four receipts arrive, then the stamp.
 Scroll to the evidence and point at the three cited posts, 14:38 to 14:41 UTC.
 
 > "Twenty-six minutes after the headline, the White House's own account: 'Wrong. Fake News.' Signed, timestamped,
-> paid for. Verdict: denied by the primary source, for eight cents of evidence."
+> paid for. Verdict: denied by the primary source, and even the judgment is signed. Thirteen cents of evidence."
 
 ## 1:15 to 1:35, don't trust us
 
@@ -67,13 +67,11 @@ transactions on Cardano.
 
 ## Questions you may get
 
-- **Why is the judgment not signed?** The OpenRouter Airnode returned an upstream 403 for every model during the
-  hackathon, and it is the only language-model listing. Failed calls are not charged. SecondSource then applies fixed,
-  published rules (`src/judge/rules.ts`) to the signed evidence and says so in the result. With OpenRouter back, the
-  model's signed judgment is used automatically.
-- **Why is the real pause on 9 April UNCONFIRMED?** It was announced on Truth Social, which no AirnodeHub listing
-  covers, and the White House X accounts only discussed it. Repetition is not confirmation, so SecondSource stays
-  cautious. That check is on /check too.
+- **Which model judges?** Through the OpenRouter Airnode, so its answer is signed. Paid models were refused upstream
+  during the hackathon, so SecondSource fell back to a free model, `nvidia/nemotron-3-ultra-550b-a55b:free`. Refused
+  calls are not charged. If no model answers, fixed published rules decide and the result says so.
+- **Does it only say DENIED?** No. The real pause on 9 April is CONFIRMED from Treasury Secretary Bessent's words
+  posted by the White House account, and the shipbuilding order is CONFIRMED. Both are on /check.
 - **What did a paid task look like?** /receipts, "A paid Sokosumi task": 1 tUSDM locked, result hash submitted on
   Cardano, task completed.
 

@@ -125,3 +125,15 @@ test('judge unreachable: fixed rules over the signed evidence, marked unsigned',
   assert.equal(r.judge?.signed, false);
   assert.match(r.reasoning, /this judgment is not/);
 });
+
+test('first judge model refused, second answers: signed judgment from the second', async () => {
+  const base = caller(denialTweets, '{"verdict":"DENIED","confidence":0.9,"reasoning":"Denied.","citations":["E1"]}');
+  let tries = 0;
+  const r = await check(HASSETT, async (s, q) => {
+    if (s === 'openrouter' && tries++ === 0) throw new Error('openrouter.chatCompletion answered 502');
+    return base(s, q);
+  });
+  assert.equal(r.verdict, 'DENIED');
+  assert.equal(r.judge?.signed, true);
+  assert.equal(r.steps.filter((s) => s.source === 'openrouter').map((s) => s.status).join(','), 'failed,ok');
+});

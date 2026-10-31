@@ -2,8 +2,14 @@ import type { Attestation } from '../airnode/client.ts';
 import type { AirnodeV2Request } from '../airnode/airnode-v2.ts';
 import type { CheckInput, EvidenceItem, Verdict } from '../types.ts';
 
-// Picked from the free listModels call on 2026-10-30. Every chatCompletion costs the same flat 0.05 aUSD.
-export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'anthropic/claude-sonnet-5';
+// Every chatCompletion costs the same flat 0.05 aUSD, whatever the model. On 2026-10-31 the Airnode refused paid models
+// with an upstream 403 but served this free one, so the judge tries the preferred model first and falls back in order.
+// JUDGE_MODELS (comma separated) overrides the list.
+export const JUDGE_MODELS = (process.env.JUDGE_MODELS ?? 'anthropic/claude-sonnet-5,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free')
+  .split(',')
+  .map((m) => m.trim())
+  .filter(Boolean);
+export const JUDGE_MODEL = JUDGE_MODELS[0]!;
 
 const SYSTEM = `You are SecondSource, a fact-checker that trading agents hire before acting on a market headline.
 You get the headline and a numbered list of evidence. Every evidence line was bought from a primary source and is cryptographically signed, so treat it as authentic, but judge what it actually says.
