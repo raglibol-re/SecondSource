@@ -34,5 +34,12 @@ mkdirSync('runs', { recursive: true });
 const file = `runs/agent-${result.checkedAt.replace(/[:.]/g, '-')}.json`;
 writeFileSync(file, JSON.stringify(result, null, 2));
 console.log(`SecondSource: ${result.verdict} (${Math.round(result.confidence * 100)}%). ${result.reasoning}`);
-console.log('Asking the Guarded Vault to trade with the signed verdict...');
-execFileSync(process.execPath, ['--env-file-if-exists=.env', 'src/vault/trade.ts', file, '--usd', values.usd!, '--send-anyway'], { stdio: 'inherit' });
+console.log(
+  result.verdict === 'CONFIRMED'
+    ? 'Confirmed by a primary source: asking the Guarded Vault to trade, with the signed post and verdict...'
+    : result.verdict === 'DENIED'
+      ? 'Denied by a primary source: not trading, and halting the Guarded Vault for every agent with the signed post...'
+      : 'Unconfirmed: not trading. Nothing to bring on chain.'
+);
+if (result.verdict === 'UNCONFIRMED') process.exit(0);
+execFileSync(process.execPath, ['--env-file-if-exists=.env', 'src/vault/trade.ts', file, '--usd', values.usd!], { stdio: 'inherit' });

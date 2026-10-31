@@ -4,13 +4,22 @@ import type { Verdict } from '../types.ts';
 
 // Must match GuardedVault.Verdict and GuardedVault.verdictDigest.
 export const VERDICT_CODE: Record<Verdict, number> = { CONFIRMED: 1, UNCONFIRMED: 2, DENIED: 3 };
-export const VERDICT_TAG = keccak256(toHex('SecondSource.Verdict.v1'));
+export const VERDICT_TAG = keccak256(toHex('SecondSource.Verdict.v2'));
 
-export const verdictDigest = (chainId: number, vault: Address, resultHash: Hex, verdict: Verdict, signedAt: bigint): Hex =>
+// The verdict commits to one chain, one vault and one primary-source post (its request hash), so it cannot be moved to
+// another vault or reused with different evidence.
+export const verdictDigest = (
+  chainId: number,
+  vault: Address,
+  resultHash: Hex,
+  verdict: Verdict,
+  signedAt: bigint,
+  evidenceRequestHash: Hex
+): Hex =>
   keccak256(
     encodeAbiParameters(
-      [{ type: 'bytes32' }, { type: 'uint256' }, { type: 'address' }, { type: 'bytes32' }, { type: 'uint8' }, { type: 'uint256' }],
-      [VERDICT_TAG, BigInt(chainId), vault, resultHash, VERDICT_CODE[verdict], signedAt]
+      [{ type: 'bytes32' }, { type: 'uint256' }, { type: 'address' }, { type: 'bytes32' }, { type: 'uint8' }, { type: 'uint256' }, { type: 'bytes32' }],
+      [VERDICT_TAG, BigInt(chainId), vault, resultHash, VERDICT_CODE[verdict], signedAt, evidenceRequestHash]
     )
   );
 
@@ -20,8 +29,16 @@ export const coworkerSigner = () => {
   return privateKeyToAccount(key);
 };
 
-// The coworker's signature over its verdict, bound to one chain and one vault so it cannot be replayed elsewhere.
-export const signVerdict = async (chainId: number, vault: Address, resultHash: Hex, verdict: Verdict, signedAt = BigInt(Math.floor(Date.now() / 1000))) => {
-  const signature = await coworkerSigner().signMessage({ message: { raw: verdictDigest(chainId, vault, resultHash, verdict, signedAt) } });
+export const signVerdict = async (
+  chainId: number,
+  vault: Address,
+  resultHash: Hex,
+  verdict: Verdict,
+  evidenceRequestHash: Hex,
+  signedAt = BigInt(Math.floor(Date.now() / 1000))
+) => {
+  const signature = await coworkerSigner().signMessage({
+    message: { raw: verdictDigest(chainId, vault, resultHash, verdict, signedAt, evidenceRequestHash) },
+  });
   return { resultHash, verdict: VERDICT_CODE[verdict], signedAt, signature };
 };
