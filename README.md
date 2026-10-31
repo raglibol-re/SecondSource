@@ -80,8 +80,8 @@ pnpm x402:buy "Hassett: Trump considering 90-day tariff pause" --asset indices/U
 ```
 
 One purchase uses x402 twice: the buyer pays SecondSource on Cardano, and SecondSource pays its five evidence sources on
-Base Sepolia. The first one settled on Preprod in
-[this transaction](https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629).
+Base Sepolia. A purchase against the live site settled on Preprod in
+[this transaction](https://preprod.cardanoscan.io/transaction/7616f0a56d346e068d7af71f167ef8cbee8e12dc63eef3acec5cd8d0ba29cc44).
 
 ## Repository
 
@@ -136,7 +136,7 @@ Keys live in `.env`, which is gitignored. Testnets only.
 | Shipbuilding executive order, 9 April 2025 | **CONFIRMED** by a signed @WhiteHouse post. The Guarded Vault executed the trade. |
 | 90-day pause, 9 April 2025 | **CONFIRMED** from Treasury Secretary Bessent's words ("We've given 90 days") as posted by @RapidResponse47. |
 | Guarded Vault | Deployed on Base Sepolia at `0x20b22351f91612015417965c8f43d22e85174ea8`. One allowed trade and one on-chain revert with `VerdictNotConfirmed`. |
-| x402 on Cardano | A buyer agent paid 2 tADA and received the signed DENIED check for the Hassett headline ([tx](https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629)). |
+| x402 on Cardano | A buyer agent paid 2 tADA to the live site and received the signed DENIED check for the Hassett headline ([tx](https://preprod.cardanoscan.io/transaction/7616f0a56d346e068d7af71f167ef8cbee8e12dc63eef3acec5cd8d0ba29cc44)); an earlier local test settled [here](https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629). |
 | Masumi | Registered on Cardano Preprod. Two paid Sokosumi tasks ran end to end. The latest: 1 tUSDM locked in escrow ([tx](https://preprod.cardanoscan.io/transaction/b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3)), check returned DENIED with a signed model judgment, result hash submitted on chain ([tx](https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879)), task completed. |
 
 All transactions are listed in [docs/transactions.md](docs/transactions.md).
