@@ -125,6 +125,9 @@
       }
     };
 
+    // /vault?run starts the tamper test straight away (for the booth and the video).
+    if (new URLSearchParams(location.search).has('run')) document.getElementById('run').click();
+
     document.querySelectorAll('[data-load]').forEach((b) => (b.onclick = async () => {
       if (b.dataset.load === 'post') {
         const p = await (await fetch('/data/post-whitehouse.json')).json();
