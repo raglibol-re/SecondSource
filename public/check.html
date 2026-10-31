@@ -17,65 +17,47 @@
     <div class="wrap">
       <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
       <nav class="nav" aria-label="Main">
-        <a href="/">Why it exists</a>
-        <a href="/check" aria-current="page">Ask SecondSource</a>
-        <a href="/vault">Test the contract</a>
-        <a href="/verify">Verify a receipt</a>
-        <a href="/receipts">Payments and signers</a>
+        <a href="/check" aria-current="page">Ask</a>
+        <a href="/vault">Contract</a>
+        <a href="/receipts">Proof</a>
         <button class="theme-toggle" type="button">Light mode</button>
       </nav>
     </div>
   </header>
 
-  <main class="wrap">
-    <div class="page-head">
+  <main class="wrap" style="max-width: 860px">
+    <div class="page-head" style="padding-bottom: 8px">
       <h1>Ask SecondSource</h1>
-      <p class="lede">Paste a headline or ask about one. The agent works out who the primary source is, buys signed evidence, and tells you whether they confirmed or denied it.</p>
     </div>
 
-    <div class="chat">
-      <div>
-        <div class="thread" id="thread" aria-live="polite">
-          <div class="msg agent"><span class="who">SecondSource</span><p>What headline should I check? Tell me when it ran if it isn't new. I'll find the people or institutions it's about, read what they actually posted, and show you every receipt.</p></div>
-        </div>
+    <div class="thread" id="thread" aria-live="polite">
+      <div class="msg agent"><span class="who">SecondSource</span><p>Which headline should I check? Tell me when it ran if it isn't new. I'll find who it's about, read what they actually posted, and show you the receipts.</p></div>
+    </div>
 
-        <form class="composer" id="composer">
-          <div class="suggest" id="suggest">
-            <button type="button" data-q="Did Hassett really say Trump is considering a 90-day tariff pause? It hit the wires on 7 April 2025 at 10:12 New York time.">Hassett's 90-day tariff pause, 7 April 2025</button>
-            <button type="button" data-q="Is it true that Apple is buying Disney?">Is Apple buying Disney?</button>
-            <button type="button" data-q="Trump signs executive order to boost US shipbuilding, 9 April 2025 at 4pm New York">Shipbuilding order, 9 April 2025</button>
-          </div>
-          <label for="q" class="sr-only">Your question</label>
-          <textarea id="q" required minlength="8" maxlength="1000" placeholder="e.g. Is it true the Fed is cutting rates by 50 basis points today?"></textarea>
-          <div class="row">
-            <button class="btn" type="submit" id="pay">Pay 0.10 USDC and investigate</button>
-            <button class="btn secondary" type="button" id="payada">Pay 2 tADA with a Cardano wallet</button>
-          </div>
-          <p class="small muted" id="walletline" style="margin: 8px 0 0">USDC: MetaMask or any EVM wallet on Base Sepolia, signed once, no gas (<a href="https://faucet.circle.com/" target="_blank" rel="noopener">free test USDC</a>). tADA: Eternl or Lace on Cardano preprod (<a href="https://dispenser.masumi.network" target="_blank" rel="noopener">free test ADA</a>). Either way you pay only if the agent finishes.</p>
-          <div>
-          </div>
-          <details class="key" id="keybox" style="margin-top: 8px">
-            <summary class="small">Have a demo key?</summary>
-            <div class="row" style="margin-top: 6px">
-              <label for="key" class="sr-only">Demo key</label>
-              <input type="password" id="key" autocomplete="off" placeholder="Demo key" style="max-width: 220px" />
-              <button class="btn secondary small" type="button" id="demo">Investigate with the demo key</button>
-            </div>
-          </details>
-        </form>
+    <form class="composer" id="composer">
+      <div class="suggest" id="suggest">
+        <button type="button" data-q="Did Hassett really say Trump is considering a 90-day tariff pause? It hit the wires on 7 April 2025 at 10:12 New York time.">Hassett's tariff pause, 7 April 2025</button>
+        <button type="button" data-q="Is it true that Apple is buying Disney?">Is Apple buying Disney?</button>
+        <span id="runs"></span>
       </div>
-
-      <aside class="side">
-        <div class="panel">
-          <h3>Recorded investigations</h3>
-          <p class="small muted">Real runs, replayed step by step. Free.</p>
-          <div id="runs"><p class="muted small">Loading…</p></div>
+      <label for="q" class="sr-only">Your question</label>
+      <textarea id="q" required minlength="8" maxlength="1000" placeholder="Paste a headline, or ask: is it true the Fed cut rates by 50 basis points today?"></textarea>
+      <div class="row">
+        <button class="btn" type="button" id="payada">Pay 2 tADA with a Cardano wallet</button>
+        <button class="btn secondary" type="submit" id="pay">Pay 0.10 USDC</button>
+        <span class="small muted" id="walletline">You pay only if the agent finishes. Test funds: <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">tADA</a>, <a href="https://faucet.circle.com/" target="_blank" rel="noopener">USDC</a>.</span>
+      </div>
+      <details class="key" id="keybox" style="margin-top: 6px">
+        <summary class="small muted">Demo key</summary>
+        <div class="row" style="margin-top: 6px">
+          <label for="key" class="sr-only">Demo key</label>
+          <input type="password" id="key" autocomplete="off" placeholder="Demo key" style="max-width: 220px" />
+          <button class="btn secondary small" type="button" id="demo">Investigate</button>
         </div>
-        <p class="small muted" style="margin-top: 16px">Agents can call the same thing over HTTP: <code>POST /api/x402/investigate</code> with <code>{"question": "…"}</code>, paid over x402 (USDC on Base Sepolia or tADA on Cardano Preprod).</p>
-      </aside>
-    </div>
+      </details>
+    </form>
   </main>
-  <footer class="site"><div class="wrap">Testnets only. You pay SecondSource over x402; SecondSource pays its evidence sources over x402 in aUSD on Base Sepolia.</div></footer>
+  <footer class="site"><div class="wrap"><span>Agents use the same agent over HTTP: <code>POST /api/x402/investigate</code>.</span><a href="/verify">Verify a receipt</a></div></footer>
 
   <script type="module">
     import { esc, receiptHtml, renderReport } from '/assets/report.js';
@@ -110,7 +92,7 @@
         onEvent(e) {
           if (e.type === 'plan') agent(planHtml(e.plan, e.signed, e.model));
           if (e.type === 'step') {
-            if (!list) list = agent('<p>Buying evidence and checking every signature:</p><ul class="receipts"></ul>').querySelector('ul');
+            if (!list) list = agent('<p>Buying signed evidence and checking every signature:</p><ul class="rcs"></ul>').querySelector('ul');
             list.insertAdjacentHTML('beforeend', receiptHtml(e.step, e.attestation));
             scroll(list.lastElementChild);
           }
@@ -144,7 +126,7 @@
 
     const busy = (on) => {
       for (const id of ['pay', 'payada', 'demo']) document.getElementById(id).disabled = on;
-      document.getElementById('pay').textContent = on ? 'Investigating…' : 'Pay 0.10 USDC and investigate';
+      document.getElementById('pay').textContent = on ? 'Investigating…' : 'Pay 0.10 USDC';
     };
 
     const ask = async (mode) => {
@@ -230,18 +212,17 @@
     };
     try {
       const runs = await (await fetch('/runs/index.json', { cache: 'no-store' })).json();
+      // Two recorded runs as one-click replays next to the suggestions (free, no wallet).
       document.getElementById('runs').innerHTML = runs
-        .map((r) => `<div style="border-top:1px solid var(--rule);padding:10px 0">
-          <p style="margin:0 0 4px;font-weight:700">${esc(r.headline)}</p>
-          <p class="small muted" style="margin:0 0 6px">Verdict ${esc(r.verdict)}.</p>
-          <button class="btn small secondary" type="button" data-run="${esc(r.file)}">Replay</button></div>`)
+        .slice(0, 2)
+        .map((r) => `<button type="button" data-run="${esc(r.file)}" title="Replay a real, recorded run">Replay a real run: ${esc(r.headline.split(/[\s:]+/).slice(0, 3).join(' '))}, ${esc(r.verdict.toLowerCase())}</button>`)
         .join('');
       document.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(b.dataset.run)));
       const wanted = new URLSearchParams(location.search).get('replay');
       const match = wanted && runs.find((r) => r.file === wanted || r.file === `${wanted}.json`);
       if (match) replay(match.file);
     } catch {
-      document.getElementById('runs').innerHTML = '<p class="small">No recorded investigations yet.</p>';
+      document.getElementById('runs').innerHTML = '';
     }
   </script>
 </body>

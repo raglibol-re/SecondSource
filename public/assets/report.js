@@ -1,4 +1,4 @@
-// Renders a SecondSource check result: the verdict stamp, the reasoning, a receipt per bought answer, and the evidence.
+// Renders a SecondSource result: verdict stamp, the reasoning, the cited posts as cards, and one quiet line per receipt.
 const SOURCE_NAMES = {
   twitter: 'TwitterAPI.io',
   benzinga: 'Benzinga',
@@ -16,67 +16,74 @@ const fmtTime = (iso) => {
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? '' : d.toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
 };
-const signedAt = (a) => (a?.response?.timestamp ? fmtTime(new Date(Number(a.response.timestamp) * 1000).toISOString()) : '');
+const hhmm = (iso) => (iso ? new Date(iso).toISOString().slice(11, 16) + ' UTC' : '');
+const day = (iso) => (iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : '');
+
+// Short, human labels for the steps, so a receipt reads as one line.
+const shortLabel = (step) =>
+  step.label
+    .replace(/^Posts by /, 'Posts by ')
+    .replace(/^Top posts about /, 'Search ')
+    .replace(/^Benzinga newswire, /, 'Newswire ')
+    .replace(/^Market: (\S+) price bars$/, 'Prices $1')
+    .replace(/^Judge: .*/, 'Judgment')
+    .replace(/^Plan: .*/, 'Plan');
+const failReason = (err = '') => (/403|502|unavailable/i.test(err) ? 'model unavailable, not charged' : 'failed, not charged');
 
 export const receiptHtml = (step, attestation, state = step.status) => {
   const name = SOURCE_NAMES[step.source] ?? step.source;
   const price = PRICES[step.source] ?? 0;
-  const sub = [];
-  if (state === 'pending') sub.push('Buying and checking the signature');
-  if (attestation) {
-    sub.push(`Signed by <span class="mono" title="${esc(attestation.response.airnode)}">${esc(short(attestation.response.airnode))}</span>, ${esc(signedAt(attestation))}`);
-    sub.push('Signature checked');
-    if (attestation.paymentTx) sub.push(`<a href="https://sepolia.basescan.org/tx/${esc(attestation.paymentTx)}" target="_blank" rel="noopener">Payment on Base Sepolia</a>`);
-  }
-  if (step.error) sub.push(`<span style="color: var(--deny)">${esc(step.error)}</span>`);
-  const raw = attestation
-    ? `<details><summary class="small">Show the signed response</summary><pre>${esc(JSON.stringify({ request: attestation.request, response: attestation.response }, null, 2))}</pre></details>`
+  const right =
+    state === 'failed'
+      ? `<span class="rc-note">${esc(failReason(step.error))}</span>`
+      : state === 'pending'
+        ? '<span class="rc-note">working…</span>'
+        : attestation?.paymentTx
+          ? `<a class="rc-pay" href="https://sepolia.basescan.org/tx/${esc(attestation.paymentTx)}" target="_blank" rel="noopener" title="x402 payment on Base Sepolia">${price.toFixed(2)} aUSD</a>`
+          : `<span class="rc-note">${price ? `${price.toFixed(2)} aUSD` : 'free'}</span>`;
+  const details = attestation
+    ? `<details class="rc-more"><summary>signed by ${esc(short(attestation.response.airnode))}</summary><pre>${esc(JSON.stringify({ request: attestation.request, response: attestation.response }, null, 2))}</pre></details>`
     : '';
-  return `<li class="receipt ${state}">
-    <span class="tick" aria-hidden="true">${state === 'failed' ? '!' : state === 'pending' ? '' : '✓'}</span>
-    <span class="what">${esc(name)}: ${esc(step.label)}</span>
-    <span class="price">${state === 'failed' ? 'not charged' : price ? `${price.toFixed(2)} aUSD` : 'free'}</span>
-    <span class="sub">${sub.join('<span aria-hidden="true"></span>')}</span>
-    ${raw}
+  return `<li class="rc ${state}">
+    <span class="rc-dot" aria-hidden="true"></span>
+    <span class="rc-src">${esc(name)}</span>
+    <span class="rc-what" title="${esc(step.label)}">${esc(shortLabel(step))}</span>
+    ${right}
+    ${details}
   </li>`;
 };
 
 export const stampHtml = (verdict, animate) =>
   `<div class="stamp ${verdict.toLowerCase()} ${animate ? 'animate' : ''}" role="img" aria-label="Verdict: ${esc(verdict.toLowerCase())}">${esc(verdict)}</div>`;
 
+// A cited post, drawn like the post it is, with the Airnode that signed it.
+export const postCard = (e, attestation) => `<article class="post">
+    <header><b>${esc(e.author ?? e.kind)}</b><time>${esc(hhmm(e.at))}${e.at ? `, ${esc(day(e.at))}` : ''}</time></header>
+    <p>${esc(e.text.replace(/\s*https:\/\/t\.co\/\S+/g, ''))}</p>
+    <footer><span class="seal-line">Signed by the ${esc(SOURCE_NAMES[attestation?.source] ?? 'source')} Airnode</span>${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">original</a>` : ''}</footer>
+  </article>`;
+
 export const renderReport = (el, r, { animate = true, receipts = true } = {}) => {
-  const cited = new Set(r.citations ?? []);
-  const evidence = (r.evidence ?? [])
-    .slice()
-    .sort((a, b) => Number(cited.has(b.id)) - Number(cited.has(a.id)))
-    .map(
-      (e) => `<li class="${cited.has(e.id) ? 'cited' : ''}">
-        <span class="eid">${esc(e.id)}</span>${esc(e.text)}
-        <span class="src">${esc(e.author ?? e.kind)}${e.at ? `, ${esc(fmtTime(e.at))}` : ''}${e.url ? `, <a href="${esc(e.url)}" target="_blank" rel="noopener">original</a>` : ''}${cited.has(e.id) ? ', cited by the judge' : ''}</span>
-      </li>`
-    )
-    .join('');
+  const cited = (r.citations ?? []).map((id) => r.evidence.find((e) => e.id === id)).filter(Boolean);
+  const citedIds = new Set(cited.map((e) => e.id));
+  const rest = (r.evidence ?? []).filter((e) => !citedIds.has(e.id));
   el.innerHTML = `
-    <div class="report-head">
-      <p class="muted small" style="margin-bottom: 6px">Headline checked${r.input?.publishedAt ? `, as of ${esc(fmtTime(r.input.publishedAt))}` : ''}</p>
-      <p class="claim">${esc(r.input?.headline)}</p>
-      ${stampHtml(r.verdict, animate)}
-    </div>
-    <p class="reasoning">${esc(r.reasoning)}</p>
-    <div class="meta">
-      <span>Confidence <b>${Math.round((r.confidence ?? 0) * 100)}%</b></span>
-      <span>Signed answers <b>${r.attestations?.length ?? 0}</b></span>
-      <span>Evidence cost <b>${esc(r.costAusd)} aUSD</b></span>
-      ${r.judge ? `<span>Judge <b>${esc(r.judge.model)}</b></span>` : ''}
-      ${r.resultHash ? `<span>Result hash <b class="mono" title="${esc(r.resultHash)}">${esc(short(r.resultHash))}</b></span>` : ''}
-    </div>
-    ${receipts ? `<h3 style="margin-bottom: 8px">Receipts</h3>
-    <ul class="receipts">${(r.steps ?? []).map((s) => receiptHtml(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined)).join('')}</ul>` : ''}
-    <h3 style="margin-bottom: 12px">Evidence the judge saw</h3>
-    ${evidence ? `<ul class="evidence">${evidence}</ul>` : '<p class="muted">No evidence came back in the time window.</p>'}
-    <div class="actions">
-      <button class="btn secondary small" type="button" data-download>Download the full result</button>
-      <a class="btn secondary small" href="/verify">Verify these receipts</a>
+    <div class="verdict">
+      <div class="verdict-head">
+        <p class="eyeline">${r.input?.publishedAt ? `As of ${esc(fmtTime(r.input.publishedAt))}` : 'Checked now'}</p>
+        <p class="claim">${esc(r.input?.headline)}</p>
+        ${stampHtml(r.verdict, animate)}
+      </div>
+      <p class="reasoning">${esc(r.reasoning)}</p>
+      ${cited.length ? `<div class="posts">${cited.map((e) => postCard(e, r.attestations[e.attestation])).join('')}</div>` : ''}
+      <p class="meta small">${Math.round((r.confidence ?? 0) * 100)}% confidence, ${r.attestations?.length ?? 0} signed answers, ${esc(r.costAusd)} aUSD of evidence${r.judge ? `, judged by ${esc(r.judge.model)}` : ''}.</p>
+      ${receipts ? `<ul class="rcs">${(r.steps ?? []).map((s) => receiptHtml(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined)).join('')}</ul>` : ''}
+      ${rest.length ? `<details class="more"><summary>All ${rest.length} other evidence lines</summary><ul class="evidence">${rest.map((e) => `<li><span class="src">${esc(e.author ?? e.kind)}${e.at ? `, ${esc(fmtTime(e.at))}` : ''}</span>${esc(e.text)}</li>`).join('')}</ul></details>` : ''}
+      <div class="verdict-actions">
+        <a href="/verify">Verify the signatures</a>
+        <button type="button" class="linklike" data-download>Download the result</button>
+        ${r.resultHash ? `<span class="mono small muted" title="${esc(r.resultHash)}">${esc(short(r.resultHash))}</span>` : ''}
+      </div>
     </div>`;
   el.querySelector('[data-download]').addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(r, null, 2)], { type: 'application/json' });

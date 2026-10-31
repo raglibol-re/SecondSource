@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Payments and signers</title>
+  <title>Proof</title>
   <meta name="description" content="Every on-chain transaction SecondSource made, and the Airnode signers it trusts." />
   <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,11 +17,9 @@
     <div class="wrap">
       <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
       <nav class="nav" aria-label="Main">
-        <a href="/">Why it exists</a>
-        <a href="/check">Ask SecondSource</a>
-        <a href="/vault">Test the contract</a>
-        <a href="/verify">Verify a receipt</a>
-        <a href="/receipts" aria-current="page">Payments and signers</a>
+        <a href="/check">Ask</a>
+        <a href="/vault">Contract</a>
+        <a href="/receipts" aria-current="page">Proof</a>
         <button class="theme-toggle" type="button">Light mode</button>
       </nav>
     </div>
@@ -29,29 +27,25 @@
 
   <main class="wrap">
     <div class="page-head">
-      <h1>Payments and signers</h1>
-      <p class="lede">Every transaction SecondSource made on a testnet, and the Airnodes whose signatures it accepts.</p>
+      <h1>Proof</h1>
+      <p class="lede">Everything SecondSource did, on chain. Testnets only.</p>
     </div>
 
     <section style="padding-bottom: 48px">
-      <h2 style="margin-bottom: 12px">The wallet that buys evidence</h2>
-      <p id="payer" class="muted">Loading…</p>
-    </section>
-
-    <section style="padding-bottom: 48px">
-      <h2 style="margin-bottom: 16px">On chain</h2>
       <div class="cols" id="proof"><p class="muted">Loading…</p></div>
     </section>
 
     <section style="padding-bottom: 48px">
-      <h2 style="margin-bottom: 16px">Transactions</h2>
+      <h2 style="margin-bottom: 16px">Latest transactions</h2>
       <div class="table-scroll" id="txs"><p class="muted">Loading…</p></div>
     </section>
 
     <section style="padding-bottom: 72px">
-      <h2 style="margin-bottom: 8px">Trusted signers</h2>
-      <p>Pinned from each listing's own spec on AirnodeHub. A response signed by anything else is rejected.</p>
-      <div class="table-scroll" id="signers"><p class="muted">Loading…</p></div>
+      <details class="more">
+        <summary>The wallet and the Airnode signers SecondSource trusts</summary>
+        <p id="payer" class="muted" style="margin-top: 12px">Loading…</p>
+        <div class="table-scroll" id="signers"><p class="muted">Loading…</p></div>
+      </details>
     </section>
   </main>
   <footer class="site"><div class="wrap">Testnets only: Base Sepolia and Cardano Preprod.</div></footer>
@@ -98,11 +92,14 @@
     try {
       const txs = await (await fetch('/data/transactions.json', { cache: 'no-store' })).json();
       if (!txs.length) throw new Error();
-      document.getElementById('txs').innerHTML = `<table class="list"><thead><tr><th>When (UTC)</th><th>Network</th><th>What</th><th>Explorer</th></tr></thead><tbody>${txs
+      const rows = txs
         .slice()
         .reverse()
-        .map((t) => `<tr><td>${esc(t.when.replace('T', ' ').slice(0, 16))}</td><td>${esc(t.network)}</td><td>${esc(t.what)}</td><td><a href="${esc(t.link)}" target="_blank" rel="noopener">View</a></td></tr>`)
-        .join('')}</tbody></table>`;
+        .map((t) => `<tr><td>${esc(t.when.replace('T', ' ').slice(5, 16))}</td><td>${esc(t.network.replace('Cardano Preprod', 'Cardano').replace('Base Sepolia', 'Base'))}</td><td>${esc(t.what)}</td><td><a href="${esc(t.link)}" target="_blank" rel="noopener">View</a></td></tr>`);
+      const table = (n) => `<table class="list"><thead><tr><th>When (UTC)</th><th>Chain</th><th>What</th><th></th></tr></thead><tbody>${rows.slice(0, n).join('')}</tbody></table>`;
+      const box = document.getElementById('txs');
+      box.innerHTML = table(12) + (rows.length > 12 ? `<p style="margin-top: 12px"><button type="button" class="linklike" id="alltx">Show all ${rows.length} transactions</button></p>` : '');
+      document.getElementById('alltx')?.addEventListener('click', () => (box.innerHTML = table(rows.length)));
     } catch {
       document.getElementById('txs').innerHTML = '<p>No transactions recorded yet.</p>';
     }

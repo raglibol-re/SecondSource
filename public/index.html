@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SecondSource</title>
-  <meta name="description" content="A coworker AI trading agents hire before acting on a headline. It checks the claim against signed primary sources and returns a verdict with a receipt for every step." />
+  <meta name="description" content="Trust the primary source, not the headline. An agent that checks market headlines against signed primary sources before anyone trades on them." />
   <link rel="icon" href="/assets/seal.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,104 +17,62 @@
     <div class="wrap">
       <a class="brand" href="/"><img class="seal" src="/assets/seal.svg" alt="" />SecondSource</a>
       <nav class="nav" aria-label="Main">
-        <a href="/" aria-current="page">Why it exists</a>
-        <a href="/check">Ask SecondSource</a>
-        <a href="/vault">Test the contract</a>
-        <a href="/verify">Verify a receipt</a>
-        <a href="/receipts">Payments and signers</a>
+        <a href="/check">Ask</a>
+        <a href="/vault">Contract</a>
+        <a href="/receipts">Proof</a>
         <button class="theme-toggle" type="button">Light mode</button>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero">
+    <section class="hero-lean">
       <div class="wrap">
-        <p class="dateline"><span class="flash">Flash</span> Monday 7 April 2025, 10:12 New York</p>
+        <p class="dateline"><span class="flash">Flash</span> 7 April 2025, 10:12 New York</p>
         <div class="headline-stage">
           <h1><q>Hassett: Trump considering 90-day tariff pause</q></h1>
           <div class="stamp animate" style="--delay: 900ms" aria-label="Verdict: denied">DENIED<small>by the primary source</small></div>
         </div>
-        <ol class="timeline" aria-label="What happened that morning">
-          <li><time>10:12</time>The headline crosses the newswires and X.</li>
-          <li><time>Minutes later</time>The Dow swings about 800 points up.</li>
-          <li><time class="bad">About 20 min later</time>The White House says the report is wrong.</li>
-          <li><time>Then</time>The rally fades. Agents that bought the headline are holding the loss.</li>
-        </ol>
-        <p class="lede" style="margin-top: 40px">
-          Trading agents act on headlines in seconds. SecondSource is the coworker they hire first: it buys signed evidence
-          from primary sources, has it judged, and answers <b>confirmed</b>, <b>unconfirmed</b> or <b>denied</b>, with a receipt
-          for every step.
-        </p>
+        <p class="sub">The Dow jumped 800 points. Twenty-six minutes later the White House called it fake. <b>SecondSource checks the primary source before your agent trades.</b></p>
         <div class="actions">
-          <a class="btn" href="/check?replay=hassett-2025-04-07">Replay the real check</a>
-          <a class="btn secondary" href="#how">See how a check works</a>
+          <a class="btn" href="/check">Ask SecondSource</a>
+          <a class="btn secondary" href="/check?replay=hassett-agent-2025-04-07">Watch the real check</a>
         </div>
       </div>
     </section>
 
-    <section class="band" id="receipt">
+    <section class="band-lean">
       <div class="wrap">
-        <h2>What SecondSource found</h2>
-        <p class="lede">We ran the check on that exact headline. These are the posts it cited, bought over x402 and signed by the TwitterAPI.io Airnode.</p>
-        <div id="found"><p class="muted">Loading the recorded check…</p></div>
+        <h2>What the White House actually posted</h2>
+        <p class="kicker">The three posts SecondSource cited, each bought over x402 and signed by the TwitterAPI.io Airnode.</p>
+        <div class="posts" id="found"><p class="muted">Loading the recorded check…</p></div>
       </div>
     </section>
 
-    <section class="band" id="how">
+    <section class="band-lean">
       <div class="wrap">
-        <h2>How a check works</h2>
-        <p class="lede">One job takes about twenty seconds and costs about 13 cents of test money in evidence.</p>
-        <ol class="steps">
-          <li><h3>Hire</h3><p>An agent, or a person in Sokosumi, sends the headline. Payment waits in Masumi escrow on Cardano.</p></li>
-          <li><h3>Buy evidence</h3><p>SecondSource pays per call over x402 on AirnodeHub: posts from the accounts that matter, the Benzinga newswire, and the market tape.</p></li>
-          <li><h3>Check signatures</h3><p>Every answer is signed by the Airnode that served it. Anything with the wrong signer, request or age is thrown out before use.</p></li>
-          <li><h3>Judge</h3><p>A language model reads only that evidence, through the OpenRouter Airnode, so the judgment is signed. If it is unreachable, fixed published rules decide and the result says so.</p></li>
-          <li><h3>Deliver</h3><p>The verdict, the reasoning, the cited evidence and every receipt. The result hash is logged on Cardano.</p></li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="band">
-      <div class="wrap">
-        <h2>Every answer carries a signature</h2>
-        <p class="lede">A screenshot of a post can be faked and a deleted post leaves nothing behind. A signed response says who served it, what was asked and when.</p>
-        <div class="specimen">
-          <pre id="specimen" aria-label="A real signed response from the Nodary Airnode">Loading a real signed response…</pre>
-          <dl>
-            <dt>airnode</dt><dd>The address that signed. We compare it to the address published in that API's own spec.</dd>
-            <dt>requestHash</dt><dd>A hash of the exact question. We recompute it from what we asked, so an answer cannot be moved to another question.</dd>
-            <dt>timestamp</dt><dd>When the Airnode signed. Stale answers are rejected.</dd>
-            <dt>data</dt><dd>The provider's answer, byte for byte. Change one character and the signature no longer matches.</dd>
-            <dt>signature</dt><dd>EIP-191 over all of the above. Anyone can check it, including a smart contract.</dd>
-          </dl>
-        </div>
-        <div class="actions"><a class="btn secondary" href="/verify">Verify a receipt yourself</a></div>
-      </div>
-    </section>
-
-    <section class="band">
-      <div class="wrap">
-        <h2>Who hires it</h2>
-        <div class="cols" style="margin-top: 28px">
-          <div><h3>Trading agents</h3><p>Call SecondSource before any order that a headline triggered. Only act on CONFIRMED, and keep the receipts for the audit trail.</p></div>
-          <div><h3>Trading desks</h3><p>Put a check between the news feed and execution. A vault can refuse to trade unless a signed CONFIRMED verdict is attached.</p></div>
-          <div><h3>Newsrooms</h3><p>Check what a quoted account really posted, and keep proof of it even after the post is edited or deleted.</p></div>
+        <h2>How it works</h2>
+        <p class="kicker">One question, about a minute, about 13 cents of evidence.</p>
+        <div class="flow">
+          <div><h3>Ask in plain words</h3><p>The agent works out who the primary source is, which posts to read, and when. Its plan is signed.</p></div>
+          <div><h3>It buys signed evidence</h3><p>Posts, newswire and prices from API3 AirnodeHub, paid per call over x402. Every signature is checked.</p></div>
+          <div><h3>A verdict a contract can verify</h3><p>Confirmed, unconfirmed or denied. Our vault only trades when the primary-source post checks out on chain.</p></div>
         </div>
       </div>
     </section>
 
-    <section class="band">
+    <section class="band-lean" style="border-bottom: 0">
       <div class="wrap">
-        <h2>Built on two networks</h2>
-        <div class="tracks" style="margin-top: 28px">
-          <div>
-            <h3>Cardano, Masumi and Sokosumi</h3>
-            <p>SecondSource is a Coworker that gets paid. Buyers hire it through Masumi escrow in a Sokosumi task, and the decision hash goes on chain. Any agent can also pay per check over x402 on Cardano Preprod: 2 tADA, no account, no key.</p>
+        <div class="rails">
+          <div class="rail">
+            <h3>Paid on Cardano</h3>
+            <p>Hire it through Masumi escrow on Sokosumi, or pay 2 tADA per question over x402 from Eternl or Lace. You pay only if it finishes.</p>
+            <a href="/check">Ask with a Cardano wallet</a>
           </div>
-          <div>
-            <h3>API3 AirnodeHub</h3>
-            <p>Every input is bought per call over x402 in aUSD on Base Sepolia, from Airnodes that sign each response: TwitterAPI.io, Benzinga, TickerLayer, Nodary and OpenRouter.</p>
+          <div class="rail">
+            <h3>Verified with API3</h3>
+            <p>Signed AirnodeHub data, checked by our contract on Base Sepolia: a fresh price and a primary-source post, or it refuses.</p>
+            <a href="/vault?run">Run the tamper test</a>
           </div>
         </div>
       </div>
@@ -122,35 +80,22 @@
   </main>
 
   <footer class="site">
-    <div class="wrap">SecondSource, TUM Blockchain Hackathon 2026. Testnets only. <a href="https://github.com/raglibol-re/SecondSource">Source code</a></div>
+    <div class="wrap">
+      <span>SecondSource, TUM Blockchain Hackathon 2026. Testnets only.</span>
+      <a href="/verify">Verify a receipt</a>
+      <a href="https://github.com/raglibol-re/SecondSource">Source</a>
+      <a href="https://github.com/raglibol-re/SecondSource/blob/main/SECURITY.md">Security</a>
+    </div>
   </footer>
 
   <script type="module">
-    import { esc, short } from '/assets/report.js';
-    // Filled from the recorded result, so every line here is what the check actually bought and cited.
+    import { postCard } from '/assets/report.js';
     try {
-      const r = await (await fetch('/runs/hassett-2025-04-07.json')).json();
+      const r = await (await fetch('/runs/hassett-agent-2025-04-07.json')).json();
       const cited = r.citations.map((id) => r.evidence.find((e) => e.id === id)).filter(Boolean).sort((a, b) => (a.at < b.at ? -1 : 1));
-      const time = (iso) => iso.slice(11, 16) + ' UTC';
-      document.getElementById('found').innerHTML = `
-        <ol class="evidence" style="max-width: 820px">${cited
-          .map((e) => {
-            const a = r.attestations[e.attestation];
-            return `<li class="cited"><span class="eid">${esc(time(e.at))}</span>${esc(e.text.replace(/\s*https:\/\/t\.co\/\S+/g, ''))}
-              <span class="src">${esc(e.author)}${e.url ? `, <a href="${esc(e.url)}" target="_blank" rel="noopener">original post</a>` : ''}, signed by Airnode <span class="mono" title="${esc(a.response.airnode)}">${esc(short(a.response.airnode))}</span>${a.paymentTx ? `, <a href="https://sepolia.basescan.org/tx/${esc(a.paymentTx)}" target="_blank" rel="noopener">paid over x402</a>` : ''}</span></li>`;
-          })
-          .join('')}</ol>
-        <p style="margin-top: 20px">Verdict <b>${esc(r.verdict)}</b>, confidence ${Math.round(r.confidence * 100)}%, from ${r.attestations.length} signed answers costing ${esc(r.costAusd)} aUSD. The headline ran at ${esc(time(r.input.publishedAt))}; the first denial came ${Math.round((Date.parse(cited[0].at) - Date.parse(r.input.publishedAt)) / 60000)} minutes later.</p>
-        <div class="actions"><a class="btn" href="/check?replay=hassett-2025-04-07">Replay the check step by step</a><a class="btn secondary" href="/verify">Verify the signatures</a></div>`;
+      document.getElementById('found').innerHTML = cited.map((e) => postCard(e, r.attestations[e.attestation])).join('');
     } catch {
-      document.getElementById('found').innerHTML = '<p>The recorded check could not be loaded. <a href="/check">Open the checker</a>.</p>';
-    }
-    try {
-      const r = await fetch('/data/example-nodary.json');
-      const a = await r.json();
-      document.getElementById('specimen').textContent = JSON.stringify(a, null, 2).replace(/"signature": "(0x.{20}).*"/, '"signature": "$1…"');
-    } catch {
-      document.getElementById('specimen').textContent = 'Could not load the example.';
+      document.getElementById('found').innerHTML = '<p><a href="/check">Open the recorded check</a>.</p>';
     }
   </script>
 </body>
