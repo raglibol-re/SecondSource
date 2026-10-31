@@ -2,6 +2,7 @@
 // Follows the Cardano Foundation's x402 Express template (developers.cardano.org/x402) and the @x402/express adapter,
 // with the same core calls: processHTTPRequest before the handler, processSettlement after it.
 import { ExactCardanoScheme } from '@x402/cardano/exact/server';
+import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { HTTPFacilitatorClient, x402HTTPResourceServer, x402ResourceServer } from '@x402/core/server';
 
 export const X402_NETWORK = 'cardano:preprod' as const;
@@ -12,6 +13,13 @@ export const X402_PAY_TO =
   process.env.X402_PAY_TO ?? 'addr_test1qq53schsdqekjahucft5uaadln9yvlhsgkrtagnl7vkx8kkc0nfmcsyy3knk4z56glq3n3e40kstkx2txl4887ymk3dqf2fnzu';
 // Hosted by the Cardano Foundation; the public x402.org facilitator does not support Cardano.
 export const X402_FACILITATOR = process.env.X402_FACILITATOR_URL ?? 'https://x402.preprod.dev.ecosyseng.cf-deployments.org';
+
+// Second way to pay: USDC on Base Sepolia from any browser wallet. The x402 "exact" scheme has the wallet sign an
+// EIP-3009 transfer authorization, so the buyer pays no gas; the x402.org facilitator settles it.
+export const X402_EVM_NETWORK = 'eip155:84532' as const;
+export const X402_EVM_PRICE = process.env.X402_EVM_PRICE ?? '$0.10';
+export const X402_EVM_PAY_TO = process.env.X402_EVM_PAY_TO ?? '0x40C29519D7D6a5DA160e7a371c9fb506E8aC031e';
+export const X402_EVM_FACILITATOR = process.env.X402_EVM_FACILITATOR_URL ?? 'https://x402.org/facilitator';
 
 class WebAdapter {
   private url: URL;
@@ -61,11 +69,18 @@ let httpServer: x402HTTPResourceServer | undefined;
 let ready: Promise<void> | undefined;
 const server = (route: PaidRoute) => {
   if (!httpServer) {
-    const resourceServer = new x402ResourceServer(new HTTPFacilitatorClient({ url: X402_FACILITATOR }));
+    const resourceServer = new x402ResourceServer([
+      new HTTPFacilitatorClient({ url: X402_FACILITATOR }),
+      new HTTPFacilitatorClient({ url: X402_EVM_FACILITATOR }),
+    ]);
     resourceServer.register(X402_NETWORK, new ExactCardanoScheme());
+    resourceServer.register(X402_EVM_NETWORK, new ExactEvmScheme());
     httpServer = new x402HTTPResourceServer(resourceServer, {
       [`${route.method} ${route.path}`]: {
-        accepts: [{ scheme: 'exact', network: X402_NETWORK, price: { amount: X402_PRICE_LOVELACE, asset: 'lovelace' }, payTo: X402_PAY_TO }],
+        accepts: [
+          { scheme: 'exact', network: X402_NETWORK, price: { amount: X402_PRICE_LOVELACE, asset: 'lovelace' }, payTo: X402_PAY_TO },
+          { scheme: 'exact', network: X402_EVM_NETWORK, price: X402_EVM_PRICE, payTo: X402_EVM_PAY_TO },
+        ],
         description: route.description,
         mimeType: 'application/json',
       },

@@ -74,15 +74,16 @@
             <input type="datetime-local" id="at" name="at" />
             <span class="hint">Leave empty for now. We look two hours before and up to three hours after.</span>
           </div>
+          <button class="btn" type="button" id="pay">Pay 0.10 USDC and check</button>
+          <p class="small muted" style="margin-top: 10px" id="walletline">Connects your wallet (MetaMask or any EVM wallet) on Base Sepolia. You sign once and pay no gas. Need test USDC? <a href="https://faucet.circle.com/" target="_blank" rel="noopener">Circle faucet</a>, Base Sepolia.</p>
           <details class="key" id="keybox">
-            <summary>Demo key</summary>
+            <summary>Have a demo key instead?</summary>
             <div class="field" style="margin-top: 10px">
               <label for="key" class="sr-only">Demo key</label>
-              <input type="password" id="key" autocomplete="off" placeholder="Live checks spend test money" />
+              <input type="password" id="key" autocomplete="off" placeholder="Demo key" />
             </div>
+            <button class="btn secondary small" type="submit" id="run">Run with the demo key</button>
           </details>
-          <button class="btn" type="submit" id="run">Run the check</button>
-          <p class="small muted" style="margin-top: 12px">About 0.13 aUSD of evidence, paid over x402 on Base Sepolia.</p>
           <div id="formerror" role="alert"></div>
         </form>
       </div>
@@ -96,7 +97,7 @@
     </div>
   </main>
 
-  <footer class="site"><div class="wrap">Testnets only. Evidence is paid in aUSD on Base Sepolia; the coworker is paid in tUSDM on Cardano Preprod.</div></footer>
+  <footer class="site"><div class="wrap">Testnets only. You pay SecondSource in USDC on Base Sepolia (or tADA on Cardano Preprod); SecondSource pays its evidence sources in aUSD over x402.</div></footer>
 
   <script type="module">
     import { esc, receiptHtml, renderReport } from '/assets/report.js';
@@ -174,7 +175,53 @@
       f.headline.focus();
     }));
     try { document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? ''; } catch {}
-    if (document.getElementById('key').value) document.getElementById('keybox').open = false; else document.getElementById('keybox').open = true;
+
+    const readForm = () => ({
+      headline: f.headline.value.trim(),
+      claimedSource: f.source.value.trim() || undefined,
+      asset: f.asset.value || undefined,
+      publishedAt: f.at.value ? `${f.at.value}:00Z` : undefined,
+    });
+
+    // Pay 0.10 USDC on Base Sepolia from the visitor's own wallet over x402, then show the signed result.
+    document.getElementById('pay').onclick = async () => {
+      const err = document.getElementById('formerror');
+      const line = document.getElementById('walletline');
+      err.innerHTML = '';
+      const body = readForm();
+      if (body.headline.length < 8) { err.innerHTML = '<p class="error">Enter the headline first, or use the Hassett case.</p>'; return; }
+      const button = document.getElementById('pay');
+      button.disabled = true;
+      const status = (text) => { button.textContent = text.length > 40 ? 'Working…' : text; line.textContent = text; };
+      try {
+        const { connectWallet, usdcBalance, payWithUsdc, USDC_FAUCET } = await import('/assets/x402-usdc.js');
+        status('Connecting your wallet…');
+        const from = await connectWallet(window.ethereum);
+        const balance = await usdcBalance(window.ethereum, from);
+        if (balance < 100000n) {
+          throw new Error(`${from.slice(0, 6)}…${from.slice(-4)} holds ${(Number(balance) / 1e6).toFixed(2)} USDC on Base Sepolia. Get 10 free test USDC at ${USDC_FAUCET} (choose Base Sepolia), then try again.`);
+        }
+        report.innerHTML = `<div class="report-head"><p class="muted small" style="margin-bottom:6px">Checking</p><p class="claim">${esc(body.headline)}</p></div><ul class="receipts"><li class="receipt pending"><span class="tick"></span><span class="what">Waiting for your payment</span><span class="price">0.10 USDC</span><span class="sub">x402 on Base Sepolia, signed in your wallet</span></li></ul>`;
+        const { response, settlement } = await payWithUsdc(window.ethereum, from, '/api/x402/check', body, (s) => {
+          status(s);
+          const sub = report.querySelector('.receipt .what');
+          if (sub) sub.textContent = s;
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error ?? `The paid check failed with HTTP ${response.status}. You were not charged.`);
+        renderReport(report, data, { animate: true });
+        const tx = settlement?.transaction;
+        line.innerHTML = tx
+          ? `Paid 0.10 USDC: <a href="https://sepolia.basescan.org/tx/${esc(tx)}" target="_blank" rel="noopener">settlement on Base Sepolia</a>.`
+          : 'Paid. The settlement receipt was not returned.';
+      } catch (e) {
+        const msg = e?.code === 4001 ? 'You rejected the request in your wallet. Nothing was paid.' : (e?.message ?? String(e));
+        err.innerHTML = `<p class="error">${esc(msg)}</p>`;
+        line.innerHTML = 'Connects your wallet on Base Sepolia. You sign once and pay no gas. Need test USDC? <a href="https://faucet.circle.com/" target="_blank" rel="noopener">Circle faucet</a>.';
+      } finally {
+        button.disabled = false; button.textContent = 'Pay 0.10 USDC and check';
+      }
+    };
 
     f.onsubmit = async (ev) => {
       ev.preventDefault();
