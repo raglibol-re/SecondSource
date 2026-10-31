@@ -143,3 +143,4 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T10:27:21.421Z | Base Sepolia | https://sepolia.basescan.org/tx/0xeef33612f4715689cd9f443dd4d54fa3aa18e8fabfe7881adde93de86b45cedd | x402 payment: twitter.searchTweets |
 | 2026-10-31T10:27:59.230Z | Base Sepolia | https://sepolia.basescan.org/tx/0x27f137b5b03d1e3bb2ef55cda05c68d3ba4df2ddca98c673bb02a71b2520ecc4 | x402 payment: openrouter.chatCompletion |
 | 2026-10-31T10:54:39.000Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/8cf8ad9b13840862cfa5f79901c60b4b252da5f37e1e4c8b3e3f2be22d817384 | x402 payment (2 tADA) from a buyer agent; facilitator answered 504 after submitting it (led to the undecided-settlement fix) |
+| 2026-10-31T11:00:45.722Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/30a21c79a0a8662dcf93ed5f0f4290894c05b8001193c95bd9b9f00e19105434 | x402 payment (2 tADA) from a buyer agent for a SecondSource investigation |
