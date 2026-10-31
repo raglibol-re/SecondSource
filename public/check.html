@@ -25,43 +25,30 @@
     </div>
   </header>
 
-  <main class="wrap chatwrap">
-    <div class="page-head chat-head">
-      <h1>Ask SecondSource</h1>
-      <p class="lede">Paste a headline or ask in plain words. The agent reads what the people involved posted, what newsrooms and filings report, and answers with a receipt for every source.</p>
-    </div>
-
-    <div class="walletbar" id="walletbar" aria-live="polite"></div>
-
-    <div class="thread" id="thread" aria-live="polite">
-      <div class="msg agent"><span class="who">SecondSource</span><p>Which headline should I check? Tell me when it ran if it isn't new. I'll find who it's about, read what they actually posted, check the newsrooms, and show you the receipts.</p></div>
-    </div>
-
-    <form class="composer" id="composer">
-      <div class="suggest" id="suggest">
-        <button type="button" data-q="Is it true that Binance was hacked recently?">Was Binance hacked?</button>
-        <button type="button" data-q="Did Hassett really say Trump is considering a 90-day tariff pause? It hit the wires on 7 April 2025 at 10:12 New York time.">Hassett's tariff pause, 7 April 2025</button>
-        <button type="button" data-q="Is it true that Apple is buying Disney?">Is Apple buying Disney?</button>
-        <span id="runs"></span>
+  <main class="ask-app" id="app">
+    <aside class="ask-side" id="side" aria-label="Conversation">
+      <div class="side-head">
+        <b>Conversation</b>
+        <button type="button" class="iconbtn" id="collapse" aria-controls="side" aria-expanded="true" title="Hide the conversation"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr-only">Hide the conversation</span></button>
       </div>
-      <label for="q" class="sr-only">Your question</label>
-      <textarea id="q" required minlength="8" maxlength="1000" placeholder="Paste a headline, or ask: is it true the Fed cut rates by 50 basis points today?"></textarea>
-      <div class="row">
-        <span id="payrow" class="payrow"></span>
-        <span class="small muted">Charged only when the verdict is ready. Test funds: <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">tADA</a>, <a href="https://faucet.circle.com/" target="_blank" rel="noopener">USDC</a>.</span>
+      <div class="walletbar" id="walletbar" aria-live="polite"></div>
+      <div class="thread" id="thread" aria-live="polite">
+        <div class="msg agent"><span class="who">SecondSource</span><p>Which headline should I check? Tell me when it ran if it isn't new.</p></div>
       </div>
-      <p class="nowallet small" id="nowallet">No wallet? <button type="button" class="linklike" data-replay="binance-hack-2026-10-31">Watch a real paid run, free</button> or <button type="button" class="linklike" data-replay="hassett-agent-2025-04-07">the White House denial</button>. Every receipt in a replay is a real signed answer you can check on <a href="/verify">Verify</a>.</p>
-      <details class="more tokens">
-        <summary>Which test token for what</summary>
-        <table class="list small">
-          <tbody>
-            <tr><td>You pay SecondSource, Cardano</td><td><b>2 tADA</b> per question over x402 on Cardano Preprod (or 1 tUSDM through Masumi escrow on Sokosumi)</td><td><a href="https://dispenser.masumi.network" target="_blank" rel="noopener">Get tADA</a></td></tr>
-            <tr><td>You pay SecondSource, EVM</td><td><b>0.10 USDC</b> per question over x402 on Base Sepolia, signed once, no gas</td><td><a href="https://faucet.circle.com/" target="_blank" rel="noopener">Get USDC</a></td></tr>
-            <tr><td>SecondSource buys evidence</td><td><b>aUSD</b> per signed answer over x402 on Base Sepolia, from its own wallet. You never need aUSD.</td><td></td></tr>
-          </tbody>
-        </table>
-      </details>
-      <details class="key" id="keybox" style="margin-top: 6px" hidden>
+    <form class="dock" id="composer">
+      <div class="dock-box">
+        <label for="q" class="sr-only">Your question</label>
+        <textarea id="q" rows="1" required minlength="8" maxlength="1000" placeholder="Paste a headline or ask a question"></textarea>
+        <div class="dock-bar">
+          <div class="paysel" role="radiogroup" aria-label="Pay with" id="paysel">
+            <button type="button" role="radio" data-method="ada" aria-checked="true">Cardano <b>2 tADA</b></button>
+            <button type="button" role="radio" data-method="usdc" aria-checked="false">Base <b>0.10 USDC</b></button>
+          </div>
+          <button class="btn send" type="submit" id="send">Ask</button>
+        </div>
+      </div>
+      <p class="dock-hint"><span>Enter to send, Shift+Enter for a new line.</span><button type="button" class="linklike" id="restart" hidden>Start over</button></p>
+      <details class="key" id="keybox" hidden>
         <summary class="small muted">Demo key</summary>
         <div class="row" style="margin-top: 6px">
           <label for="key" class="sr-only">Demo key</label>
@@ -70,8 +57,32 @@
         </div>
       </details>
     </form>
+    </aside>
+    <button type="button" class="side-open" id="expand" hidden title="Show the conversation"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H9l-4 3v-3H4A1.5 1.5 0 0 1 2.5 13V6A1.5 1.5 0 0 1 4 4.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Conversation</span></button>
+
+    <section class="ask-main" id="main" aria-label="Result">
+      <div class="out-empty" id="starter">
+        <h1>Ask SecondSource</h1>
+        <p class="lede">Ask about any headline in the conversation. The agent reads what the people involved posted and what newsrooms and filings report. The verdict and its sources appear here, with a receipt for every source.</p>
+        <p class="starter-label">Try a question</p>
+        <div class="start-grid">
+          <button type="button" class="start-card" data-q="Is it true that Binance was hacked recently?"><b>Was Binance hacked recently?</b><span>No date given, so the agent looks back a week</span></button>
+          <button type="button" class="start-card" data-q="Did Hassett really say Trump is considering a 90-day tariff pause? It hit the wires on 7 April 2025 at 10:12 New York time."><b>Did Hassett say Trump is pausing tariffs?</b><span>7 April 2025, the headline that moved the Dow</span></button>
+          <button type="button" class="start-card" data-q="Is it true that Apple is buying Disney?"><b>Is Apple buying Disney?</b><span>A rumour about two listed companies</span></button>
+        </div>
+        <p class="starter-label">Or watch a real paid run, free</p>
+        <div class="start-grid" id="runs"></div>
+        <p class="starter-note">You pay per question, <b>2 tADA</b> on Cardano Preprod or <b>0.10 USDC</b> on Base Sepolia, and only when the verdict is ready. Test funds: <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">tADA</a>, <a href="https://faucet.circle.com/" target="_blank" rel="noopener">USDC</a>. SecondSource buys its own evidence in aUSD, so you never need aUSD. Agents call the same thing at <code>POST /api/x402/investigate</code>.</p>
+      </div>
+      <div class="out-live" id="live" hidden aria-live="polite">
+        <p class="live-q" id="live-q"></p>
+        <p class="live-status"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span id="live-text">Planning the check…</span></p>
+        <div class="live-sources" id="live-sources"></div>
+      </div>
+      <div id="out-verdict"></div>
+      <div id="out-payment"></div>
+    </section>
   </main>
-  <footer class="site"><div class="wrap"><span>Agents use the same agent over HTTP: <code>POST /api/x402/investigate</code>.</span><a href="/verify">Verify a receipt</a></div></footer>
 
   <script type="module">
     import { esc, receiptHtml, renderReport, short } from '/assets/report.js';
@@ -92,7 +103,24 @@
       return el;
     };
     const agent = (inner, cls = '') => add(`<div class="msg agent ${cls}"><span class="who">SecondSource</span>${inner}</div>`);
+    const live = document.getElementById('live');
+    const liveText = document.getElementById('live-text');
+    const liveSources = document.getElementById('live-sources');
+    const outVerdict = document.getElementById('out-verdict');
+    const outPayment = document.getElementById('out-payment');
+    const mainPane = document.getElementById('main');
+    // A new question: clear the right side and show what is being checked.
+    const startOutput = (question) => {
+      outVerdict.innerHTML = '';
+      outPayment.innerHTML = '';
+      liveSources.innerHTML = '';
+      document.getElementById('live-q').textContent = question;
+      liveText.textContent = 'Planning the check…';
+      live.hidden = false;
+      mainPane.scrollTop = 0;
+    };
     const think = (text) => {
+      if (!live.hidden) liveText.textContent = text;
       if (!typing || !typing.isConnected) {
         typing = null;
         typing = agent('<p class="typing-line"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t"></span></p>', 'typing');
@@ -103,6 +131,7 @@
     const stopThinking = () => {
       typing?.remove();
       typing = null;
+      live.hidden = true;
     };
     const fmtTime = (iso) => (iso ? new Date(iso).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'now');
     const span = (h) => (h >= 48 ? `the last ${Math.round(h / 24)} days` : `the last ${h} hours`);
@@ -150,7 +179,7 @@
       if (!wallet.kind) {
         bar.className = 'walletbar';
         bar.innerHTML = `<span class="wb-text">${note || 'Connect a wallet to pay per question.'}</span>
-          <span class="wb-actions"><button type="button" class="btn small" data-connect="cardano">Connect Cardano wallet</button><button type="button" class="btn small secondary" data-connect="evm">Connect EVM wallet</button></span>`;
+          <span class="wb-actions"><button type="button" class="btn small" data-connect="cardano">Cardano wallet</button><button type="button" class="btn small secondary" data-connect="evm">EVM wallet</button></span>`;
       } else {
         const c = wallet.kind === 'cardano';
         const icon = c && /^data:image\//.test(wallet.icon ?? '') ? `<img class="wb-icon" src="${esc(wallet.icon)}" alt="" />` : '<span class="wb-icon wb-dot"></span>';
@@ -220,13 +249,24 @@
       }
     }, 400);
 
+    // How the next question is paid. A connected wallet decides it; otherwise the visitor picks.
+    let method = 'ada';
     const renderPayButtons = () => {
-      const row = document.getElementById('payrow');
-      const ada = '<button class="btn" type="button" data-pay="ada">Ask and pay 2 tADA</button>';
-      const usdc = (secondary) => `<button class="btn ${secondary ? 'secondary' : ''}" type="button" data-pay="usdc">${secondary ? 'Pay 0.10 USDC instead' : 'Ask and pay 0.10 USDC'}</button>`;
-      row.innerHTML = wallet.kind === 'cardano' ? ada : wallet.kind === 'evm' ? usdc(false) : ada + usdc(true);
-      row.querySelectorAll('[data-pay]').forEach((b) => (b.onclick = () => ask(b.dataset.pay)));
+      if (wallet.kind === 'cardano') method = 'ada';
+      if (wallet.kind === 'evm') method = 'usdc';
+      document.querySelectorAll('[data-method]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.method === method)));
+      const send = document.getElementById('send');
+      if (!send.disabled) send.textContent = 'Ask';
     };
+    document.querySelectorAll('[data-method]').forEach((b) => (b.onclick = () => {
+      method = b.dataset.method;
+      if (wallet.kind && wallet.kind !== (method === 'ada' ? 'cardano' : 'evm')) {
+        forget();
+        remember(null);
+        renderWallet();
+      }
+      renderPayButtons();
+    }));
 
     // ---------- The payment receipt: shown for every paid question ----------
     const NETWORKS = { 'cardano:preprod': 'Cardano Preprod', 'eip155:84532': 'Base Sepolia' };
@@ -242,7 +282,9 @@
     const txUrl = (tx, network) => (isCardano(network, tx) ? `https://preprod.cardanoscan.io/transaction/${tx}` : `https://sepolia.basescan.org/tx/${tx}`);
     const addrUrl = (a, network) => (isCardano(network, a) ? `https://preprod.cardanoscan.io/address/${a}` : `https://sepolia.basescan.org/address/${a}`);
     const payslip = (d) => {
-      const el = agent('<article class="payslip"></article>', 'slip').querySelector('.payslip');
+      outPayment.innerHTML = '<h2 class="out-h">Your payment</h2><article class="payslip"></article>';
+      const el = outPayment.querySelector('.payslip');
+      agent('<p class="small">Payment is settling. The receipt is on the right.</p>');
       const render = () => {
         const net = d.terms?.network ?? (d.method === 'ada' ? 'cardano:preprod' : 'eip155:84532');
         const cardano = net.startsWith('cardano');
@@ -312,6 +354,7 @@
           }
           if (e.type === 'plan') {
             agent(planHtml(e.plan, e.signed, e.model));
+            document.getElementById('live-q').textContent = e.plan.headline ?? document.getElementById('live-q').textContent;
             think('Buying signed evidence…');
           }
           if (e.type === 'step') {
@@ -323,6 +366,7 @@
             if (e.step.status === 'ok') count++;
             list.insertAdjacentHTML('beforeend', receiptHtml(e.step, e.attestation));
             list.counter.textContent = `${count} signed`;
+            liveSources.insertAdjacentHTML('beforeend', `<span class="src-pill ${e.step.status === 'ok' ? 'ok' : 'off'}">${esc(e.step.label.replace(/^Judge: .*/, 'Judgment').replace(/^Market: /, '').replace(/ price bars$/, ''))}</span>`);
             think(/^Judge/.test(e.step.label) && e.step.status === 'ok' ? 'Writing up the verdict…' : `${count} signed answer${count === 1 ? '' : 's'} so far. Reading them…`);
           }
           if (e.type === 'settling') {
@@ -335,13 +379,16 @@
           }
           if (e.type === 'result') {
             stopThinking();
-            const el = agent('<div></div>').querySelector('div');
-            renderReport(el, e.result, { animate: true, receipts: false });
+            renderReport(outVerdict, e.result, { animate: true, receipts: false });
+            mainPane.scrollTop = 0;
+            if (matchMedia('(max-width: 900px)').matches) outVerdict.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+            agent(`<p class="verdict-line v-${esc(e.result.verdict.toLowerCase())}"><b>${esc(e.result.verdict)}</b>, ${Math.round((e.result.confidence ?? 0) * 100)}% confidence. The sources are on the right.</p>`);
             slip?.update({ resultHash: e.result.resultHash, verdict: e.result.verdict });
           }
           if (e.type === 'error') {
             stopThinking();
             agent(`<p class="error">${esc(e.error)}</p>`);
+            outVerdict.innerHTML = `<div class="out-error"><h2 class="out-h">No verdict</h2><p>${esc(e.error)}</p></div>`;
             if (e.notCharged) ensureSlip({ status: 'notcharged' });
           }
         },
@@ -365,9 +412,21 @@
       }
     };
 
+    const starter = document.getElementById('starter');
+    const restart = document.getElementById('restart');
+    const conversing = (on) => {
+      starter.hidden = on;
+      restart.hidden = !on;
+    };
+    const grow = () => {
+      q.style.height = 'auto';
+      q.style.height = `${Math.min(q.scrollHeight, 200)}px`;
+    };
     const busy = (on) => {
-      document.querySelectorAll('[data-pay], #demo, [data-connect]').forEach((b) => (b.disabled = on));
+      document.querySelectorAll('#send, #demo, [data-connect], [data-method], [data-run], [data-q]').forEach((b) => (b.disabled = on));
       document.getElementById('composer').classList.toggle('working', on);
+      document.getElementById('send').textContent = on ? 'Working…' : 'Ask';
+      if (!on) renderPayButtons();
     };
 
     const ask = async (mode) => {
@@ -376,8 +435,11 @@
         q.focus();
         return;
       }
+      conversing(true);
+      startOutput(question);
       add(`<div class="msg user">${esc(question)}</div>`);
       q.value = '';
+      grow();
       busy(true);
       try {
         if (mode === 'usdc') {
@@ -436,32 +498,63 @@
 
     document.getElementById('composer').onsubmit = (e) => {
       e.preventDefault();
-      ask(wallet.kind === 'evm' ? 'usdc' : 'ada');
+      ask(method);
     };
+    q.addEventListener('input', grow);
     q.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
         e.preventDefault();
-        document.getElementById('composer').requestSubmit();
+        if (!document.getElementById('send').disabled) document.getElementById('composer').requestSubmit();
       }
     });
+    restart.onclick = () => {
+      stopThinking();
+      thread.querySelectorAll('.msg:not(:first-child)').forEach((m) => m.remove());
+      outVerdict.innerHTML = '';
+      outPayment.innerHTML = '';
+      conversing(false);
+      q.focus();
+    };
     document.getElementById('demo').onclick = () => ask('demo');
     // The team's demo key spends the shared evidence wallet, so its box only appears with ?demo in the URL.
     if (new URLSearchParams(location.search).has('demo')) document.getElementById('keybox').hidden = false;
     document.querySelectorAll('[data-replay]').forEach((b) => (b.onclick = () => replay(`${b.dataset.replay}.json`)));
     document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => {
       q.value = b.dataset.q;
+      grow();
       q.focus();
+      q.setSelectionRange(q.value.length, q.value.length);
     }));
     try {
       document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? '';
     } catch {}
     renderWallet();
 
+    const app = document.getElementById('app');
+    const collapse = document.getElementById('collapse');
+    const expand = document.getElementById('expand');
+    const setSide = (open) => {
+      app.classList.toggle('collapsed', !open);
+      collapse.setAttribute('aria-expanded', String(open));
+      expand.hidden = open;
+      try {
+        localStorage.setItem('secondsource:side', open ? 'open' : 'closed');
+      } catch {}
+      if (open) q.focus({ preventScroll: true });
+    };
+    collapse.onclick = () => setSide(false);
+    expand.onclick = () => setSide(true);
+    try {
+      if (localStorage.getItem('secondsource:side') === 'closed') setSide(false);
+    } catch {}
+
     // Recorded investigations, replayed as the conversation they were.
     const replay = async (file) => {
       const r = await (await fetch(`/runs/${file}`)).json();
       stopThinking();
       thread.querySelectorAll('.msg:not(:first-child)').forEach((m) => m.remove());
+      conversing(true);
+      startOutput(r.plan?.question ?? r.input.headline);
       add(`<div class="msg user">${esc(r.plan?.question ?? r.input.headline)}</div>`);
       think('Planning the check…');
       await sleep(700);
@@ -484,7 +577,7 @@
       // Two recorded runs as one-click replays next to the suggestions (free, no wallet).
       document.getElementById('runs').innerHTML = runs
         .slice(0, 2)
-        .map((r) => `<button type="button" class="replay" data-run="${esc(r.file)}" title="Replay a real, recorded run, free">Replay: ${esc(r.headline.split(/[\s:]+/).slice(0, 3).join(' '))}, ${esc(r.verdict.toLowerCase())}</button>`)
+        .map((r) => `<button type="button" class="start-card replay v-${esc(r.verdict.toLowerCase())}" data-run="${esc(r.file)}"><b>${esc(r.headline)}</b><span><i class="vchip">${esc(r.verdict)}</i>${esc(r.note)}</span></button>`)
         .join('');
       document.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(b.dataset.run)));
       const wanted = new URLSearchParams(location.search).get('replay');
