@@ -152,6 +152,10 @@
             <button class="btn small" type="button" data-run="${i}">Replay this check</button></div>`)
         .join('');
       box.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(`/runs/${runs[Number(b.dataset.run)].file}`)));
+      // /check?replay=<file> plays a recorded check straight away, for links in the pitch.
+      const wanted = new URLSearchParams(location.search).get('replay');
+      const match = wanted && runs.find((r) => r.file === wanted || r.file === `${wanted}.json`);
+      if (match) replay(`/runs/${match.file}`);
     } catch {
       document.getElementById('runs').innerHTML = '<p>No recorded checks yet. Run a live check to make the first one.</p>';
       show('live');
