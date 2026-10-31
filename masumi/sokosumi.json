@@ -4,5 +4,19 @@
   "vendorId": "01a18f47-7179-7418-ad0a-206928e56d25",
   "coworkerId": "01a18f47-8ad2-7695-ac78-40515a62e758",
   "personalWorkspaceAccess": "GRANTED",
-  "firstTask": { "id": "01a18f47-e882-723a-82ca-e7bffa262468", "status": "COMPLETED", "paid": false, "note": "plumbing test before the evidence wallet was funded" }
+  "firstTask": {
+    "id": "01a18f47-e882-723a-82ca-e7bffa262468",
+    "status": "COMPLETED",
+    "paid": false,
+    "note": "plumbing test before the evidence wallet was funded"
+  },
+  "paidTask": {
+    "id": "01a18f66-f4b1-73fe-914b-c9a3660e1296",
+    "status": "COMPLETED",
+    "price": "1 tUSDM via Masumi escrow",
+    "verdict": "DENIED",
+    "fundsLockedTx": "69f54064e43f4e970cd7325a97cfe9ce28b7c7b3018cd8c1a47bb49a6c2366ed",
+    "resultSubmittedTx": "ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189",
+    "checkResultHash": "0x024248f07629a21baa37e0b758fd0138ef4df39077fc1789db1c67a2df68d16f"
+  }
 }

@@ -48,3 +48,9 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T00:37:34.191Z | Base Sepolia | https://sepolia.basescan.org/tx/0xbcdbcfb10b65298bb657e74249b10b4760c3115d863a97162c4383bff1dcbbed | x402 payment: twitter.searchTweets |
 | 2026-10-31T00:37:34.438Z | Base Sepolia | https://sepolia.basescan.org/tx/0xe4c5875bcb15817317197d04f4cd58c9b46d75c74ee569b03a4df694d5925bf9 | x402 payment: twitter.searchTweets |
 | 2026-10-31T00:37:47.245Z | Base Sepolia | https://sepolia.basescan.org/tx/0xfabfa8e441a7589a4e7aa8b5951f41734bfe9cdb6af7e5c7808185d19ce0eefb | GuardedVault trade ALLOWED (CONFIRMED): Trump signs executive order to boost US shipbuilding |
+| 2026-10-31T00:45:21.685Z | Base Sepolia | https://sepolia.basescan.org/tx/0xf215ab814ad3859ac0d23a3d8434e4adb045f3ec734232b4e5cfa3d8ad64b7a3 | x402 payment: benzinga.news |
+| 2026-10-31T00:45:22.207Z | Base Sepolia | https://sepolia.basescan.org/tx/0xa9243120d8ef638450fef28dc1d6c65c6ed1c04d4fc85148de8e11b94b11c3fa | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:45:22.274Z | Base Sepolia | https://sepolia.basescan.org/tx/0x499848b6936aaeba5d4d5190a006f5ce46694f801ead48dbcb94e1751699c93b | x402 payment: tickerlayer.aggregates |
+| 2026-10-31T00:45:22.840Z | Base Sepolia | https://sepolia.basescan.org/tx/0x02855de985128e24ab82d1388d41efc38d137f91caddf7fa74c03dd377043589 | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:45:24.265Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/69f54064e43f4e970cd7325a97cfe9ce28b7c7b3018cd8c1a47bb49a6c2366ed | Masumi escrow FundsLocked for Task 01a18f66-f4b1-73fe-914b-c9a3660e1296 |
+| 2026-10-31T00:46:54.494Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189 | Masumi escrow ResultSubmitted for Task 01a18f66-f4b1-73fe-914b-c9a3660e1296 |
