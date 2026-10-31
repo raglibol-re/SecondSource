@@ -7,6 +7,7 @@ import { extractKeywords } from './evidence/keywords.ts';
 import { barsRequest, barsToEvidence } from './evidence/market.ts';
 import { accountsRequest, handle, keywordRequest, tweetsToEvidence } from './evidence/twitter.ts';
 import { judgeRequest, parseJudgment } from './judge/openrouter.ts';
+import { judgeByRules } from './judge/rules.ts';
 import type { Caller, CheckInput, CheckResult, CheckStep, EvidenceItem } from './types.ts';
 
 export const DEFAULT_OFFICIAL_ACCOUNTS = ['RapidResponse47', 'WhiteHouse', 'PressSec'];
@@ -46,12 +47,12 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
   const accounts = [...new Set([...(input.officialAccounts?.length ? input.officialAccounts : DEFAULT_OFFICIAL_ACCOUNTS), ...(input.claimedSource ? [input.claimedSource] : [])].map(handle))];
 
   const plan: { label: string; source: AirnodeName; request: AirnodeV2Request; toEvidence: (a: Attestation, i: number) => Omit<EvidenceItem, 'id'>[] }[] = [
-    { label: `Posts by ${accounts.map((a) => '@' + a).join(', ')}`, source: 'twitter', request: accountsRequest(accounts, window.since, window.until), toEvidence: (a, i) => tweetsToEvidence(a, i) },
+    { label: `Posts by ${accounts.map((a) => '@' + a).join(', ')}`, source: 'twitter', request: accountsRequest(accounts, window.since, window.until), toEvidence: (a, i) => tweetsToEvidence(a, i, 20) },
     { label: `Top posts about "${keywords.join(' ')}"`, source: 'twitter', request: keywordRequest(keywords, window.since, window.until), toEvidence: (a, i) => tweetsToEvidence(a, i, 6) },
-    { label: `Benzinga newswire: ${keywords.join(', ')}`, source: 'benzinga', request: newsRequest(keywords, window.since, window.until), toEvidence: (a, i) => newsToEvidence(a, i) },
+    { label: `Benzinga newswire, ${window.since.slice(0, 10)}`, source: 'benzinga', request: newsRequest(window.since, window.until), toEvidence: (a, i) => newsToEvidence(a, i, keywords, window.since, window.until) },
   ];
   if (input.asset) {
-    plan.push({ label: `Market: ${input.asset} 5-minute bars`, source: 'tickerlayer', request: barsRequest(input.asset, window.since, window.until), toEvidence: (a, i) => barsToEvidence(a, i, input.publishedAt!, window.since, window.until) });
+    plan.push({ label: `Market: ${input.asset} price bars`, source: 'tickerlayer', request: barsRequest(input.asset, window.since, window.until), toEvidence: (a, i) => barsToEvidence(a, i, input.publishedAt!, window.since, window.until) });
   }
 
   // Buy all evidence in parallel. A failed source is recorded, not fatal.
@@ -91,16 +92,18 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
     try {
       const a = await call('openrouter', request);
       const index = attestations.push(a) - 1;
-      judge = { model: String(request.parameters.model), attestation: index };
+      judge = { model: String(request.parameters.model), attestation: index, signed: true };
       const step: CheckStep = { label: `Judge: ${judge.model}`, source: 'openrouter', status: 'ok', attestation: index };
       steps.push(step);
       onProgress?.({ type: 'step', step, attestation: a });
       judgment = parseJudgment(a, evidence);
     } catch (err) {
-      const step: CheckStep = { label: 'Judge', source: 'openrouter', status: 'failed', error: (err as Error).message.slice(0, 300) };
+      const step: CheckStep = { label: `Judge: ${String(request.parameters.model)}`, source: 'openrouter', status: 'failed', error: (err as Error).message.slice(0, 300) };
       steps.push(step);
       onProgress?.({ type: 'step', step });
-      judgment.reasoning = 'The judge could not be reached, so the verdict stays UNCONFIRMED.';
+      // Fall back to fixed rules over the signed evidence, and say so.
+      judgment = judgeByRules(input, evidence, keywords, accounts);
+      judge = { model: 'fixed rules (OpenRouter Airnode unavailable)', signed: false };
     }
   }
 

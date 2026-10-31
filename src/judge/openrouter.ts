@@ -3,7 +3,7 @@ import type { AirnodeV2Request } from '../airnode/airnode-v2.ts';
 import type { CheckInput, EvidenceItem, Verdict } from '../types.ts';
 
 // Picked from the free listModels call on 2026-10-30. Every chatCompletion costs the same flat 0.05 aUSD.
-export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'anthropic/claude-sonnet-5.5';
+export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'anthropic/claude-sonnet-5';
 
 const SYSTEM = `You are SecondSource, a fact-checker that trading agents hire before acting on a market headline.
 You get the headline and a numbered list of evidence. Every evidence line was bought from a primary source and is cryptographically signed, so treat it as authentic, but judge what it actually says.

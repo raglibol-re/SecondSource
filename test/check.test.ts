@@ -113,3 +113,15 @@ test('no evidence at all: UNCONFIRMED without paying the judge', async () => {
   assert.equal(r.verdict, 'UNCONFIRMED');
   assert.equal(judged, false);
 });
+
+test('judge unreachable: fixed rules over the signed evidence, marked unsigned', async () => {
+  const base = caller(denialTweets, '');
+  const r = await check(HASSETT, async (s, q) => {
+    if (s === 'openrouter') throw new Error('openrouter.chatCompletion answered 502');
+    return base(s, q);
+  });
+  assert.equal(r.verdict, 'DENIED');
+  assert.deepEqual(r.citations, ['E1']);
+  assert.equal(r.judge?.signed, false);
+  assert.match(r.reasoning, /this judgment is not/);
+});

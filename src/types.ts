@@ -47,7 +47,8 @@ export interface CheckResult {
   evidence: EvidenceItem[];
   attestations: Attestation[];
   steps: CheckStep[];
-  judge: { model: string; attestation: number } | null;
+  // signed: the judgment came back through the OpenRouter Airnode; false means the fixed-rules fallback ran.
+  judge: { model: string; attestation?: number; signed: boolean } | null;
   costAusd: string;
   checkedAt: string;
   resultHash?: string;

@@ -10,5 +10,161 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/c92eccbff8cfe3ba56d8784466a2adbf48ae26e37403a3811e8b87932681caac",
     "what": "Masumi registry: register SecondSource agent (RegistrationConfirmed)"
+  },
+  {
+    "when": "2026-10-31T00:24:38.971Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x0b6fe6579e1778f5945ecd34ee482198bb797f28debd66b3d8e909af460ea167",
+    "what": "Mint 10 aUSD from faucet"
+  },
+  {
+    "when": "2026-10-31T00:24:54.089Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xc475a14cb2173e8b83d70ed54e74853c015d7aba2c274d9ca1bcb3e9dcbdd5d5",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:24:55.850Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x5d205d729c994751c1c4fa49a2df99a803553681080591cdffb0605003f40030",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:24:57.810Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x19d137ddb6bca3fce727ee7795c20eb01cb25cf0c7acfffa54ae76ba2521d6dd",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:25:29.035Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xfb95b18f8367854f09a570efb1d7102a3ea9e135bbd2fa46e4427e2dead75ddb",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:25:30.187Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x0358aacbfb8e3df9a9d7621ab052a89a56691e88ea5cd0cf8eec70c786833c08",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:25:31.842Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xf360dca07aff5bb39e096e53a649353056b28911a9ea9ba831ef9e79e40572eb",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:25:54.797Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xc8b25bbda30ca2ef276561d2c56564a0627642bed07ebc6caa8e21a896ba148c",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:25:56.200Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xe45719486eee81eb4ca42648fc1bd4bc0aaf63f264d7409d68eecc8d30ea4b76",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:25:56.987Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xac77372459e52de1998398fddceba37b4c16a5f3d2ae842488bd376902fd5b58",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:26:48.017Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x2d611e930d9f431f955af1f11307e651795afa3a4926edd43baf066819612a59",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:26:48.032Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xfdea01ea33b0c61466ad85120ad973c402ad8575385039ec819ad22ad6906729",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:26:49.406Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x8a74cfd594ece87e19acdb9bff8746fbd6873c2eada2ad21dace3298647cdeb3",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:26:49.673Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x7e8d4fc6eb0b0113f511f2c89baff20c075c11e10d067f1531221ddb8d905017",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:28:40.969Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xa2180bdadc9b2f3056380fec00237cc5a6769b883d0a60353c4e95cc5318994e",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:28:41.003Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x2a8679044e07084bdee1e8144f62a6516ead8ec7c4bc536f7454076bb592628f",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:28:41.848Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xdaf09d3eeb0c90e6bd32e9cfc0aa6225ff6a4f35c5fe55d6e11bd77efaf0d2fc",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:28:42.051Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x0106e9ea470d55afcd4cb82b3cdfe663a446e7762cf02f74340f9aede909915f",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:29:57.457Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x39fd8b12094d51dde22a967a84cecec1f999e920ef28c37249d4347b2771a114",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:29:57.806Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xb10c2767ec4d85fef4c2206643f3698e189940a9956365322c61aeaca4edfce5",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:29:57.990Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x435b6a9cf4d2c11e1c759316352d528895a84a0d1c8aefea027eaa7ec1e6d2cb",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:29:58.093Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x62d9ed760f923d087b4fb5dd0240b3fb9fe0d53f6f0e8d0e8f33f086b48180ce",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:30:16.174Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xceaa619f589d9fa24f8cc3c4bb3cb06b4231cac2847f99d3959027d498a72eb3",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T00:30:16.253Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x52639d8ad6ce293844d53e31490c5db6c50a496a28d0ad36cc85eb6a03dfcdb4",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T00:30:17.270Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x31a9753674d27a19c0a60f3ffe92846b832b04c99f31d36f025a7b309c4d2662",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T00:30:17.655Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xa5ff3ee16ad7222eb412cef03dacc7839f3d6cdce50c0bda3a826113f7a29d55",
+    "what": "x402 payment: twitter.searchTweets"
   }
 ]
