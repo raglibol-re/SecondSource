@@ -32,8 +32,12 @@ export const judgeByRules = (input: CheckInput, evidence: EvidenceItem[], keywor
       citations: denials.map((e) => e.id),
     };
   }
-  // A primary account stating the claim itself.
-  const confirmations = posts.filter((e) => !DENIAL.test(e.text) && relevant(e) >= Math.min(2, words.length));
+  // A primary account stating the claim itself: it must carry the specific words of the headline, not only names.
+  const specific = keywords.filter((k) => !/^[A-Z]/.test(k)).map((k) => k.toLowerCase());
+  const specificHits = (e: EvidenceItem) => specific.filter((w) => e.text.toLowerCase().includes(w)).length;
+  const confirmations = posts.filter(
+    (e) => !DENIAL.test(e.text) && relevant(e) >= Math.min(2, words.length) && specificHits(e) >= Math.min(2, specific.length)
+  );
   if (confirmations.length) {
     return {
       verdict: 'CONFIRMED',

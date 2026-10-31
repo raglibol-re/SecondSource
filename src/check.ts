@@ -73,7 +73,8 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
       steps.push(step);
       onProgress?.({ type: 'step', step, attestation: s.value });
       try {
-        for (const e of p.toEvidence(s.value, index)) evidence.push({ ...e, id: `E${evidence.length + 1}` });
+        // The same post can come back from both searches; keep the first copy.
+        for (const e of p.toEvidence(s.value, index)) if (!(e.url && evidence.some((x) => x.url === e.url))) evidence.push({ ...e, id: `E${evidence.length + 1}` });
       } catch (err) {
         step.error = `Could not read the response: ${(err as Error).message}`;
       }

@@ -32,3 +32,19 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T00:30:16.253Z | Base Sepolia | https://sepolia.basescan.org/tx/0x52639d8ad6ce293844d53e31490c5db6c50a496a28d0ad36cc85eb6a03dfcdb4 | x402 payment: tickerlayer.aggregates |
 | 2026-10-31T00:30:17.270Z | Base Sepolia | https://sepolia.basescan.org/tx/0x31a9753674d27a19c0a60f3ffe92846b832b04c99f31d36f025a7b309c4d2662 | x402 payment: twitter.searchTweets |
 | 2026-10-31T00:30:17.655Z | Base Sepolia | https://sepolia.basescan.org/tx/0xa5ff3ee16ad7222eb412cef03dacc7839f3d6cdce50c0bda3a826113f7a29d55 | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:35:44.346Z | Base Sepolia | https://sepolia.basescan.org/tx/0x043a3fee78fac82120c94af9cd39a0f6e724055fe9b07b0c6bb14a2045f871b7 | Deploy GuardedVault at 0x20b22351f91612015417965c8f43d22e85174ea8 |
+| 2026-10-31T00:35:57.097Z | Base Sepolia | https://sepolia.basescan.org/tx/0xc114cf2692850bcbb7da9e72963a06f8a8c842d0a116439ba8f5d12946dc272a | GuardedVault trade BLOCKED (DENIED, VerdictNotConfirmed(3)): Hassett: Trump considering 90-day tariff pause |
+| 2026-10-31T00:36:08.005Z | Base Sepolia | https://sepolia.basescan.org/tx/0x044ea0de249e264509aeee00321cac4833be684c76736a2437b2688d53c160d3 | x402 payment: tickerlayer.aggregates |
+| 2026-10-31T00:36:08.357Z | Base Sepolia | https://sepolia.basescan.org/tx/0x60549da560ce095f8c2b94f71d45ef7072a7663446cf82af9fc9e5a41543d9f6 | x402 payment: benzinga.news |
+| 2026-10-31T00:36:08.956Z | Base Sepolia | https://sepolia.basescan.org/tx/0x3de64a2e55932250283efd74938f21c0c91de5d5f5ccdc9a2b58ad57a5276984 | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:36:09.028Z | Base Sepolia | https://sepolia.basescan.org/tx/0x3b367a1284c9537c4999ec417c7b3c8d3a99866d7b3814da713b5aeebc6ebe5f | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:36:37.288Z | Base Sepolia | https://sepolia.basescan.org/tx/0x26387a7881fc5f1f74285a350a765fdc9a4429652c95e220924a69e68b945d95 | x402 payment: benzinga.news |
+| 2026-10-31T00:36:38.422Z | Base Sepolia | https://sepolia.basescan.org/tx/0x5ba47d567669eaecf569b9400e9a856a93edc8729e5ecfc5dec6d304fca7f39b | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:36:38.640Z | Base Sepolia | https://sepolia.basescan.org/tx/0xf48cc2749c05b14f0e857e37f4739870191aef6c06541047684bab84b5c86f65 | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:37:08.648Z | Base Sepolia | https://sepolia.basescan.org/tx/0x6ac7d6b41db353e410e5aaf6582241b2013522527946f23807bcf384a1b5862c | x402 payment: benzinga.news |
+| 2026-10-31T00:37:09.469Z | Base Sepolia | https://sepolia.basescan.org/tx/0xc9ad21d81a296b5ab8d85a633a9d1adf5f0a0a1224a1043a52e5bcfa00b361ba | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:37:09.581Z | Base Sepolia | https://sepolia.basescan.org/tx/0xc5d14e951bfa358112bd87f616c3a9fc91f2906a6d17daf541145b843ffbbaf5 | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:37:33.279Z | Base Sepolia | https://sepolia.basescan.org/tx/0x0caf0a3dab02007359fef6016a888f5ee63469b2c5801ea1a526f0c25114d7ee | x402 payment: benzinga.news |
+| 2026-10-31T00:37:34.191Z | Base Sepolia | https://sepolia.basescan.org/tx/0xbcdbcfb10b65298bb657e74249b10b4760c3115d863a97162c4383bff1dcbbed | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:37:34.438Z | Base Sepolia | https://sepolia.basescan.org/tx/0xe4c5875bcb15817317197d04f4cd58c9b46d75c74ee569b03a4df694d5925bf9 | x402 payment: twitter.searchTweets |
+| 2026-10-31T00:37:47.245Z | Base Sepolia | https://sepolia.basescan.org/tx/0xfabfa8e441a7589a4e7aa8b5951f41734bfe9cdb6af7e5c7808185d19ce0eefb | GuardedVault trade ALLOWED (CONFIRMED): Trump signs executive order to boost US shipbuilding |

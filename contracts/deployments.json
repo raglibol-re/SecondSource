@@ -1,0 +1,8 @@
+{
+  "baseSepolia": {
+    "GuardedVault": "0x20b22351f91612015417965c8f43d22e85174ea8",
+    "deployTx": "0x043a3fee78fac82120c94af9cd39a0f6e724055fe9b07b0c6bb14a2045f871b7",
+    "priceRequestHash": "0x180eae9387bb66a72380e61ebe0a00d19f8414a716a37ebe1df124b66acfff66",
+    "secondSource": "0xC5b076bf4362E1a1e2652d7c75b3b6b90a0e5132"
+  }
+}

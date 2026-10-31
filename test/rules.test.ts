@@ -37,3 +37,12 @@ test('a post from before the headline cannot deny it', () => {
   const early = tweet('E9', '@RapidResponse47', '2025-04-07T12:41:00.000Z', '"If that were false," says NEC Director Kevin Hassett about tariffs');
   assert.equal(judgeByRules(input, [early], keywords, accounts).verdict, 'UNCONFIRMED');
 });
+
+test('a different order by the same president does not confirm the headline', () => {
+  const kw = ['Trump', 'executive', 'shipbuilding'];
+  const shower = tweet('E9', '@WhiteHouse', '2025-04-09T21:38:00.000Z', 'President Trump signs an Executive Order to end the war on showers');
+  const ships = tweet('E2', '@WhiteHouse', '2025-04-09T22:41:00.000Z', 'President Trump signed a historic Executive Order to increase U.S. shipbuilding');
+  const j = judgeByRules({ headline: 'Trump signs executive order to boost US shipbuilding', publishedAt: '2025-04-09T20:00:00.000Z' }, [shower, ships], kw, accounts);
+  assert.equal(j.verdict, 'CONFIRMED');
+  assert.deepEqual(j.citations, ['E2']);
+});
