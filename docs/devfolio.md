@@ -42,6 +42,10 @@ Who uses it:
 
 ## What we built and how it works
 
+0. **Plan.** You ask in plain words ("Did Hassett really say Trump is pausing tariffs? 7 April, 10:12 New York"). A model,
+   asked through the OpenRouter Airnode so the plan is signed, works out the claim, the time in UTC, the primary
+   accounts that would confirm or deny it (for "Apple buying Disney" it chose @Apple, @Disney, @tim_cook and
+   @RobertIger), search words and the market to watch. It tells you its plan in the chat.
 1. **Buy evidence.** SecondSource pays per call over x402 in aUSD on Base Sepolia for AirnodeHub data. It gets X posts
    from the primary accounts and top posts about the claim (TwitterAPI.io), the Benzinga newswire, and market bars
    (TickerLayer). Every answer is signed by the Airnode that served it, and every signature is verified before use:

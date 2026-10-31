@@ -4,7 +4,9 @@ Setup time counts against the 2:30, so everything below is open and loaded befor
 
 ## Browser, light mode (toggle in the top bar), in this order
 1. https://secondsource-two.vercel.app (home, stamp)
-2. https://secondsource-two.vercel.app/check?replay=hassett-2025-04-07 (reload right before you show it; it plays itself)
+2. https://secondsource-two.vercel.app/check?replay=hassett-agent-2025-04-07 (reload right before you show it; it plays
+   itself). For a live paid run: Eternl installed, on preprod, holding 5+ tADA (dispenser.masumi.network), or MetaMask on
+   Base Sepolia with 0.10+ USDC (faucet.circle.com).
 3. https://secondsource-two.vercel.app/vault?run (reload right before you show it; it runs the tamper test)
 4. https://secondsource-two.vercel.app/receipts (On chain section, then transactions)
 5. BaseScan, the trade on a White House post:

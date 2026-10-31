@@ -18,8 +18,11 @@ pnpm agent "Hassett: Trump considering 90-day tariff pause" --naive
 ```
 > "This agent buys on the headline. Nothing in between."
 
-**Screen:** tab `/check?replay=hassett-2025-04-07`. Receipts arrive, then the stamp.
-> "SecondSource buys evidence over x402 on API3's AirnodeHub: posts from the White House accounts, the Benzinga
+**Screen:** tab `/check?replay=hassett-agent-2025-04-07`: the question in plain words, the agent's plan (accounts, search
+words, 14:12 UTC), the receipts arriving, then the stamp. (Live alternative: type the question and click "Pay 2 tADA with
+a Cardano wallet" in Eternl.)
+> "You ask in plain words. The agent plans where the primary source would speak, and the plan itself is signed. It
+> buys evidence over x402 on API3's AirnodeHub: posts from the White House accounts, the Benzinga
 > newswire, Dow price bars. Each answer is signed by its Airnode and checked. A model judges only that evidence, also
 > through an Airnode. Verdict: denied. It cites the White House's own posts: 'Wrong. Fake News.'"
 

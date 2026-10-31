@@ -6,6 +6,7 @@ on a market headline. It buys signed evidence from primary sources, has it judge
 verify, on chain, a primary-source post signed by an Airnode.
 
 - Live site: https://secondsource-two.vercel.app
+- Ask it a question and pay from your own wallet: https://secondsource-two.vercel.app/check
 - Test the contract yourself: https://secondsource-two.vercel.app/vault
 - Guarded Vault v2 on Base Sepolia: [`0x0e9128f550254ed3389330e8134cea8cb09f46b6`](https://sepolia.basescan.org/address/0x0e9128f550254ed3389330e8134cea8cb09f46b6)
 
@@ -53,10 +54,16 @@ collected the payment:
 | Payout to SecondSource (Withdrawn) | [665cf3d5…](https://preprod.cardanoscan.io/transaction/665cf3d555452c066826138e7dff9969191a4221331572ca9f389c5a717bd877) |
 | Paid request over x402 (2 tADA) | [7616f0a5…](https://preprod.cardanoscan.io/transaction/7616f0a56d346e068d7af71f167ef8cbee8e12dc63eef3acec5cd8d0ba29cc44) |
 
-**Try a paid check yourself, in the browser.** On https://secondsource-two.vercel.app/check, open "Live check", load
-the Hassett case and click "Pay 0.10 USDC and check". Your wallet (MetaMask or any EVM wallet) signs one USDC
-authorization on Base Sepolia; you pay no gas. Test USDC is free at https://faucet.circle.com (Base Sepolia). The same
-endpoint, `POST /api/x402/check`, also accepts 2 tADA on Cardano Preprod (`pnpm x402:buy`).
+**Ask it yourself, in the browser.** On https://secondsource-two.vercel.app/check, type a question about a headline in
+plain words (or pick a suggestion). Pay with either wallet:
+- **Cardano:** "Pay 2 tADA with a Cardano wallet" (Eternl or Lace on preprod; test ADA at
+  https://dispenser.masumi.network).
+- **USDC:** "Pay 0.10 USDC and investigate" (MetaMask or any EVM wallet on Base Sepolia, signed once, no gas; test USDC
+  at https://faucet.circle.com).
+
+The agent then plans the check: which primary accounts, which search words, which time window and market. You watch
+it buy and verify each signed answer, and get the verdict in the chat. Agents use the same thing over HTTP at
+`POST /api/x402/investigate` (`pnpm x402:buy --question "…"`).
 
 Payment is tied to the result. The x402 payment settles only after the check succeeded, and Masumi escrow refunds the
 buyer if no result hash is submitted before the deadline.

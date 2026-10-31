@@ -9,7 +9,8 @@ experience, real-world impact, a clear customer and journey, payment tied to the
 > minutes later. An agent would pay a few cents to know that first."
 
 ## 0:25 to 1:30, one paid job, live
-Tab `/receipts`, "A paid Sokosumi task", or the terminal for x402.
+Tab `/check`: type the question and click "Pay 2 tADA with a Cardano wallet" (Eternl on preprod), or hand the judge the
+laptop to pay from theirs. While the agent works (about 60 to 90 s), switch to `/receipts`, "A paid Sokosumi task".
 > "Two ways to hire SecondSource on Cardano. On Sokosumi: the buyer creates a task, Masumi locks 1 tUSDM in escrow, our
 > worker runs the check, submits the result hash on chain, completes the task, and collects. Here are all three
 > transactions: escrow, result hash, payout."

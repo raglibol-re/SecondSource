@@ -36,6 +36,7 @@ Signature recovery and the final binding check use `AirnodeV2Attestation` from t
 | Response from another Airnode or key | Expected signer is immutable, set at deployment from each listing's spec | `test_5_…AnotherKey…`, `test_revertsWhenPostSignedByAnotherKey` |
 | Real response to a different request (other pair, other post) | Request hash stored (price) or rebuilt on chain from the post id | `test_4_…AnotherRequest…`, `test_revertsWhenPostIsForAnotherId` |
 | Replay of an old price | 60 s limit on signing time and on Nodary's own timestamp | `test_3_staleResponseIsRejected`, `test_revertsWhenPriceDataIsOld` |
+| A signed answer about a different post than requested | Signed `id` must equal the requested post id | `test_revertsWhenSignedPostIsAnotherPost` |
 | Post id injection into the rebuilt request | Post id restricted to 1 to 25 decimal digits | `test_revertsOnMalformedPostId` |
 | Evidence from a non-primary account | Author allowlist fixed at deployment | `test_revertsWhenPostIsNotByAPrimaryAccount`, `test_tradeNeedsAPrimarySource` |
 | Verdict replay, cross-vault or cross-chain reuse | Digest binds chain id and vault address; `verdictUsed` | `test_revertsWhenVerdictWasForAnotherVault`, `test_revertsWhenVerdictIsReused` |
@@ -75,6 +76,14 @@ contract.
   falls back to a free model, and if no model answers, to fixed published rules. The result then says the judgment is
   unsigned.
 - **Coverage.** No AirnodeHub listing covers Truth Social, official press-release feeds or timestamped SEC filings.
+- **Paid endpoints.** `/api/x402/check` and `/api/x402/investigate` verify the payment before any work and settle
+  only after it succeeded, so a failed job is not charged. The streamed investigation shows its steps before the
+  payment settles, but sends the verdict only after settlement. On Cardano, a settlement still confirming
+  (`settlement_pending`) is treated as paid, because the buyer's signed transaction is already submitted.
+- **Browser Cardano payments** read Blockfrost through `/api/blockfrost`, a read-only proxy restricted to three
+  path patterns, so the project key never reaches the browser.
+- **The planning step** is a model reading the user's question. Its output is validated: handles must look like X
+  handles, the market must be one of a fixed list, and keywords and length are capped.
 - **Operator keys.** The off-chain payer and verdict keys live in a local `.env` and in Vercel environment variables.
   Not production key management.
 - **Not audited.** This is hackathon code on testnets.
