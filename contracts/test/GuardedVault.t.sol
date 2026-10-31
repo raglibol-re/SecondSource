@@ -315,3 +315,97 @@ contract GuardedVaultTest is VaultFixtures {
         vault.haltOnDenial(denialId, denialPost, v);
     }
 }
+
+/// @notice Property tests: the guarantees above must hold for every input, not only the fixtures we picked.
+contract GuardedVaultFuzzTest is VaultFixtures {
+    uint256 constant SECP256K1_N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+
+    /// Any single changed byte of a signed price breaks the signature.
+    function testFuzz_anyEditedByteIsRejected(uint256 position, uint8 delta) public {
+        GuardedVault.AirnodeResponse memory r = ethPrice;
+        position = bound(position, 0, r.data.length - 1);
+        delta = uint8(bound(delta, 1, 255));
+        unchecked {
+            r.data[position] = bytes1(uint8(r.data[position]) + delta);
+        }
+        vm.expectPartialRevert(GuardedVault.SignatureMismatch.selector);
+        vault.verifyPrice(r);
+    }
+
+    /// Any other timestamp breaks the signature too, so a stale response cannot be made to look fresh.
+    function testFuzz_editedTimestampIsRejected(uint256 timestamp) public {
+        GuardedVault.AirnodeResponse memory r = ethPrice;
+        timestamp = bound(timestamp, 1, block.timestamp);
+        vm.assume(timestamp != r.timestamp);
+        r.timestamp = timestamp;
+        vm.expectPartialRevert(GuardedVault.SignatureMismatch.selector);
+        vault.verifyPrice(r);
+    }
+
+    /// The same signed price is accepted while fresh and rejected, with its age, once older than 60 seconds.
+    function testFuzz_freshnessBoundary(uint256 age) public {
+        age = bound(age, 0, 30 days);
+        vm.warp(ethPrice.timestamp + age);
+        if (age <= 10) {
+            (uint256 price,) = vault.verifyPrice(ethPrice);
+            assertGt(price, 0);
+        } else if (age > 60) {
+            vm.expectRevert(abi.encodeWithSelector(GuardedVault.PriceResponseTooOld.selector, ethPrice.timestamp, age));
+            vault.verifyPrice(ethPrice);
+        }
+    }
+
+    /// A correctly signed response from any key other than the Nodary Airnode is refused.
+    function testFuzz_anyOtherKeyIsRejected(uint256 key) public {
+        key = bound(key, 1, SECP256K1_N - 1);
+        address signer = vm.addr(key);
+        vm.assume(signer != NODARY);
+        GuardedVault.AirnodeResponse memory r = ethPrice;
+        r.airnode = signer;
+        r.signature = signResponse(key, r.requestHash, r.timestamp, r.data);
+        vm.expectRevert(abi.encodeWithSelector(GuardedVault.UnexpectedAirnode.selector, signer, NODARY));
+        vault.verifyPrice(r);
+    }
+
+    /// A verdict signed for any other vault does not work on this one.
+    function testFuzz_verdictIsBoundToThisVault(address otherVault) public {
+        vm.assume(otherVault != address(vault));
+        GuardedVault.SignedVerdict memory v = signVerdict(
+            COWORKER_KEY, GuardedVault.Verdict.Confirmed, keccak256("x"), block.timestamp, otherVault, whiteHousePost.requestHash
+        );
+        vm.expectPartialRevert(GuardedVault.VerdictNotSignedBySecondSource.selector);
+        vault.executeTrade(ethPrice, whiteHouseId, whiteHousePost, v, 1000e18);
+    }
+
+    /// Whatever the result hash, a verdict trades once and never again.
+    function testFuzz_verdictIsSingleUse(bytes32 resultHash) public {
+        GuardedVault.SignedVerdict memory v = signVerdict(
+            COWORKER_KEY, GuardedVault.Verdict.Confirmed, resultHash, block.timestamp, address(vault), whiteHousePost.requestHash
+        );
+        vault.executeTrade(ethPrice, whiteHouseId, whiteHousePost, v, 1000e18);
+        vm.expectRevert(abi.encodeWithSelector(GuardedVault.VerdictAlreadyUsed.selector, resultHash));
+        vault.executeTrade(ethPrice, whiteHouseId, whiteHousePost, v, 1000e18);
+    }
+
+    /// At any moment inside the halt, no trade goes through, whoever sends it.
+    function testFuzz_noTradeDuringTheHalt(uint256 elapsed, address caller) public {
+        vault.haltOnDenial(denialId, denialPost, denied());
+        uint256 until = vault.haltedUntil();
+        elapsed = bound(elapsed, 0, 1 hours - 1);
+        vm.warp(block.timestamp + elapsed);
+        GuardedVault.SignedVerdict memory v = confirmed();
+        vm.prank(caller);
+        vm.expectRevert(abi.encodeWithSelector(GuardedVault.TradingHalted.selector, until));
+        vault.executeTrade(ethPrice, whiteHouseId, whiteHousePost, v, 1000e18);
+    }
+
+    /// Any notional buys exactly notional / price of mock ETH, and the books add up.
+    function testFuzz_tradeAmountMatchesThePrice(uint96 notional) public {
+        vm.assume(notional > 0);
+        (uint256 price,) = vault.verifyPrice(ethPrice);
+        uint256 bought = vault.executeTrade(ethPrice, whiteHouseId, whiteHousePost, confirmed(), notional);
+        assertEq(bought, (uint256(notional) * 1e18) / price);
+        assertEq(vault.ethBought(), bought);
+        assertEq(vault.trades(), 1);
+    }
+}
