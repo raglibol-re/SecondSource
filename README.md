@@ -83,6 +83,19 @@ flowchart LR
 Limits, plainly: a signature proves what a source said, not that it is true, and the model can misjudge. That is why
 money only moves in the vault on a primary source's own signed words.
 
+## Which test token for what
+
+| Who pays whom | Token and network | Where to get it |
+|---|---|---|
+| You pay SecondSource per question | 2 tADA over x402, Cardano Preprod | https://dispenser.masumi.network |
+| You pay SecondSource through Sokosumi | 1 tUSDM in Masumi escrow, Cardano Preprod | Sokosumi Preprod credits |
+| You pay SecondSource from an EVM wallet | 0.10 USDC over x402, Base Sepolia, no gas | https://faucet.circle.com |
+| SecondSource buys signed evidence | aUSD over x402 on Base Sepolia, from its own wallet | You never need aUSD |
+
+No wallet? The chat page has free replays of real paid runs; every receipt in them is a real signed answer you can
+check on [/verify](https://secondsource-two.vercel.app/verify). The team's demo key (it spends the shared evidence
+wallet) is hidden unless the page is opened with `?demo`.
+
 ## For judges: one minute per track
 
 **API3, tamper test (pass/fail).** Open https://secondsource-two.vercel.app/vault?run, or run:

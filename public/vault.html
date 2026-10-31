@@ -29,7 +29,7 @@
     <div class="page-head">
       <h1>Test the contract</h1>
       <p class="lede">The Guarded Vault on Base Sepolia only acts on responses it can verify: the expected Airnode signed them, they answer the request it expects, and they are fresh. Try to fool it.</p>
-      <p class="small" id="where">Loading the contract address…</p>
+      <p class="small" id="where">Contract <a class="mono" href="https://sepolia.basescan.org/address/0x0e9128f550254ed3389330e8134cea8cb09f46b6" target="_blank" rel="noopener">0x0e9128f550254ed3389330e8134cea8cb09f46b6</a> on Base Sepolia.</p>
     </div>
 
     <section style="padding-bottom: 40px">
@@ -69,6 +69,14 @@
 
   <script type="module">
     import { esc, short } from '/assets/report.js';
+    // Gives up after `ms` so a slow network shows a readable message, never an endless wait.
+    const timed = (url, init = {}, ms = 5000) => {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), ms);
+      return fetch(url, { ...init, signal: ctl.signal })
+        .catch((e) => { throw new Error(e.name === 'AbortError' ? `No answer from ${url} within ${ms / 1000} s. Check the connection and try again; offline, run pnpm tamper-test --offline.` : e.message); })
+        .finally(() => clearTimeout(t));
+    };
     const results = document.getElementById('results');
     const summary = document.getElementById('summary');
     const ta = document.getElementById('json');
@@ -76,7 +84,7 @@
     const out = document.getElementById('out');
 
     const verify = async (response, postId) => {
-      const r = await fetch('/api/vault/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ response, postId }) });
+      const r = await timed('/api/vault/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ response, postId }) }, 15000);
       return r.json();
     };
     const row = (n, label, o) => `<li class="receipt ${o.accepted ? '' : 'failed'}">
@@ -86,7 +94,7 @@
       <span class="sub">${o.accepted ? esc(o.detail) : `<b class="mono">${esc(o.error)}</b>: ${esc(o.reason)}`}</span></li>`;
 
     try {
-      const c = await (await fetch('/data/proof.json', { cache: 'no-store' })).json();
+      const c = await (await timed('/data/proof.json', { cache: 'no-store' })).json();
       const v = c.vault;
       document.getElementById('where').innerHTML = v
         ? `Contract <a class="mono" href="https://sepolia.basescan.org/address/${esc(v.address)}" target="_blank" rel="noopener">${esc(v.address)}</a> on Base Sepolia.`
@@ -101,7 +109,7 @@
       summary.textContent = '';
       const started = performance.now();
       try {
-        const res = await fetch('/api/vault/cases', { cache: 'no-store' });
+        const res = await timed('/api/vault/cases', { cache: 'no-store' }, 15000);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
         lastCases = data.cases;
@@ -128,7 +136,7 @@
 
     document.querySelectorAll('[data-load]').forEach((b) => (b.onclick = async () => {
       if (b.dataset.load === 'post') {
-        const p = await (await fetch('/data/post-whitehouse.json')).json();
+        const p = await (await timed('/data/post-whitehouse.json')).json();
         post.value = p.postId;
         const { postId, ...response } = p;
         ta.value = JSON.stringify(response, null, 2);
@@ -136,7 +144,7 @@
       }
       b.disabled = true;
       try {
-        const data = await (await fetch('/api/vault/cases', { cache: 'no-store' })).json();
+        const data = await (await timed('/api/vault/cases', { cache: 'no-store' }, 15000)).json();
         lastCases = data.cases;
         post.value = '';
         ta.value = JSON.stringify(data.cases[0].response, null, 2);

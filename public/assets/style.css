@@ -446,3 +446,20 @@ footer.site .wrap { display: flex; flex-wrap: wrap; gap: 6px 22px; }
 @media (prefers-reduced-motion: reduce) {
   .msg, .msg.slip, .plan > div, .msg .rcs .rc, .rc.ok .rc-dot, .meter span, .verdict .posts .post, .dots i, .payslip.pending .ps-status { animation: none; }
 }
+
+/* Proof page: paid Cardano jobs first */
+.proof-cardano { padding: 8px 0 48px; }
+.proof-cardano h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 6px; }
+.proof-cardano .kicker { color: var(--ink-2); margin-bottom: 18px; }
+.jobs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.job { background: var(--card); border: 1px solid var(--rule); border-top: 4px solid #0033ad; border-radius: 10px; padding: 16px 18px; }
+:root[data-theme='dark'] .job { border-top-color: #6f8cff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .job { border-top-color: #6f8cff; } }
+.job header { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.job .mono { overflow-wrap: anywhere; margin: 4px 0 8px; }
+.steps-mini { list-style: none; margin: 8px 0 0; padding: 0; }
+.steps-mini li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 2px 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px dotted var(--rule); font-size: 0.93rem; }
+.steps-mini li:last-child { border-bottom: 0; }
+.steps-mini li > .small { grid-column: 2 / 4; }
+.ok-dot, .dot-off { width: 8px; height: 8px; border-radius: 50%; background: var(--confirm); align-self: center; }
+.dot-off { background: var(--rule); }

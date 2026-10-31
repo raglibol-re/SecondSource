@@ -28,81 +28,155 @@
   <main class="wrap">
     <div class="page-head">
       <h1>Proof</h1>
-      <p class="lede">Everything SecondSource did, on chain. Testnets only.</p>
+      <p class="lede">Everything SecondSource did, on chain. Testnets only: Cardano Preprod and Base Sepolia.</p>
     </div>
 
+    <section class="proof-cardano" id="cardano" aria-labelledby="cardano-h">
+      <h2 id="cardano-h">Paid jobs on Cardano Preprod</h2>
+      <p class="kicker">Buyers paid SecondSource on Cardano, and every payment settled only after the result existed.</p>
+      <div id="cardano-body"><p class="muted">Reading the transaction log…</p></div>
+    </section>
+
     <section style="padding-bottom: 48px">
-      <div class="cols" id="proof"><p class="muted">Loading…</p></div>
+      <h2 style="margin-bottom: 16px">Signed data used on chain, Base Sepolia</h2>
+      <div class="cols" id="proof"><p class="muted">Reading the deployment record…</p></div>
     </section>
 
     <section style="padding-bottom: 48px">
       <h2 style="margin-bottom: 16px">Latest transactions</h2>
-      <div class="table-scroll" id="txs"><p class="muted">Loading…</p></div>
+      <div class="table-scroll" id="txs"><p class="muted">Reading the transaction log…</p></div>
     </section>
 
     <section style="padding-bottom: 72px">
-      <details class="more">
-        <summary>The wallet and the Airnode signers SecondSource trusts</summary>
-        <p id="payer" class="muted" style="margin-top: 12px">Loading…</p>
-        <div class="table-scroll" id="signers"><p class="muted">Loading…</p></div>
+      <details class="more" open>
+        <summary>The evidence wallet and the Airnode signers SecondSource trusts</summary>
+        <p id="payer" class="muted" style="margin-top: 12px"></p>
+        <div class="table-scroll" id="signers"><p class="muted">Reading the signer list…</p></div>
+        <p class="small muted" id="signers-note"></p>
       </details>
     </section>
   </main>
-  <footer class="site"><div class="wrap">Testnets only: Base Sepolia and Cardano Preprod.</div></footer>
+  <footer class="site"><div class="wrap">Testnets only: Base Sepolia and Cardano Preprod. Every row links to a public explorer.</div></footer>
 
   <script type="module">
     import { esc } from '/assets/report.js';
-    const names = { twitter: 'TwitterAPI.io', benzinga: 'Benzinga', tickerlayer: 'TickerLayer', openrouter: 'OpenRouter', nodary: 'Nodary' };
-    try {
-      const p = await (await fetch('/data/proof.json', { cache: 'no-store' })).json();
-      const base = (tx) => `https://sepolia.basescan.org/tx/${tx}`;
-      const ada = (tx) => `https://preprod.cardanoscan.io/transaction/${tx}`;
-      const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`;
-      const blocks = [];
-      if (p.vault)
-        blocks.push(`<div><h3>Guarded Vault, Base Sepolia</h3><p>Trades only with a Nodary price signed under 60 seconds ago, a primary-source post signed by the TwitterAPI.io Airnode, and a CONFIRMED verdict that cites it. <a href="/vault">Test it yourself</a>.</p>
-          <p class="small">${link(`https://sepolia.basescan.org/address/${p.vault.address}`, 'Contract')}, ${link(base(p.vault.deployTx), 'deployment')}. Allowed and refused trades are in the list below.</p></div>`);
-      if (p.masumi)
-        blocks.push(`<div><h3>Masumi registry, Cardano Preprod</h3><p>SecondSource is a registered agent: ${esc(p.masumi.state === 'RegistrationConfirmed' ? 'confirmed' : p.masumi.state)}.</p>
-          <p class="small">${link(ada(p.masumi.registrationTx), 'Registration transaction')}</p></div>`);
-      if (p.sokosumi?.paidTask) {
-        const t = p.sokosumi.paidTask;
-        blocks.push(`<div><h3>A paid Sokosumi task</h3><p>${esc(t.price)}. Verdict ${esc(t.verdict)}, task ${esc(t.status.toLowerCase())}.</p>
-          <p class="small">${link(ada(t.fundsLockedTx), 'Escrow locked')}, ${link(ada(t.resultSubmittedTx), 'result hash on chain')}${t.payout?.withdrawnTx ? `, ${link(ada(t.payout.withdrawnTx), 'payout to SecondSource')}` : ''}</p></div>`);
+    // Every request gives up after 5 s, so a slow network shows a readable message instead of an empty block.
+    const getJson = async (url, ms = 5000) => {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), ms);
+      try {
+        const r = await fetch(url, { signal: ctl.signal, cache: 'no-store' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return await r.json();
+      } finally {
+        clearTimeout(timer);
       }
-      document.getElementById('proof').innerHTML = blocks.join('') || '<p>Nothing on chain yet.</p>';
-    } catch {
-      document.getElementById('proof').innerHTML = '<p>Could not load the on-chain summary.</p>';
-    }
-    try {
-      const s = await (await fetch('/api/status')).json();
-      document.getElementById('payer').innerHTML = s.payer
-        ? `<a class="mono" href="https://sepolia.basescan.org/address/${esc(s.payer.address)}" target="_blank" rel="noopener">${esc(s.payer.address)}</a> on Base Sepolia holds <b>${esc(s.payer.ausd ?? '?')} aUSD</b>.`
-        : await (async () => { try { const p = await (await fetch('/data/proof.json')).json(); return p.payer ? `<a class="mono" href="https://sepolia.basescan.org/address/${esc(p.payer)}" target="_blank" rel="noopener">${esc(p.payer)}</a> on Base Sepolia. Every x402 payment below comes from this wallet. Live checks on this site are switched off; recorded checks replay for free.` : 'No wallet is attached to this deployment.'; } catch { return 'No wallet is attached to this deployment.'; } })();
-      document.getElementById('signers').innerHTML = `<table class="list"><thead><tr><th>API</th><th>Signer address</th><th>Price per call</th></tr></thead><tbody>${Object.entries(s.airnodes)
-        .map(([k, v]) => {
-          const prices = Object.values(s.prices[k] ?? {});
-          const p = prices.length ? `${Math.min(...prices.map(Number)).toFixed(2)} aUSD` : 'free';
-          return `<tr><td><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(names[k] ?? k)}</a></td><td class="mono">${esc(v.address)}</td><td>${p}</td></tr>`;
-        })
-        .join('')}</tbody></table>`;
-    } catch {
-      document.getElementById('payer').textContent = 'Could not reach the status endpoint.';
-    }
-    try {
-      const txs = await (await fetch('/data/transactions.json', { cache: 'no-store' })).json();
-      if (!txs.length) throw new Error();
+    };
+    const names = { twitter: 'TwitterAPI.io', benzinga: 'Benzinga', tickerlayer: 'TickerLayer', openrouter: 'OpenRouter', nodary: 'Nodary', lunarcrush: 'LunarCrush', finnhub: 'Finnhub' };
+    const base = (tx) => `https://sepolia.basescan.org/tx/${tx}`;
+    const ada = (tx) => `https://preprod.cardanoscan.io/transaction/${tx}`;
+    const link = (href, text) => `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+    const hashOf = (url) => url.split('/').pop();
+    const shortTx = (url) => `${hashOf(url).replace(/^0x/, '').slice(0, 8)}…`;
+    const day = (iso) => iso.replace('T', ' ').slice(0, 16) + ' UTC';
+    const fail = (id, what) => (document.getElementById(id).innerHTML = `<p class="error">Could not load ${what} within 5 seconds. Every transaction is also listed in <a href="https://github.com/raglibol-re/SecondSource/blob/main/docs/transactions.md" target="_blank" rel="noopener">docs/transactions.md</a>.</p>`);
+
+    let proof = null;
+    const proofP = getJson('/data/proof.json').then((p) => (proof = p)).catch(() => null);
+    const txsP = getJson('/data/transactions.json').catch(() => null);
+
+    // ---------- Paid jobs on Cardano, from the committed transaction log ----------
+    (async () => {
+      const txs = await txsP;
+      await proofP;
+      if (!txs) return fail('cardano-body', 'the Cardano transactions');
+      const c = txs.filter((t) => t.network === 'Cardano Preprod');
+      const tasks = {};
+      for (const t of c) {
+        const m = /Task (\S+)/.exec(t.what);
+        if (!m) continue;
+        const k = m[1];
+        tasks[k] ??= { id: k };
+        if (/FundsLocked/.test(t.what)) tasks[k].locked = t;
+        if (/ResultSubmitted/.test(t.what)) tasks[k].result = t;
+        if (/Withdrawn/.test(t.what)) tasks[k].paid = t;
+      }
+      const x402 = c.filter((t) => /^x402 payment \(2 tADA\)/.test(t.what)).reverse();
+      const reg = c.find((t) => /Masumi registry/.test(t.what));
+      const step = (t, label) => (t ? `<li><span class="ok-dot"></span><span>${esc(label)}</span>${link(t.link, shortTx(t.link))}<span class="muted small">${esc(day(t.when))}</span></li>` : `<li class="muted"><span class="dot-off"></span><span>${esc(label)}</span><span>not yet</span></li>`);
+      const taskCards = Object.values(tasks)
+        .sort((a, b) => (b.locked?.when ?? '').localeCompare(a.locked?.when ?? ''))
+        .map((t) => `<article class="job">
+            <header><b>Sokosumi task, Masumi escrow</b><span class="badge ${t.paid ? 'ok' : ''}">${t.paid ? 'Paid out' : t.result ? 'Result on chain' : 'In escrow'}</span></header>
+            <p class="small muted mono">${esc(t.id)}</p>
+            <ol class="steps-mini">
+              ${step(t.locked, 'Buyer funds 1 tUSDM into escrow')}
+              ${step(t.result, 'Result hash written on chain')}
+              ${step(t.paid, 'Escrow pays SecondSource')}
+            </ol>
+          </article>`)
+        .join('');
+      const x402Card = `<article class="job">
+          <header><b>Direct requests over x402, 2 tADA each</b><span class="badge ok">${x402.length} paid</span></header>
+          <p class="small muted">No account and no escrow: the buyer signs a 2 tADA payment, and it settles only after the verdict exists.</p>
+          <ol class="steps-mini">${x402.map((t) => `<li><span class="ok-dot"></span><span>${esc(day(t.when))}</span>${link(t.link, shortTx(t.link))}</li>`).join('')}</ol>
+        </article>`;
+      document.getElementById('cardano-body').innerHTML = `<div class="jobs">${taskCards}${x402Card}</div>
+        <p class="small muted" style="margin-top: 12px">SecondSource is a registered Masumi agent${reg ? `: ${link(reg.link, 'registration ' + shortTx(reg.link))}` : ''}${proof?.masumi?.sellerAddress ? `, selling address ${link('https://preprod.cardanoscan.io/address/' + proof.masumi.sellerAddress, proof.masumi.sellerAddress.slice(0, 16) + '…')}` : ''}. Snapshot from the committed transaction log.</p>`;
+    })();
+
+    // ---------- Base Sepolia: the vault ----------
+    (async () => {
+      const p = await proofP;
+      if (!p) return fail('proof', 'the deployment record');
+      document.getElementById('proof').innerHTML = p.vault
+        ? `<div><h3>Guarded Vault</h3><p>Trades only with a Nodary price signed under 60 seconds ago, a primary-source post signed by the TwitterAPI.io Airnode, and a CONFIRMED verdict that cites it. <a href="/vault?run">Run the tamper test</a>.</p>
+            <p class="small">${link(`https://sepolia.basescan.org/address/${p.vault.address}`, p.vault.address)}<br />${link(base(p.vault.deployTx), 'Deployment transaction')}</p></div>
+           <div><h3>Evidence bought per call</h3><p>Every signed answer SecondSource uses is paid for over x402 in aUSD on Base Sepolia. Each payment is a row in the table below.</p></div>`
+        : '<p>No contract recorded.</p>';
+    })();
+
+    // ---------- Latest transactions ----------
+    (async () => {
+      const txs = await txsP;
+      if (!txs?.length) return fail('txs', 'the transaction list');
       const rows = txs
         .slice()
         .reverse()
-        .map((t) => `<tr><td>${esc(t.when.replace('T', ' ').slice(5, 16))}</td><td>${esc(t.network.replace('Cardano Preprod', 'Cardano').replace('Base Sepolia', 'Base'))}</td><td>${esc(t.what)}</td><td><a href="${esc(t.link)}" target="_blank" rel="noopener">View</a></td></tr>`);
+        .map((t) => `<tr><td>${esc(t.when.replace('T', ' ').slice(5, 16))}</td><td>${esc(t.network.replace('Cardano Preprod', 'Cardano').replace('Base Sepolia', 'Base'))}</td><td>${esc(t.what)}</td><td>${link(t.link, 'View')}</td></tr>`);
       const table = (n) => `<table class="list"><thead><tr><th>When (UTC)</th><th>Chain</th><th>What</th><th></th></tr></thead><tbody>${rows.slice(0, n).join('')}</tbody></table>`;
       const box = document.getElementById('txs');
       box.innerHTML = table(12) + (rows.length > 12 ? `<p style="margin-top: 12px"><button type="button" class="linklike" id="alltx">Show all ${rows.length} transactions</button></p>` : '');
       document.getElementById('alltx')?.addEventListener('click', () => (box.innerHTML = table(rows.length)));
-    } catch {
-      document.getElementById('txs').innerHTML = '<p>No transactions recorded yet.</p>';
-    }
+    })();
+
+    // ---------- Signers: snapshot first, then the live balance ----------
+    const renderSigners = (s, label) => {
+      document.getElementById('signers').innerHTML = `<table class="list"><thead><tr><th>API</th><th>Signer address</th><th>Price per call</th></tr></thead><tbody>${Object.entries(s.airnodes)
+        .map(([k, v]) => {
+          const prices = Object.values(s.prices[k] ?? {});
+          const p = prices.length ? `${Math.min(...prices.map(Number)).toFixed(2)} aUSD` : 'free';
+          return `<tr><td>${link(v.url, names[k] ?? k)}</td><td class="mono">${esc(v.address)}</td><td>${p}</td></tr>`;
+        })
+        .join('')}</tbody></table>`;
+      document.getElementById('signers-note').textContent = label;
+    };
+    (async () => {
+      try {
+        const snap = await getJson('/data/signers.json');
+        renderSigners(snap, `Snapshot from ${day(snap.generatedAt)}, the list the code verifies against.`);
+      } catch {
+        fail('signers', 'the signer list');
+      }
+      await proofP;
+      const payerLine = (addr, extra) => `${link(`https://sepolia.basescan.org/address/${addr}`, addr)} on Base Sepolia pays for the evidence${extra}.`;
+      if (proof?.payer) document.getElementById('payer').innerHTML = payerLine(proof.payer, '');
+      try {
+        const s = await getJson('/api/status');
+        if (s.payer) document.getElementById('payer').innerHTML = payerLine(s.payer.address, `, holding <b>${esc(s.payer.ausd ?? '?')} aUSD</b> (live)`);
+        if (s.airnodes) renderSigners(s, 'Live from the running deployment.');
+      } catch {}
+    })();
   </script>
 </body>
 </html>

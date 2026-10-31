@@ -50,7 +50,18 @@
         <span id="payrow" class="payrow"></span>
         <span class="small muted">Charged only when the verdict is ready. Test funds: <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">tADA</a>, <a href="https://faucet.circle.com/" target="_blank" rel="noopener">USDC</a>.</span>
       </div>
-      <details class="key" id="keybox" style="margin-top: 6px">
+      <p class="nowallet small" id="nowallet">No wallet? <button type="button" class="linklike" data-replay="binance-hack-2026-10-31">Watch a real paid run, free</button> or <button type="button" class="linklike" data-replay="hassett-agent-2025-04-07">the White House denial</button>. Every receipt in a replay is a real signed answer you can check on <a href="/verify">Verify</a>.</p>
+      <details class="more tokens">
+        <summary>Which test token for what</summary>
+        <table class="list small">
+          <tbody>
+            <tr><td>You pay SecondSource, Cardano</td><td><b>2 tADA</b> per question over x402 on Cardano Preprod (or 1 tUSDM through Masumi escrow on Sokosumi)</td><td><a href="https://dispenser.masumi.network" target="_blank" rel="noopener">Get tADA</a></td></tr>
+            <tr><td>You pay SecondSource, EVM</td><td><b>0.10 USDC</b> per question over x402 on Base Sepolia, signed once, no gas</td><td><a href="https://faucet.circle.com/" target="_blank" rel="noopener">Get USDC</a></td></tr>
+            <tr><td>SecondSource buys evidence</td><td><b>aUSD</b> per signed answer over x402 on Base Sepolia, from its own wallet. You never need aUSD.</td><td></td></tr>
+          </tbody>
+        </table>
+      </details>
+      <details class="key" id="keybox" style="margin-top: 6px" hidden>
         <summary class="small muted">Demo key</summary>
         <div class="row" style="margin-top: 6px">
           <label for="key" class="sr-only">Demo key</label>
@@ -434,6 +445,9 @@
       }
     });
     document.getElementById('demo').onclick = () => ask('demo');
+    // The team's demo key spends the shared evidence wallet, so its box only appears with ?demo in the URL.
+    if (new URLSearchParams(location.search).has('demo')) document.getElementById('keybox').hidden = false;
+    document.querySelectorAll('[data-replay]').forEach((b) => (b.onclick = () => replay(`${b.dataset.replay}.json`)));
     document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => {
       q.value = b.dataset.q;
       q.focus();

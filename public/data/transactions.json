@@ -832,5 +832,11 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/8cf8ad9b13840862cfa5f79901c60b4b252da5f37e1e4c8b3e3f2be22d817384",
     "what": "x402 payment (2 tADA) from a buyer agent; facilitator answered 504 after submitting it (led to the undecided-settlement fix)"
+  },
+  {
+    "when": "2026-10-31T11:00:45.722Z",
+    "network": "Cardano Preprod",
+    "link": "https://preprod.cardanoscan.io/transaction/30a21c79a0a8662dcf93ed5f0f4290894c05b8001193c95bd9b9f00e19105434",
+    "what": "x402 payment (2 tADA) from a buyer agent for a SecondSource investigation"
   }
 ]

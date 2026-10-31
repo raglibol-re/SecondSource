@@ -45,7 +45,19 @@
       <div class="wrap">
         <h2>What the White House actually posted</h2>
         <p class="kicker">The three posts SecondSource cited, each bought over x402 and signed by the TwitterAPI.io Airnode.</p>
-        <div class="posts" id="found"><p class="muted">Loading the recorded check…</p></div>
+        <div class="posts" id="found"><article class="post">
+    <header><b>@RapidResponse47</b><time>14:38 UTC, 7 Apr 2025</time></header>
+    <p>Wrong. Not only did Director Hassett not say this (clip below), @POTUS has been clear — &quot;it all has to change, but especially with CHINA!!!&quot;</p>
+    <footer><span class="seal-line">Signed by the TwitterAPI.io Airnode</span><a href="https://x.com/RapidResponse47/status/1909254335822692548" target="_blank" rel="noopener">original</a></footer>
+  </article><article class="post">
+    <header><b>@RapidResponse47</b><time>14:39 UTC, 7 Apr 2025</time></header>
+    <p>Wrong. Fake News.</p>
+    <footer><span class="seal-line">Signed by the TwitterAPI.io Airnode</span><a href="https://x.com/RapidResponse47/status/1909254710361575428" target="_blank" rel="noopener">original</a></footer>
+  </article><article class="post">
+    <header><b>@RapidResponse47</b><time>14:41 UTC, 7 Apr 2025</time></header>
+    <p>.@PressSec: Reports that @POTUS is considering a 90-day pause on tariffs are FAKE NEWS.</p>
+    <footer><span class="seal-line">Signed by the TwitterAPI.io Airnode</span><a href="https://x.com/RapidResponse47/status/1909255140671984072" target="_blank" rel="noopener">original</a></footer>
+  </article></div>
       </div>
     </section>
 
@@ -91,7 +103,9 @@
   <script type="module">
     import { postCard } from '/assets/report.js';
     try {
-      const r = await (await fetch('/runs/hassett-agent-2025-04-07.json')).json();
+      const ctl = new AbortController();
+      setTimeout(() => ctl.abort(), 5000);
+      const r = await (await fetch('/runs/hassett-agent-2025-04-07.json', { signal: ctl.signal })).json();
       const cited = r.citations.map((id) => r.evidence.find((e) => e.id === id)).filter(Boolean).sort((a, b) => (a.at < b.at ? -1 : 1));
       document.getElementById('found').innerHTML = cited.map((e) => postCard(e, r.attestations[e.attestation])).join('');
     } catch {

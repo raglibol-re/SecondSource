@@ -1,5 +1,6 @@
 import { privateKeyToAccount } from 'viem/accounts';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { AIRNODES, PRICES } from '../airnode/registry.ts';
 import type { CheckResult } from '../types.ts';
 
 // Refreshes the static data the site reads:
@@ -60,3 +61,6 @@ writeFileSync(
     2
   ) + '\n'
 );
+
+// The trusted Airnode signers and prices, so pages can show them without a live call.
+writeFileSync('public/data/signers.json', JSON.stringify({ generatedAt: new Date().toISOString(), airnodes: AIRNODES, prices: PRICES }, null, 2) + '\n');
