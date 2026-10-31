@@ -107,7 +107,16 @@ type Settle = (responseBody: Buffer) => Promise<{ ok: true; headers: Record<stri
 
 // Verifies the payment on a request. Returns the response to send (402 or an error), or a `settle` function to call
 // once the paid work succeeded. Not calling it means the buyer is not charged.
-export const verifyX402Payment = async (req: Request, body: unknown): Promise<{ respond: Response } | { settle: Settle }> => {
+// The terms the buyer's verified payment was made under, for the buyer's receipt.
+export interface PaymentTerms {
+  scheme?: string;
+  network?: string;
+  amount?: string;
+  asset?: string;
+  payTo?: string;
+}
+
+export const verifyX402Payment = async (req: Request, body: unknown): Promise<{ respond: Response } | { settle: Settle; terms: PaymentTerms }> => {
   const { http, ready } = server();
   const adapter = new WebAdapter(req, body);
   const path = new URL(req.url).pathname;
@@ -135,7 +144,9 @@ export const verifyX402Payment = async (req: Request, body: unknown): Promise<{ 
       }),
     };
   }
+  const req0 = result.paymentRequirements as PaymentTerms;
   return {
+    terms: { scheme: req0?.scheme, network: req0?.network, amount: req0?.amount, asset: req0?.asset, payTo: req0?.payTo },
     settle: async (responseBody) => {
       const settled = await http.processSettlement(
         result.paymentPayload,

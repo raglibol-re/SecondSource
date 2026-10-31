@@ -25,17 +25,21 @@
     </div>
   </header>
 
-  <main class="wrap" style="max-width: 860px">
-    <div class="page-head" style="padding-bottom: 8px">
+  <main class="wrap chatwrap">
+    <div class="page-head chat-head">
       <h1>Ask SecondSource</h1>
+      <p class="lede">Paste a headline or ask in plain words. The agent reads what the people involved posted, what newsrooms and filings report, and answers with a receipt for every source.</p>
     </div>
 
+    <div class="walletbar" id="walletbar" aria-live="polite"></div>
+
     <div class="thread" id="thread" aria-live="polite">
-      <div class="msg agent"><span class="who">SecondSource</span><p>Which headline should I check? Tell me when it ran if it isn't new. I'll find who it's about, read what they actually posted, and show you the receipts.</p></div>
+      <div class="msg agent"><span class="who">SecondSource</span><p>Which headline should I check? Tell me when it ran if it isn't new. I'll find who it's about, read what they actually posted, check the newsrooms, and show you the receipts.</p></div>
     </div>
 
     <form class="composer" id="composer">
       <div class="suggest" id="suggest">
+        <button type="button" data-q="Is it true that Binance was hacked recently?">Was Binance hacked?</button>
         <button type="button" data-q="Did Hassett really say Trump is considering a 90-day tariff pause? It hit the wires on 7 April 2025 at 10:12 New York time.">Hassett's tariff pause, 7 April 2025</button>
         <button type="button" data-q="Is it true that Apple is buying Disney?">Is Apple buying Disney?</button>
         <span id="runs"></span>
@@ -43,9 +47,8 @@
       <label for="q" class="sr-only">Your question</label>
       <textarea id="q" required minlength="8" maxlength="1000" placeholder="Paste a headline, or ask: is it true the Fed cut rates by 50 basis points today?"></textarea>
       <div class="row">
-        <button class="btn" type="button" id="payada">Pay 2 tADA with a Cardano wallet</button>
-        <button class="btn secondary" type="submit" id="pay">Pay 0.10 USDC</button>
-        <span class="small muted" id="walletline">You pay only if the agent finishes. Test funds: <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">tADA</a>, <a href="https://faucet.circle.com/" target="_blank" rel="noopener">USDC</a>.</span>
+        <span id="payrow" class="payrow"></span>
+        <span class="small muted">Charged only when the verdict is ready. Test funds: <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">tADA</a>, <a href="https://faucet.circle.com/" target="_blank" rel="noopener">USDC</a>.</span>
       </div>
       <details class="key" id="keybox" style="margin-top: 6px">
         <summary class="small muted">Demo key</summary>
@@ -60,49 +63,275 @@
   <footer class="site"><div class="wrap"><span>Agents use the same agent over HTTP: <code>POST /api/x402/investigate</code>.</span><a href="/verify">Verify a receipt</a></div></footer>
 
   <script type="module">
-    import { esc, receiptHtml, renderReport } from '/assets/report.js';
+    import { esc, receiptHtml, renderReport, short } from '/assets/report.js';
 
     const thread = document.getElementById('thread');
     const q = document.getElementById('q');
-    const sleep = (ms) => new Promise((r) => setTimeout(r, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ms));
-    const scroll = (el) => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
+    const scroll = (el) => el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
+    let typing = null;
+    // New messages go above the "working" indicator, which always stays last.
     const add = (html) => {
-      thread.insertAdjacentHTML('beforeend', html);
-      const el = thread.lastElementChild;
-      scroll(el);
+      const tpl = document.createElement('template');
+      tpl.innerHTML = html.trim();
+      const el = tpl.content.firstElementChild;
+      thread.insertBefore(el, typing && typing.isConnected ? typing : null);
+      scroll(typing && typing.isConnected ? typing : el);
       return el;
     };
-    const agent = (inner) => add(`<div class="msg agent"><span class="who">SecondSource</span>${inner}</div>`);
+    const agent = (inner, cls = '') => add(`<div class="msg agent ${cls}"><span class="who">SecondSource</span>${inner}</div>`);
+    const think = (text) => {
+      if (!typing || !typing.isConnected) {
+        typing = null;
+        typing = agent('<p class="typing-line"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="t"></span></p>', 'typing');
+      }
+      typing.querySelector('.t').textContent = text;
+      scroll(typing);
+    };
+    const stopThinking = () => {
+      typing?.remove();
+      typing = null;
+    };
     const fmtTime = (iso) => (iso ? new Date(iso).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : 'now');
+    const span = (h) => (h >= 48 ? `the last ${Math.round(h / 24)} days` : `the last ${h} hours`);
 
-    const planHtml = (p, signed, model) => `<p>${esc(p.reply)}</p>
-      <div class="chips">
-        ${(p.officialAccounts ?? []).map((a) => `<span class="chip">@${esc(a)}</span>`).join('')}
-        ${p.claimedSource && !(p.officialAccounts ?? []).includes(p.claimedSource) ? `<span class="chip">@${esc(p.claimedSource)}</span>` : ''}
-        ${(p.keywords ?? []).map((k) => `<span class="chip">“${esc(k)}”</span>`).join('')}
-        <span class="chip"><b>When</b> ${esc(fmtTime(p.publishedAt))}</span>
-        ${p.asset ? `<span class="chip"><b>Market</b> ${esc(p.asset)}</span>` : ''}
-      </div>
-      <p class="small muted">${signed ? `Planned by ${esc(model)} through the OpenRouter Airnode; the plan is signed.` : 'Planned by simple rules: no model was reachable.'}</p>`;
+    // ---------- The plan, grouped by where the agent will look ----------
+    const planHtml = (p, signed, model) => {
+      const accounts = [...new Set([...(p.officialAccounts ?? []), ...(p.claimedSource ? [p.claimedSource] : [])])];
+      const undated = !p.publishedAt || (p.lookbackHours ?? 0) > 6;
+      const recent = !p.publishedAt || Date.now() - Date.parse(p.publishedAt) < 8 * 86400_000;
+      const topic = p.newsTopic ?? (p.keywords ?? [])[0]?.toLowerCase();
+      const category = p.newsCategory ?? (p.asset?.startsWith('crypto/') ? 'crypto' : 'general');
+      const rows = [
+        ['Primary sources', accounts.map((a) => `@${a}`)],
+        ['Searching X for', (p.keywords ?? []).map((k) => `“${k}”`)],
+        ['Newsrooms and filings', ['Benzinga newswire', ...(recent && topic ? [`Outlets on “${topic}”`, `Finnhub ${category} news`] : []), ...(p.ticker ? [`${p.ticker} news`, `${p.ticker} SEC filings`] : [])]],
+        ['Time', [undated ? span(p.lookbackHours ?? 168) : `around ${fmtTime(p.publishedAt)}`]],
+        ['Market', p.asset ? [p.asset] : []],
+      ].filter(([, v]) => v.length);
+      return `<p>${esc(p.reply)}</p>
+        <dl class="plan">${rows.map(([k, v], i) => `<div style="--i:${i}"><dt>${esc(k)}</dt><dd class="chips">${v.map((c) => `<span class="chip">${esc(c)}</span>`).join('')}</dd></div>`).join('')}</dl>
+        <p class="small muted">${signed ? `Planned by ${esc(model)} through the OpenRouter Airnode. The plan is signed.` : 'Planned by simple rules: no model was reachable.'}</p>`;
+    };
 
-    // One investigation, streamed: plan, then receipts, then the verdict.
-    const work = () => {
+    // ---------- Wallet: connect up front, reuse for every payment ----------
+    const wallet = { kind: null };
+    const WKEY = 'secondsource:wallet';
+    const remember = (v) => {
+      try {
+        v ? localStorage.setItem(WKEY, v) : localStorage.removeItem(WKEY);
+      } catch {}
+    };
+    const forget = () => {
+      for (const k of Object.keys(wallet)) delete wallet[k];
+      wallet.kind = null;
+    };
+    const shortAddr = (a) => (a ? `${a.slice(0, a.startsWith('addr') ? 12 : 6)}…${a.slice(-4)}` : '');
+    const money = (units, dp = 2) => (Number(units) / 1e6).toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: 2 });
+    const NO_CARDANO = 'No Cardano wallet found in this browser. Install <a href="https://eternl.io" target="_blank" rel="noopener">Eternl</a> or <a href="https://www.lace.io" target="_blank" rel="noopener">Lace</a>, switch it to preprod, and get test ADA at <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">dispenser.masumi.network</a>.';
+    const NO_EVM = 'No EVM wallet found in this browser. Install MetaMask or another EVM wallet and reload.';
+    class HtmlError extends Error {}
+
+    const bar = document.getElementById('walletbar');
+    const renderWallet = (note = '') => {
+      bar.classList.remove('busy');
+      if (!wallet.kind) {
+        bar.className = 'walletbar';
+        bar.innerHTML = `<span class="wb-text">${note || 'Connect a wallet to pay per question.'}</span>
+          <span class="wb-actions"><button type="button" class="btn small" data-connect="cardano">Connect Cardano wallet</button><button type="button" class="btn small secondary" data-connect="evm">Connect EVM wallet</button></span>`;
+      } else {
+        const c = wallet.kind === 'cardano';
+        const icon = c && /^data:image\//.test(wallet.icon ?? '') ? `<img class="wb-icon" src="${esc(wallet.icon)}" alt="" />` : '<span class="wb-icon wb-dot"></span>';
+        const low = c ? wallet.lovelace < 4_000_000n : wallet.usdc !== undefined && wallet.usdc < 100_000n;
+        bar.className = 'walletbar on';
+        bar.innerHTML = `${icon}
+          <span class="wb-name"><b>${esc(c ? wallet.name : 'EVM wallet')}</b><span class="mono" title="${esc(wallet.address)}">${esc(shortAddr(wallet.address))}</span></span>
+          <span class="wb-bal ${low ? 'low' : ''}">${c ? `${money(wallet.lovelace)} tADA` : wallet.usdc !== undefined ? `${money(wallet.usdc)} USDC` : ''}</span>
+          <span class="wb-net">${c ? 'Cardano Preprod' : 'Base Sepolia'}</span>
+          ${low ? `<a class="small" href="${c ? 'https://dispenser.masumi.network' : 'https://faucet.circle.com/'}" target="_blank" rel="noopener">Get test ${c ? 'ADA' : 'USDC'}</a>` : ''}
+          <button type="button" class="linklike small" data-disconnect>Disconnect</button>`;
+      }
+      bar.querySelectorAll('[data-connect]').forEach((b) => (b.onclick = () => connect(b.dataset.connect).catch(walletError)));
+      bar.querySelector('[data-disconnect]')?.addEventListener('click', () => {
+        forget();
+        remember(null);
+        renderWallet();
+      });
+      renderPayButtons();
+    };
+    const walletError = (e) => {
+      const msg = e instanceof HtmlError ? e.message : esc(e?.code === 4001 ? 'You declined the connection in your wallet.' : (e?.message ?? String(e)));
+      forget();
+      renderWallet(`<span class="error-inline">${msg}</span>`);
+    };
+    const connect = async (kind, id) => {
+      bar.classList.add('busy');
+      const text = bar.querySelector('.wb-text');
+      if (kind === 'cardano') {
+        const { listCardanoWallets, connectCardanoWallet } = await import('/assets/cardano-pay.js');
+        const list = listCardanoWallets();
+        if (!list.length) throw new HtmlError(NO_CARDANO);
+        const chosen = (id && list.find((w) => w.id === id)) ?? list.find((x) => /eternl|lace/i.test(x.name)) ?? list[0];
+        if (text) text.textContent = `Approve SecondSource in ${chosen.name}…`;
+        const signer = await connectCardanoWallet(chosen.id);
+        Object.assign(wallet, { kind: 'cardano', id: chosen.id, name: chosen.name, icon: chosen.icon, signer, address: signer.getAddress(), lovelace: await signer.lovelace() });
+        remember(`cardano:${chosen.id}`);
+      } else {
+        if (!window.ethereum) throw new HtmlError(NO_EVM);
+        if (text) text.textContent = 'Approve SecondSource in your wallet…';
+        const { connectWallet, usdcBalance } = await import('/assets/x402-usdc.js');
+        const address = await connectWallet(window.ethereum);
+        Object.assign(wallet, { kind: 'evm', address, usdc: await usdcBalance(window.ethereum, address) });
+        remember('evm');
+      }
+      renderWallet();
+    };
+    const refreshBalance = async () => {
+      try {
+        if (wallet.kind === 'cardano') wallet.lovelace = await wallet.signer.lovelace();
+        if (wallet.kind === 'evm') wallet.usdc = await (await import('/assets/x402-usdc.js')).usdcBalance(window.ethereum, wallet.address);
+        if (wallet.kind) renderWallet();
+      } catch {}
+    };
+    // Reconnect silently when this browser already approved the wallet (extensions inject a moment after load).
+    setTimeout(async () => {
+      let v = null;
+      try {
+        v = localStorage.getItem(WKEY);
+      } catch {}
+      try {
+        if (v?.startsWith('cardano:') && (await window.cardano?.[v.slice(8)]?.isEnabled?.())) await connect('cardano', v.slice(8));
+        else if (v === 'evm' && (await window.ethereum?.request({ method: 'eth_accounts' }))?.length) await connect('evm');
+      } catch {
+        forget();
+        renderWallet();
+      }
+    }, 400);
+
+    const renderPayButtons = () => {
+      const row = document.getElementById('payrow');
+      const ada = '<button class="btn" type="button" data-pay="ada">Ask and pay 2 tADA</button>';
+      const usdc = (secondary) => `<button class="btn ${secondary ? 'secondary' : ''}" type="button" data-pay="usdc">${secondary ? 'Pay 0.10 USDC instead' : 'Ask and pay 0.10 USDC'}</button>`;
+      row.innerHTML = wallet.kind === 'cardano' ? ada : wallet.kind === 'evm' ? usdc(false) : ada + usdc(true);
+      row.querySelectorAll('[data-pay]').forEach((b) => (b.onclick = () => ask(b.dataset.pay)));
+    };
+
+    // ---------- The payment receipt: shown for every paid question ----------
+    const NETWORKS = { 'cardano:preprod': 'Cardano Preprod', 'eip155:84532': 'Base Sepolia' };
+    const STATUS = {
+      settling: ['Settling', 'pending'],
+      settled: ['Paid', 'ok'],
+      pending: ['Paid, confirming on chain', 'pending'],
+      confirmed: ['Paid, confirmed on chain', 'ok'],
+      notcharged: ['Not charged', 'off'],
+    };
+    const isCardano = (network, value = '') => (network ?? '').startsWith('cardano') || value.startsWith('addr') || /^[0-9a-f]{64}$/.test(value);
+    const txUrl = (tx, network) => (isCardano(network, tx) ? `https://preprod.cardanoscan.io/transaction/${tx}` : `https://sepolia.basescan.org/tx/${tx}`);
+    const addrUrl = (a, network) => (isCardano(network, a) ? `https://preprod.cardanoscan.io/address/${a}` : `https://sepolia.basescan.org/address/${a}`);
+    const payslip = (d) => {
+      const el = agent('<article class="payslip"></article>', 'slip').querySelector('.payslip');
+      const render = () => {
+        const net = d.terms?.network ?? (d.method === 'ada' ? 'cardano:preprod' : 'eip155:84532');
+        const cardano = net.startsWith('cardano');
+        const amount = d.terms?.amount ? `${money(d.terms.amount, cardano ? 0 : 2)} ${cardano ? 'tADA' : 'USDC'}` : d.method === 'ada' ? '2 tADA' : '0.10 USDC';
+        const [label, tone] = STATUS[d.status] ?? STATUS.settling;
+        const link = (href, text, title = '') => `<a href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${esc(text)}</a>`;
+        const rows = [
+          ['For', `“${esc(d.question.length > 90 ? d.question.slice(0, 88) + '…' : d.question)}”`],
+          ['From', d.from ? `${esc(d.walletName ?? '')} ${link(addrUrl(d.from, net), shortAddr(d.from), d.from)}` : ''],
+          ['To', d.terms?.payTo ? `SecondSource ${link(addrUrl(d.terms.payTo, net), shortAddr(d.terms.payTo), d.terms.payTo)}` : 'SecondSource'],
+          ['Network', `${esc(NETWORKS[net] ?? net)}, paid over x402`],
+          ['Transaction', d.tx ? link(txUrl(d.tx, net), short(d.tx), d.tx) : d.status === 'notcharged' ? 'none' : '<span class="muted">after the verdict</span>'],
+          ['Time', esc(fmtTime(d.settledAt ?? d.authorisedAt))],
+          ['Result', d.resultHash ? `<span class="mono" title="${esc(d.resultHash)}">${esc(short(d.resultHash))}</span>${d.verdict ? `, ${esc(d.verdict.toLowerCase())}` : ''}` : ''],
+        ].filter(([, v]) => v);
+        el.className = `payslip ${tone}`;
+        el.innerHTML = `<header><span class="ps-title">Payment receipt</span><span class="ps-status">${esc(label)}</span></header>
+          <p class="ps-amount">${esc(amount)}</p>
+          <dl>${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+          <footer><span>${d.status === 'notcharged' ? 'The work did not finish, so the payment was never settled.' : 'Settled only after the verdict was ready.'}</span><button type="button" class="linklike" data-save>Save receipt</button></footer>`;
+        el.querySelector('[data-save]').onclick = () => {
+          const body = { receipt: 'SecondSource payment', amount, network: NETWORKS[net] ?? net, from: d.from ?? null, to: d.terms?.payTo ?? null, transaction: d.tx ?? null, status: label, question: d.question, resultHash: d.resultHash ?? null, verdict: d.verdict ?? null, time: d.settledAt ?? d.authorisedAt };
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([JSON.stringify(body, null, 2)], { type: 'application/json' }));
+          a.download = `secondsource-receipt-${(d.tx ?? 'unsettled').slice(0, 12)}.json`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+        };
+      };
+      render();
+      return {
+        data: d,
+        update(patch) {
+          Object.assign(d, patch);
+          render();
+        },
+      };
+    };
+    // A Cardano payment can still be confirming when the verdict arrives; follow it until it is in a block.
+    const watchCardano = async (slip) => {
+      for (let i = 0; i < 24; i++) {
+        await new Promise((r) => setTimeout(r, 10_000));
+        try {
+          const r = await fetch(`/api/blockfrost/txs/${slip.data.tx}`);
+          if (r.ok) return slip.update({ status: 'confirmed' });
+        } catch {}
+      }
+    };
+
+    // ---------- One investigation, streamed: plan, receipts, payment, verdict ----------
+    const work = (payment) => {
       let list = null;
+      let count = 0;
+      let slip = null;
+      const terms = {};
+      const ensureSlip = (patch) => {
+        if (!payment) return null;
+        slip ??= payslip({ ...payment, terms });
+        slip.update(patch);
+        return slip;
+      };
       return {
         onEvent(e) {
-          if (e.type === 'plan') agent(planHtml(e.plan, e.signed, e.model));
-          if (e.type === 'step') {
-            if (!list) list = agent('<p>Buying signed evidence and checking every signature:</p><ul class="rcs"></ul>').querySelector('ul');
-            list.insertAdjacentHTML('beforeend', receiptHtml(e.step, e.attestation));
-            scroll(list.lastElementChild);
+          if (e.type === 'payment') {
+            Object.assign(terms, e);
+            think('Payment authorised. Planning the check…');
           }
-          if (e.type === 'settling') agent('<p class="muted">Done. Settling your payment before I hand over the verdict…</p>');
-          if (e.type === 'settlement' && e.transaction) agent(`<p class="small">${e.pending ? 'Payment submitted on Cardano, confirming' : 'Payment settled'}: <a href="${/^0x/.test(e.transaction) ? 'https://sepolia.basescan.org/tx/' : 'https://preprod.cardanoscan.io/transaction/'}${esc(e.transaction)}" target="_blank" rel="noopener">${esc(e.transaction.slice(0, 10))}…</a></p>`);
+          if (e.type === 'plan') {
+            agent(planHtml(e.plan, e.signed, e.model));
+            think('Buying signed evidence…');
+          }
+          if (e.type === 'step') {
+            if (!list) {
+              const m = agent('<p class="rcs-head">Buying signed evidence and checking every signature <span class="rcs-count">0 signed</span></p><ul class="rcs"></ul>');
+              list = m.querySelector('ul');
+              list.counter = m.querySelector('.rcs-count');
+            }
+            if (e.step.status === 'ok') count++;
+            list.insertAdjacentHTML('beforeend', receiptHtml(e.step, e.attestation));
+            list.counter.textContent = `${count} signed`;
+            think(/^Judge/.test(e.step.label) && e.step.status === 'ok' ? 'Writing up the verdict…' : `${count} signed answer${count === 1 ? '' : 's'} so far. Reading them…`);
+          }
+          if (e.type === 'settling') {
+            ensureSlip({ status: 'settling' });
+            think('Done. Settling your payment before I hand over the verdict…');
+          }
+          if (e.type === 'settlement') {
+            const s = ensureSlip({ status: e.pending ? 'pending' : 'settled', tx: e.transaction, from: e.payer ?? payment?.from, settledAt: e.settledAt ?? new Date().toISOString() });
+            if (s && e.pending && e.transaction) watchCardano(s);
+          }
           if (e.type === 'result') {
+            stopThinking();
             const el = agent('<div></div>').querySelector('div');
             renderReport(el, e.result, { animate: true, receipts: false });
+            slip?.update({ resultHash: e.result.resultHash, verdict: e.result.verdict });
           }
-          if (e.type === 'error') agent(`<p class="error">${esc(e.error)}</p>`);
+          if (e.type === 'error') {
+            stopThinking();
+            agent(`<p class="error">${esc(e.error)}</p>`);
+            if (e.notCharged) ensureSlip({ status: 'notcharged' });
+          }
         },
       };
     };
@@ -125,89 +354,114 @@
     };
 
     const busy = (on) => {
-      for (const id of ['pay', 'payada', 'demo']) document.getElementById(id).disabled = on;
-      document.getElementById('pay').textContent = on ? 'Investigating…' : 'Pay 0.10 USDC';
+      document.querySelectorAll('[data-pay], #demo, [data-connect]').forEach((b) => (b.disabled = on));
+      document.getElementById('composer').classList.toggle('working', on);
     };
 
     const ask = async (mode) => {
       const question = q.value.trim();
-      if (question.length < 8) { q.focus(); return; }
+      if (question.length < 8) {
+        q.focus();
+        return;
+      }
       add(`<div class="msg user">${esc(question)}</div>`);
       q.value = '';
       busy(true);
-      const w = work();
       try {
-        if (mode === 'pay') {
-          const { connectWallet, usdcBalance, payWithUsdc, USDC_FAUCET } = await import('/assets/x402-usdc.js');
-          const status = agent('<p class="muted">Connecting your wallet…</p>').querySelector('p');
-          const from = await connectWallet(window.ethereum);
-          const balance = await usdcBalance(window.ethereum, from);
-          if (balance < 100000n) {
-            status.innerHTML = `Your wallet ${esc(from.slice(0, 6))}…${esc(from.slice(-4))} holds ${(Number(balance) / 1e6).toFixed(2)} USDC on Base Sepolia. Get free test USDC at <a href="${USDC_FAUCET}" target="_blank" rel="noopener">faucet.circle.com</a> (choose Base Sepolia), then ask again.`;
+        if (mode === 'usdc') {
+          if (wallet.kind !== 'evm') {
+            think('Connecting your EVM wallet…');
+            await connect('evm');
+          }
+          const { payWithUsdc, USDC_FAUCET } = await import('/assets/x402-usdc.js');
+          if (wallet.usdc < 100_000n) {
+            stopThinking();
+            agent(`<p>Your wallet ${esc(shortAddr(wallet.address))} holds ${money(wallet.usdc)} USDC on Base Sepolia. Get free test USDC at <a href="${USDC_FAUCET}" target="_blank" rel="noopener">faucet.circle.com</a> (choose Base Sepolia), then ask again.</p>`);
             return;
           }
-          const { response } = await payWithUsdc(window.ethereum, from, '/api/x402/investigate', { question }, (s) => (status.textContent = s));
+          const w = work({ method: 'usdc', question, from: wallet.address, walletName: 'EVM wallet', authorisedAt: new Date().toISOString() });
+          const { response } = await payWithUsdc(window.ethereum, wallet.address, '/api/x402/investigate', { question }, (s) => think(s));
           if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error ?? `HTTP ${response.status}`);
-          status.textContent = 'Payment authorised. Working on it; I settle it only if I can finish.';
+          think('Payment authorised. I settle it only if I can finish…');
           await readStream(response, w.onEvent);
         } else if (mode === 'ada') {
-          const status = agent('<p class="muted">Looking for a Cardano wallet…</p>').querySelector('p');
-          const { listCardanoWallets, connectCardanoWallet, payWithCardano } = await import('/assets/cardano-pay.js');
-          const wallets = listCardanoWallets();
-          if (!wallets.length) {
-            status.innerHTML = 'No Cardano wallet found in this browser. Install <a href="https://eternl.io" target="_blank" rel="noopener">Eternl</a> or <a href="https://www.lace.io" target="_blank" rel="noopener">Lace</a>, switch it to preprod, and get test ADA at <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">dispenser.masumi.network</a>.';
+          if (wallet.kind !== 'cardano') {
+            think('Connecting your Cardano wallet…');
+            await connect('cardano');
+          }
+          if (wallet.lovelace < 4_000_000n) {
+            stopThinking();
+            agent(`<p>${esc(wallet.name)} (${esc(shortAddr(wallet.address))}) holds ${money(wallet.lovelace)} tADA on preprod. Get test ADA at <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">dispenser.masumi.network</a>, then ask again.</p>`);
             return;
           }
-          const chosen = wallets.find((x) => /eternl|lace/i.test(x.name)) ?? wallets[0];
-          status.textContent = `Connecting ${chosen.name}…`;
-          const signer = await connectCardanoWallet(chosen.id);
-          const lovelace = await signer.lovelace();
-          if (lovelace < 4_000_000n) {
-            status.innerHTML = `${esc(chosen.name)} (${esc(signer.getAddress().slice(0, 14))}…) holds ${(Number(lovelace) / 1e6).toFixed(2)} tADA on preprod. Get test ADA at <a href="https://dispenser.masumi.network" target="_blank" rel="noopener">dispenser.masumi.network</a>, then ask again.`;
-            return;
-          }
-          const response = await payWithCardano(signer, '/api/x402/investigate', { question }, (s) => (status.textContent = s));
+          const { payWithCardano } = await import('/assets/cardano-pay.js');
+          const w = work({ method: 'ada', question, from: wallet.address, walletName: wallet.name, authorisedAt: new Date().toISOString() });
+          const response = await payWithCardano(wallet.signer, '/api/x402/investigate', { question }, (s) => think(s));
           if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error ?? `HTTP ${response.status}`);
-          status.textContent = 'Payment signed in your Cardano wallet. Working on it; it settles only if I can finish.';
+          think('Payment signed in your wallet. It settles only if I can finish…');
           await readStream(response, w.onEvent);
         } else {
           const key = document.getElementById('key').value.trim();
-          try { localStorage.setItem('secondsource:key', key); } catch {}
+          try {
+            localStorage.setItem('secondsource:key', key);
+          } catch {}
+          think('Planning the check…');
           const res = await fetch('/api/check', { method: 'POST', headers: { 'content-type': 'application/json', 'x-demo-key': key }, body: JSON.stringify({ question }) });
           if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `HTTP ${res.status}`);
-          await readStream(res, w.onEvent);
+          await readStream(res, work(null).onEvent);
         }
       } catch (e) {
-        const msg = e?.code === 4001 ? 'You rejected the request in your wallet. Nothing was paid.' : (e?.message ?? String(e));
-        agent(`<p class="error">${esc(msg)}</p>`);
+        stopThinking();
+        const msg = e instanceof HtmlError ? e.message : esc(e?.code === 4001 ? 'You rejected the request in your wallet. Nothing was paid.' : (e?.message ?? String(e)));
+        agent(`<p class="error">${msg}</p>`);
+        if (!wallet.kind) renderWallet();
       } finally {
+        stopThinking();
         busy(false);
+        refreshBalance();
       }
     };
 
-    document.getElementById('composer').onsubmit = (e) => { e.preventDefault(); ask('pay'); };
+    document.getElementById('composer').onsubmit = (e) => {
+      e.preventDefault();
+      ask(wallet.kind === 'evm' ? 'usdc' : 'ada');
+    };
+    q.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        document.getElementById('composer').requestSubmit();
+      }
+    });
     document.getElementById('demo').onclick = () => ask('demo');
-    document.getElementById('payada').onclick = () => ask('ada');
-    document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => { q.value = b.dataset.q; q.focus(); }));
-    try { document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? ''; } catch {}
+    document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => {
+      q.value = b.dataset.q;
+      q.focus();
+    }));
+    try {
+      document.getElementById('key').value = localStorage.getItem('secondsource:key') ?? '';
+    } catch {}
+    renderWallet();
 
     // Recorded investigations, replayed as the conversation they were.
     const replay = async (file) => {
       const r = await (await fetch(`/runs/${file}`)).json();
+      stopThinking();
       thread.querySelectorAll('.msg:not(:first-child)').forEach((m) => m.remove());
       add(`<div class="msg user">${esc(r.plan?.question ?? r.input.headline)}</div>`);
-      await sleep(600);
+      think('Planning the check…');
+      await sleep(700);
       if (r.plan) {
         agent(planHtml({ ...r.input, reply: r.plan.reply }, Boolean(r.plan.model), r.plan.model));
+        think('Buying signed evidence…');
         await sleep(900);
       }
-      const w = work();
+      const w = work(null);
       for (const s of r.steps) {
         if (s.label.startsWith('Plan')) continue;
         w.onEvent({ type: 'step', step: s, attestation: s.attestation !== undefined ? r.attestations[s.attestation] : undefined });
-        await sleep(550);
+        await sleep(420);
       }
-      await sleep(400);
+      await sleep(500);
       w.onEvent({ type: 'result', result: r });
     };
     try {
@@ -215,7 +469,7 @@
       // Two recorded runs as one-click replays next to the suggestions (free, no wallet).
       document.getElementById('runs').innerHTML = runs
         .slice(0, 2)
-        .map((r) => `<button type="button" data-run="${esc(r.file)}" title="Replay a real, recorded run">Replay a real run: ${esc(r.headline.split(/[\s:]+/).slice(0, 3).join(' '))}, ${esc(r.verdict.toLowerCase())}</button>`)
+        .map((r) => `<button type="button" class="replay" data-run="${esc(r.file)}" title="Replay a real, recorded run, free">Replay: ${esc(r.headline.split(/[\s:]+/).slice(0, 3).join(' '))}, ${esc(r.verdict.toLowerCase())}</button>`)
         .join('');
       document.querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => replay(b.dataset.run)));
       const wanted = new URLSearchParams(location.search).get('replay');

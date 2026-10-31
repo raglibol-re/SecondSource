@@ -1,5 +1,13 @@
 [
   {
+    "file": "binance-hack-2026-10-31.json",
+    "headline": "Binance was hacked recently",
+    "verdict": "CONFIRMED",
+    "note": "31 Oct 2026, asked in plain words with no date. The agent looked back a week and found CNBC, Cointelegraph, The Independent and others reporting the hack; no primary account disputed it.",
+    "checkedAt": "2026-10-31T10:27:59.239Z",
+    "pinned": true
+  },
+  {
     "file": "hassett-agent-2025-04-07.json",
     "headline": "Hassett says Trump considering 90-day tariff pause",
     "verdict": "DENIED",

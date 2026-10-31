@@ -5,8 +5,10 @@ const SOURCE_NAMES = {
   tickerlayer: 'TickerLayer',
   openrouter: 'OpenRouter',
   nodary: 'Nodary',
+  lunarcrush: 'LunarCrush',
+  finnhub: 'Finnhub',
 };
-const PRICES = { twitter: 0.01, benzinga: 0.01, tickerlayer: 0.05, openrouter: 0.05, nodary: 0 };
+const PRICES = { twitter: 0.01, benzinga: 0.01, tickerlayer: 0.05, openrouter: 0.05, nodary: 0, lunarcrush: 0.02, finnhub: 0.01 };
 
 export const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -24,6 +26,9 @@ const shortLabel = (step) =>
   step.label
     .replace(/^Posts by /, 'Posts by ')
     .replace(/^Top posts about /, 'Search ')
+    .replace(/^What (.+) said about it$/, '$1 on the topic')
+    .replace(/^News outlets on "(.+)" \(LunarCrush\)$/, 'Newsrooms on “$1”')
+    .replace(/^Finnhub (\w+) market news$/, '$1 market news')
     .replace(/^Benzinga newswire, /, 'Newswire ')
     .replace(/^Market: (\S+) price bars$/, 'Prices $1')
     .replace(/^Judge: .*/, 'Judgment')
@@ -63,20 +68,28 @@ export const postCard = (e, attestation) => `<article class="post">
     <footer><span class="seal-line">Signed by the ${esc(SOURCE_NAMES[attestation?.source] ?? 'source')} Airnode</span>${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">original</a>` : ''}</footer>
   </article>`;
 
+const tally = (ev = []) => {
+  const n = (k) => ev.filter((e) => e.kind === k).length;
+  const parts = [[n('tweet'), 'post'], [n('news'), 'news story', 'news stories']].filter(([c]) => c).map(([c, one, many]) => `${c} ${c === 1 ? one : (many ?? one + 's')}`);
+  return parts.length ? `${parts.join(' and ')} read, ` : '';
+};
+
 export const renderReport = (el, r, { animate = true, receipts = true } = {}) => {
   const cited = (r.citations ?? []).map((id) => r.evidence.find((e) => e.id === id)).filter(Boolean);
   const citedIds = new Set(cited.map((e) => e.id));
   const rest = (r.evidence ?? []).filter((e) => !citedIds.has(e.id));
   el.innerHTML = `
-    <div class="verdict">
+    <div class="verdict v-${esc((r.verdict ?? '').toLowerCase())}">
       <div class="verdict-head">
-        <p class="eyeline">${r.input?.publishedAt ? `As of ${esc(fmtTime(r.input.publishedAt))}` : 'Checked now'}</p>
+        <p class="eyeline">${(r.input?.lookbackHours ?? 0) > 6 ? `Checked ${esc(fmtTime(r.checkedAt ?? r.input.publishedAt))}, looking back ${r.input.lookbackHours >= 48 ? `${Math.round(r.input.lookbackHours / 24)} days` : `${r.input.lookbackHours} hours`}` : r.input?.publishedAt ? `As of ${esc(fmtTime(r.input.publishedAt))}` : 'Checked now'}</p>
         <p class="claim">${esc(r.input?.headline)}</p>
         ${stampHtml(r.verdict, animate)}
       </div>
       <p class="reasoning">${esc(r.reasoning)}</p>
-      ${cited.length ? `<div class="posts">${cited.map((e) => postCard(e, r.attestations[e.attestation])).join('')}</div>` : ''}
-      <p class="meta small">${Math.round((r.confidence ?? 0) * 100)}% confidence, ${r.attestations?.length ?? 0} signed answers, ${esc(r.costAusd)} aUSD of evidence${r.judge ? `, judged by ${esc(r.judge.model)}` : ''}.</p>
+      ${cited.length ? `<div class="posts">${cited.slice(0, 6).map((e) => postCard(e, r.attestations[e.attestation])).join('')}</div>` : ''}
+      ${cited.length > 6 ? `<details class="more"><summary>${cited.length - 6} more cited sources</summary><div class="posts" style="margin-top: 10px">${cited.slice(6).map((e) => postCard(e, r.attestations[e.attestation])).join('')}</div></details>` : ''}
+      <div class="confidence"><span class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((r.confidence ?? 0) * 100)}" aria-label="Confidence"><span style="--w:${Math.round((r.confidence ?? 0) * 100)}%"></span></span><b>${Math.round((r.confidence ?? 0) * 100)}%</b> confidence</div>
+      <p class="meta small">${tally(r.evidence)}${r.attestations?.length ?? 0} signed answers, ${esc(r.costAusd)} aUSD of evidence${r.judge ? `, judged by ${esc(r.judge.model)}` : ''}.</p>
       ${receipts ? `<ul class="rcs">${(r.steps ?? []).map((s) => receiptHtml(s, s.attestation !== undefined ? r.attestations[s.attestation] : undefined)).join('')}</ul>` : ''}
       ${rest.length ? `<details class="more"><summary>All ${rest.length} other evidence lines</summary><ul class="evidence">${rest.map((e) => `<li><span class="src">${esc(e.author ?? e.kind)}${e.at ? `, ${esc(fmtTime(e.at))}` : ''}</span>${esc(e.text)}</li>`).join('')}</ul></details>` : ''}
       <div class="verdict-actions">

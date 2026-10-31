@@ -14,5 +14,9 @@
   "hassett-agent-2025-04-07.json": {
     "note": "Asked in plain words. The agent planned its own sources, then found the White House denials.",
     "pinned": true
+  },
+  "binance-hack-2026-10-31.json": {
+    "note": "31 Oct 2026, asked in plain words with no date. The agent looked back a week and found CNBC, Cointelegraph, The Independent and others reporting the hack; no primary account disputed it.",
+    "pinned": true
   }
 }
