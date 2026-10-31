@@ -82,3 +82,10 @@ Every real testnet transaction, newest last. Scripts append to this file automat
 | 2026-10-31T01:18:07.635Z | Base Sepolia | https://sepolia.basescan.org/tx/0x522fdfaa13c1320b67740496c9ef988bd9b854a35f694a5a78ca3c725deebab3 | x402 payment: openrouter.chatCompletion |
 | 2026-10-31T01:18:07.742Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3 | Masumi escrow FundsLocked for Task 01a18f87-970d-757b-8346-b32369aa2a99 |
 | 2026-10-31T01:19:17.059Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879 | Masumi escrow ResultSubmitted for Task 01a18f87-970d-757b-8346-b32369aa2a99 |
+| 2026-10-31T07:39:01.588Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/a599de1bc4c9e5d67220e63140fd5562da36832e81e81854b115b98b98d8bcbf | Masumi dispenser: test ADA to the demo x402 buyer agent |
+| 2026-10-31T07:40:04.725Z | Base Sepolia | https://sepolia.basescan.org/tx/0x9bc2cc43e3b97320da25ec40021271694b9dfa8663a00a10689dc3e5d393006b | x402 payment: benzinga.news |
+| 2026-10-31T07:40:12.649Z | Base Sepolia | https://sepolia.basescan.org/tx/0x999adf59eef71f3df09ba0397acd7ca6440d0372ef552f600c1ce83bde8024b5 | x402 payment: twitter.searchTweets |
+| 2026-10-31T07:40:12.670Z | Base Sepolia | https://sepolia.basescan.org/tx/0x53291dd5036c56a6011fd4d3c4378523776ff62ba5cbc6b1e66aab21e7452832 | x402 payment: twitter.searchTweets |
+| 2026-10-31T07:40:14.128Z | Base Sepolia | https://sepolia.basescan.org/tx/0x4f0b74af4750852c67219c19464b910a08aad9f5d7959bf58b93b07335fa1389 | x402 payment: tickerlayer.aggregates |
+| 2026-10-31T07:40:38.109Z | Base Sepolia | https://sepolia.basescan.org/tx/0xbccd647145c9ef5c028d2be4dbde51d20b324ee6abb5831d86ee7d7454beddbf | x402 payment: openrouter.chatCompletion |
+| 2026-10-31T07:41:04.030Z | Cardano Preprod | https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629 | x402 payment (2 tADA) from a buyer agent for a SecondSource check: DENIED |

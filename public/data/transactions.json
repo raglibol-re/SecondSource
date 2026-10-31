@@ -466,5 +466,47 @@
     "network": "Cardano Preprod",
     "link": "https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879",
     "what": "Masumi escrow ResultSubmitted for Task 01a18f87-970d-757b-8346-b32369aa2a99"
+  },
+  {
+    "when": "2026-10-31T07:39:01.588Z",
+    "network": "Cardano Preprod",
+    "link": "https://preprod.cardanoscan.io/transaction/a599de1bc4c9e5d67220e63140fd5562da36832e81e81854b115b98b98d8bcbf",
+    "what": "Masumi dispenser: test ADA to the demo x402 buyer agent"
+  },
+  {
+    "when": "2026-10-31T07:40:04.725Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x9bc2cc43e3b97320da25ec40021271694b9dfa8663a00a10689dc3e5d393006b",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T07:40:12.649Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x999adf59eef71f3df09ba0397acd7ca6440d0372ef552f600c1ce83bde8024b5",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T07:40:12.670Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x53291dd5036c56a6011fd4d3c4378523776ff62ba5cbc6b1e66aab21e7452832",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T07:40:14.128Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x4f0b74af4750852c67219c19464b910a08aad9f5d7959bf58b93b07335fa1389",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T07:40:38.109Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xbccd647145c9ef5c028d2be4dbde51d20b324ee6abb5831d86ee7d7454beddbf",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T07:41:04.030Z",
+    "network": "Cardano Preprod",
+    "link": "https://preprod.cardanoscan.io/transaction/8bfdab7fbee258bc89c08ba49539bd0ce176cf366baeed633bbee12d9632f629",
+    "what": "x402 payment (2 tADA) from a buyer agent for a SecondSource check: DENIED"
   }
 ]
