@@ -424,5 +424,47 @@
     "network": "Base Sepolia",
     "link": "https://sepolia.basescan.org/tx/0x46fb2afc23d75398db15162061dddafe141a4a78e3811fe15c5a5fbb88f06c7b",
     "what": "GuardedVault trade ALLOWED (CONFIRMED): Trump signs executive order to boost US shipbuilding"
+  },
+  {
+    "when": "2026-10-31T01:17:52.199Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x7f2e4f0e6728928f79579af24c66cab60ecf0b89d77b317644e413d9aac096ed",
+    "what": "x402 payment: tickerlayer.aggregates"
+  },
+  {
+    "when": "2026-10-31T01:17:52.206Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x81349248131689634dd02b31e834f9c045fcaba7952db8ba3adb430da8c4fb33",
+    "what": "x402 payment: benzinga.news"
+  },
+  {
+    "when": "2026-10-31T01:17:52.853Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xccde1914c9e3c5966cf920bdd2ec3ca56b2c0ffea7c9d499efba888cac0c8dda",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:17:53.081Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0xfecf5ee95e18c7c57d6b4508eedee9cec9a83b06ed084ff7a485eb61615c5b9f",
+    "what": "x402 payment: twitter.searchTweets"
+  },
+  {
+    "when": "2026-10-31T01:18:07.635Z",
+    "network": "Base Sepolia",
+    "link": "https://sepolia.basescan.org/tx/0x522fdfaa13c1320b67740496c9ef988bd9b854a35f694a5a78ca3c725deebab3",
+    "what": "x402 payment: openrouter.chatCompletion"
+  },
+  {
+    "when": "2026-10-31T01:18:07.742Z",
+    "network": "Cardano Preprod",
+    "link": "https://preprod.cardanoscan.io/transaction/b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3",
+    "what": "Masumi escrow FundsLocked for Task 01a18f87-970d-757b-8346-b32369aa2a99"
+  },
+  {
+    "when": "2026-10-31T01:19:17.059Z",
+    "network": "Cardano Preprod",
+    "link": "https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879",
+    "what": "Masumi escrow ResultSubmitted for Task 01a18f87-970d-757b-8346-b32369aa2a99"
   }
 ]

@@ -115,7 +115,7 @@ Keys live in `.env`, which is gitignored. Testnets only.
 | Shipbuilding executive order, 9 April 2025 | **CONFIRMED** by a signed @WhiteHouse post. The Guarded Vault executed the trade. |
 | 90-day pause, 9 April 2025 | **CONFIRMED** from Treasury Secretary Bessent's words ("We've given 90 days") as posted by @RapidResponse47. |
 | Guarded Vault | Deployed on Base Sepolia at `0x20b22351f91612015417965c8f43d22e85174ea8`. One allowed trade and one on-chain revert with `VerdictNotConfirmed`. |
-| Masumi | Registered on Cardano Preprod. One paid Sokosumi task ran end to end: 1 tUSDM locked in escrow ([tx](https://preprod.cardanoscan.io/transaction/69f54064e43f4e970cd7325a97cfe9ce28b7c7b3018cd8c1a47bb49a6c2366ed)), check returned DENIED, result hash submitted on chain ([tx](https://preprod.cardanoscan.io/transaction/ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189)), task completed. |
+| Masumi | Registered on Cardano Preprod. Two paid Sokosumi tasks ran end to end. The latest: 1 tUSDM locked in escrow ([tx](https://preprod.cardanoscan.io/transaction/b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3)), check returned DENIED with a signed model judgment, result hash submitted on chain ([tx](https://preprod.cardanoscan.io/transaction/721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879)), task completed. |
 
 All transactions are listed in [docs/transactions.md](docs/transactions.md).
 

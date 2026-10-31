@@ -14,13 +14,15 @@
   "sokosumi": {
     "coworkerId": "01a18f47-8ad2-7695-ac78-40515a62e758",
     "paidTask": {
-      "id": "01a18f66-f4b1-73fe-914b-c9a3660e1296",
+      "id": "01a18f87-970d-757b-8346-b32369aa2a99",
       "status": "COMPLETED",
       "price": "1 tUSDM via Masumi escrow",
       "verdict": "DENIED",
-      "fundsLockedTx": "69f54064e43f4e970cd7325a97cfe9ce28b7c7b3018cd8c1a47bb49a6c2366ed",
-      "resultSubmittedTx": "ac37ca588fe9953619dee462199078b788eccb2d0b8679fac8824caf81822189",
-      "checkResultHash": "0x024248f07629a21baa37e0b758fd0138ef4df39077fc1789db1c67a2df68d16f"
+      "judge": "nvidia/nemotron-3-ultra-550b-a55b:free via the OpenRouter Airnode (signed)",
+      "fundsLockedTx": "b74e743b2848b4919a73c99a814ad92471f5971d4aba15bd1e0ad3cd5fa086f3",
+      "resultSubmittedTx": "721423f3f8809c86bd7ae6a3b0127c8454ef1ef1384d89899716b3808ece4879",
+      "checkResultHash": "0xf04cace4079fe504620fc12ae819dafc760facf507e5db2381db011cba574404",
+      "resultHashOnChainMatches": true
     }
   }
 }
