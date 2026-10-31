@@ -1,6 +1,6 @@
 import { investigate } from '../../src/agent/investigate.ts';
 import { callAirnode, createPayer } from '../../src/airnode/client.ts';
-import { settlementFromHeaders, verifyX402Payment } from '../../src/x402/seller.ts';
+import { settlementFromHeaders, undecidedSettlement, verifyX402Payment } from '../../src/x402/seller.ts';
 
 export const maxDuration = 300;
 
@@ -38,6 +38,10 @@ export async function POST(request: Request): Promise<Response> {
           // Cardano: the signed transaction was submitted and is waiting for its confirmation. The buyer will be charged,
           // so they get the verdict now; the transaction id lets them follow it.
           send({ type: 'settlement', ...receipt, pending: true, settledAt: new Date().toISOString() });
+          send({ type: 'result', result });
+        } else if (!s.ok && undecidedSettlement(s)) {
+          // The facilitator did not answer; the payment may already be on chain. Never charge without delivering.
+          send({ type: 'settlement', network: v.terms.network, pending: true, unconfirmed: true, settledAt: new Date().toISOString() });
           send({ type: 'result', result });
         } else if (!s.ok) {
           const reason = receipt?.errorReason ?? (!s.ok ? JSON.stringify(s.body).slice(0, 200) : '');

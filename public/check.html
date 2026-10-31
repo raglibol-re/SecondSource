@@ -224,6 +224,7 @@
       settled: ['Paid', 'ok'],
       pending: ['Paid, confirming on chain', 'pending'],
       confirmed: ['Paid, confirmed on chain', 'ok'],
+      unconfirmed: ['Submitted, not yet confirmed', 'pending'],
       notcharged: ['Not charged', 'off'],
     };
     const isCardano = (network, value = '') => (network ?? '').startsWith('cardano') || value.startsWith('addr') || /^[0-9a-f]{64}$/.test(value);
@@ -242,7 +243,7 @@
           ['From', d.from ? `${esc(d.walletName ?? '')} ${link(addrUrl(d.from, net), shortAddr(d.from), d.from)}` : ''],
           ['To', d.terms?.payTo ? `SecondSource ${link(addrUrl(d.terms.payTo, net), shortAddr(d.terms.payTo), d.terms.payTo)}` : 'SecondSource'],
           ['Network', `${esc(NETWORKS[net] ?? net)}, paid over x402`],
-          ['Transaction', d.tx ? link(txUrl(d.tx, net), short(d.tx), d.tx) : d.status === 'notcharged' ? 'none' : '<span class="muted">after the verdict</span>'],
+          ['Transaction', d.tx ? link(txUrl(d.tx, net), short(d.tx), d.tx) : d.status === 'notcharged' ? 'none' : d.status === 'unconfirmed' ? '<span class="muted">the facilitator did not report it; check your wallet</span>' : '<span class="muted">after the verdict</span>'],
           ['Time', esc(fmtTime(d.settledAt ?? d.authorisedAt))],
           ['Result', d.resultHash ? `<span class="mono" title="${esc(d.resultHash)}">${esc(short(d.resultHash))}</span>${d.verdict ? `, ${esc(d.verdict.toLowerCase())}` : ''}` : ''],
         ].filter(([, v]) => v);
@@ -318,7 +319,7 @@
             think('Done. Settling your payment before I hand over the verdict…');
           }
           if (e.type === 'settlement') {
-            const s = ensureSlip({ status: e.pending ? 'pending' : 'settled', tx: e.transaction, from: e.payer ?? payment?.from, settledAt: e.settledAt ?? new Date().toISOString() });
+            const s = ensureSlip({ status: e.unconfirmed ? 'unconfirmed' : e.pending ? 'pending' : 'settled', tx: e.transaction, from: e.payer ?? payment?.from, settledAt: e.settledAt ?? new Date().toISOString() });
             if (s && e.pending && e.transaction) watchCardano(s);
           }
           if (e.type === 'result') {

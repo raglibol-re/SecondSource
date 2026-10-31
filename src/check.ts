@@ -63,7 +63,10 @@ export const check = async (rawInput: CheckInput, call: Caller, onProgress?: (e:
   if (input.lookbackHours === undefined) delete input.lookbackHours;
   const window = evidenceWindow(input.publishedAt!, Date.now(), input.lookbackHours ?? 2);
   const keywords = input.keywords?.length ? input.keywords : extractKeywords(input.headline);
-  const accounts = [...new Set([...(input.officialAccounts?.length ? input.officialAccounts : DEFAULT_OFFICIAL_ACCOUNTS), ...(input.claimedSource ? [input.claimedSource] : [])].map(handle))];
+  // One entry per account: X handles are case-insensitive, and planners write @binance and @Binance alike.
+  const accounts = [...(input.officialAccounts?.length ? input.officialAccounts : DEFAULT_OFFICIAL_ACCOUNTS), ...(input.claimedSource ? [input.claimedSource] : [])]
+    .map(handle)
+    .filter((a, i, all) => all.findIndex((b) => b.toLowerCase() === a.toLowerCase()) === i);
   const longWindow = (input.lookbackHours ?? 2) > 6;
   const current = Date.now() - Date.parse(window.until) < CURRENT_FEED_MS;
 

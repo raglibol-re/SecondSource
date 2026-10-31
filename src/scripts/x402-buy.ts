@@ -56,6 +56,7 @@ if (values.question) {
       console.log(`Paid${e.pending ? ' (confirming)' : ''}: https://preprod.cardanoscan.io/transaction/${e.transaction}`);
       logTransaction('Cardano Preprod', `https://preprod.cardanoscan.io/transaction/${e.transaction}`, 'x402 payment (2 tADA) from a buyer agent for a SecondSource investigation');
     }
+    if (e.type === 'settlement' && e.unconfirmed) console.log('Payment submitted; the facilitator did not confirm it in time, so the verdict was delivered anyway.');
     if (e.type === 'result') console.log(`${e.result.verdict} (${Math.round(e.result.confidence * 100)}%): ${e.result.reasoning}`);
     if (e.type === 'error') console.log(`ERROR: ${e.error}`);
   }

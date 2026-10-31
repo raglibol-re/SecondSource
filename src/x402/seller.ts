@@ -162,6 +162,16 @@ export const verifyX402Payment = async (req: Request, body: unknown): Promise<{ 
   };
 };
 
+// A settlement that failed without a definite answer: the facilitator timed out or returned a server error. On
+// 31 Oct 2026 the Cardano facilitator answered 504 after it had already submitted the buyer's 2 tADA (tx 8cf8ad9b…).
+// Withholding the verdict then would charge the buyer for nothing, so the work is delivered and SecondSource carries the
+// risk of not being paid. A definite rejection (bad signature, insufficient funds) still withholds it.
+export const undecidedSettlement = (s: { status?: number; body?: unknown; headers?: Record<string, string> }) => {
+  const receipt = settlementFromHeaders(s.headers ?? {}) as { errorReason?: string } | null;
+  const reason = `${receipt?.errorReason ?? ''} ${JSON.stringify(s.body ?? '')}`;
+  return (s.status ?? 0) >= 500 || /\b50[234]\b|time-?out|timed out|gateway|ECONNRESET|ETIMEDOUT|fetch failed/i.test(reason);
+};
+
 // JSON route for agents (e.g. @x402/fetch): runs `handler` after the payment verified, settles only if it succeeded.
 export const sellWithX402 = async (
   req: Request,
@@ -175,6 +185,10 @@ export const sellWithX402 = async (
   if (out.status >= 400) return json(out.status, out.body); // not settled: the buyer keeps their money
   const responseBody = Buffer.from(JSON.stringify(out.body));
   const s = await v.settle(responseBody);
+  if (!s.ok && undecidedSettlement(s)) {
+    // The facilitator did not answer (timeout or 5xx); the payment may already be on chain. Deliver the work.
+    return new Response(responseBody, { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store', 'X-Settlement': 'unconfirmed' } });
+  }
   if (!s.ok) return new Response(JSON.stringify(s.body), { status: s.status, headers: { 'Content-Type': 'application/json', ...s.headers } });
   return new Response(responseBody, { status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store', ...s.headers } });
 };
